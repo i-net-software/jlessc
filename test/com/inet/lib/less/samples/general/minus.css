@@ -1,0 +1,25 @@
+.text-primary {
+  unicode-range: U+0???, U+0-7F, U+A5;
+  listparms: inset 0 -1px 0;
+  height: 5px;
+  width: -7px;
+  top: 7px;
+  bottom: 9px;
+  background-position: 0px -20px;
+  padding-top: 36;
+  padding-bottom1: -19;
+  padding-bottom2: -19;
+  padding-bottom3: -19;
+  -moz-transition: -moz-transform "-abc";
+  abc: 2 -1;
+  def: 1;
+  uvw: 1;
+  xyz: 1;
+  xxx: 1;
+  yyy: 1;
+  background-image: -webkit-linear-gradient(#123456, #654321);
+  function1: -floor(-2.3);
+  function2: - -3;
+  function3: -floor(-2.3);
+  function4: 3;
+}
