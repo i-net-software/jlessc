@@ -1,0 +1,23 @@
+.container-fixed {
+  abc: 23;
+}
+@media only screen and (min-resolution: 192dpi) {
+  .container-fixed {
+    background-size: 123 456;
+  }
+}
+@media print {
+  .visible-print {
+    display: block !important;
+  }
+  table.visible-print {
+    display: table;
+  }
+  tr.visible-print {
+    display: table-row !important;
+  }
+  th.visible-print,
+  td.visible-print {
+    display: table-cell !important;
+  }
+}

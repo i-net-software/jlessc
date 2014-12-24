@@ -1,0 +1,22 @@
+.container-fixed {
+  abc: 23;
+  &:extend(.clearfix all);
+  @media
+  only screen and ( min-resolution: 192dpi) {
+    background-size: 123 456;
+  }
+}
+
+.responsive-visibility() {
+  display: block !important;
+  table&  { display: table; }
+  tr&     { display: table-row !important; }
+  th&,
+  td&     { display: table-cell !important; }
+}
+
+.visible-print {
+  @media print {
+    .responsive-visibility();
+  }
+}
