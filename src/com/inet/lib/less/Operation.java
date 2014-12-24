@@ -188,6 +188,14 @@ class Operation extends AbstractExpression implements Expression {
                             operands.get( i ).appendTo( formatter );
                         }
                         return;
+                    case '/':
+                        for( int i = 0; i < operands.size(); i++ ) {
+                            if( i > 0 ) {
+                                formatter.append( ' ' ).append( operator ).append( ' ' );
+                            }
+                            operands.get( i ).appendTo( formatter );
+                        }
+                        return;
                     case '~':
                         String str = operands.get( 0 ).stringValue( formatter );
                         StringBuilder builder = new StringBuilder();
