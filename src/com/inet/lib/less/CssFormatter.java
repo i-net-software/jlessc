@@ -210,12 +210,7 @@ class CssFormatter {
         if( !inlineMode && hint != null ) {
             output.append( hint );
         } else {
-            output.append( '#' );
-            String hex = Integer.toHexString( value & 0xFFFFFF );
-            for( int i = hex.length(); i < 6; i++ ) {
-                output.append( '0' );
-            }
-            output.append( hex );
+            ColorUtils.appendColor( output, value );
         }
         return this;
     }

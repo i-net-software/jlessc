@@ -26,6 +26,8 @@
  */
 package com.inet.lib.less;
 
+import java.io.IOException;
+
 /**
  * Some methods for calculating colors.
  */
@@ -148,5 +150,29 @@ class ColorUtils {
         } else {
             return (int)Math.round( value );
         }
+    }
+    
+    static void appendColor( Appendable output, int rgb ) throws IOException {
+        output.append( '#' );
+        String hex = Integer.toHexString( rgb & 0xFFFFFF );
+        for( int i = hex.length(); i < 6; i++ ) {
+            output.append( '0' );
+        }
+        output.append( hex );
+    }
+
+    /**
+     * Get the expression value as percent (range 0 - 1).
+     * 
+     * @param expression
+     *            the expression
+     * @return the percent value
+     */
+    static double getPercent( Expression expression, CssFormatter formatter ) {
+        double d = expression.doubleValue( formatter );
+        if( expression.getDataType( formatter ) == Expression.PERCENT ) {
+            d /= 100;
+        }
+        return d;
     }
 }
