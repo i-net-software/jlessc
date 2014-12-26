@@ -132,6 +132,9 @@ class FunctionExpression extends AbstractExpression implements Expression {
                 }
                 formatter.append( hex );
                 return;
+            case "svg-gradient":
+                SvgGradient.svgGradient( formatter, parameters );
+                return;
         }
         if( type == UNKNOWN ) {
             eval( formatter );
@@ -486,15 +489,10 @@ class FunctionExpression extends AbstractExpression implements Expression {
      * 
      * @param idx
      *            the index starting with 0
-     * @return the expression
+     * @return the the percent value
      */
     private double getPercent( int idx, CssFormatter formatter ) {
-        Expression expression = get( idx );
-        double d = expression.doubleValue( formatter );
-        if( expression.getDataType( formatter ) == PERCENT ) {
-            d /= 100;
-        }
-        return d;
+        return ColorUtils.getPercent( get( idx ), formatter );
     }
 
     /**
