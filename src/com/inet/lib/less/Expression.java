@@ -47,6 +47,13 @@ interface Expression extends Formattable {
 
     static final int STRING  = 6;
 
+    // A color alpha value of 1 as long mask.
+    static final long ALPHA_1 = 0xFFFF_0000_0000_0000L;
+
+    static final double WHITE = Double.longBitsToDouble( ALPHA_1 | 0xFF00_FF00_FF00L );
+
+    static final double BLACK = Double.longBitsToDouble( ALPHA_1 );
+
     /**
      * Write the expression to the CSS output
      * 

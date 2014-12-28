@@ -64,13 +64,14 @@ class CompressCssFormatter extends CssFormatter {
         return this;
     }
 
-    CssFormatter appendColor( int rgb, String hint ) throws IOException {
+    @Override
+    CssFormatter appendColor( double color, String hint ) throws IOException {
         if( !inlineMode() ) {
-            int red = ColorUtils.red( rgb );
+            int red = ColorUtils.red( color );
             if( red % 17 == 0 ) {
-                int green = ColorUtils.green( rgb );
+                int green = ColorUtils.green( color );
                 if( green % 17 == 0 ) {
-                    int blue = ColorUtils.blue( rgb );
+                    int blue = ColorUtils.blue( color );
                     if( blue % 17 == 0 ) {
                         append( '#' )
                         .append( Character.forDigit( red / 17, 16 ) )
@@ -81,7 +82,7 @@ class CompressCssFormatter extends CssFormatter {
                 }
             }
         }
-        return super.appendColor( rgb, null );
+        return super.appendColor( color, null );
     }
 
     @Override

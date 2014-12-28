@@ -39,6 +39,8 @@ import java.util.Locale;
  */
 class CssFormatter {
 
+    private final static char[]                          DIGITS         = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+
     private Appendable                                   output;
 
     private LessExtendMap                                lessExtends;
@@ -206,13 +208,22 @@ class CssFormatter {
         return this;
     }
 
-    CssFormatter appendColor( int value, String hint ) throws IOException {
+    CssFormatter appendColor( double color, String hint ) throws IOException {
         if( !inlineMode && hint != null ) {
             output.append( hint );
         } else {
-            ColorUtils.appendColor( output, value );
+            int argb = ColorUtils.argb( color );
+            output.append( '#' );
+            appendHex( argb, 6 );
         }
         return this;
+    }
+
+    void appendHex( int value, int digits ) throws IOException {
+        if( digits > 1 ) {
+            appendHex( value >>> 4, digits-1 );
+        }
+        output.append( DIGITS[ value & 0xF ] );
     }
 
     CssFormatter append( char ch ) throws IOException {

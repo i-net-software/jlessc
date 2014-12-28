@@ -33,11 +33,12 @@ import java.io.IOException;
  */
 class ColorUtils {
 
-    static HSL toHSL( int argb ) {
-        double a = ((argb >> 24) & 0xFF) / 255.0;
-        double r = ((argb >> 16) & 0xFF) / 255.0;
-        double g = ((argb >> 8) & 0xFF) / 255.0;
-        double b = ((argb >> 0) & 0xFF) / 255.0;
+    static HSL toHSL( double color ) {
+        long argb = Double.doubleToRawLongBits( color );
+        double a = alpha( color );
+        double r = clamp( ((argb >> 32) & 0xFFFF) / (double)0xFF00 );
+        double g = clamp( ((argb >> 16) & 0xFFFF) / (double)0xFF00 );
+        double b = clamp( ((argb >> 0) & 0xFFFF) / (double)0xFF00 );
 
         double max = Math.max( Math.max( r, g ), b );
         double min = Math.min( Math.min( r, g ), b );
@@ -64,45 +65,57 @@ class ColorUtils {
         return Math.min( 1, Math.max( 0, val ) );
     }
 
-    static int rgba( double r, double g, double b, double a ) {
-        return rgba( (int)Math.round( r ), (int)Math.round( g ), (int)Math.round( b ), a );
+    static double rgba( double r, double g, double b, double a ) {
+        return Double.longBitsToDouble( Math.round( a * 0xFFFF ) << 48 | (colorLargeDigit(r) << 32) | (colorLargeDigit(g) << 16) | colorLargeDigit(b) );
     }
 
-    static int rgba( int r, int g, int b, double a ) {
-        return (colorDigit(a * 255.1) << 24) | (colorDigit(r) << 16) | (colorDigit(g) << 8) | colorDigit(b);
+    static double rgba( int r, int g, int b, double a ) {
+        return Double.longBitsToDouble( Math.round( a * 0xFFFF ) << 48 | (colorLargeDigit(r) << 32) | (colorLargeDigit(g) << 16) | colorLargeDigit(b) );
     }
 
-    static int rgb( int r, int g, int b ) {
-        return (colorDigit(r) << 16) | (colorDigit(g) << 8) | colorDigit(b);
+    static double rgb( int r, int g, int b ) {
+        return Double.longBitsToDouble( Expression.ALPHA_1 | (colorLargeDigit(r) << 32) | (colorLargeDigit(g) << 16) | colorLargeDigit(b) );
     }
 
-    static double alpha( int argb ) {
-        return Math.round( ((argb >> 24) & 0xFF) / 2.55) / 100.0; 
+    static int argb( double color ) {
+        long value = Double.doubleToRawLongBits( color );
+        int result = colorDigit( ((value >>> 48)) / 256.0 ) << 24;
+        result |= colorDigit( ((value >> 32) & 0xFFFF) / 256.0 ) << 16; 
+        result |= colorDigit( ((value >> 16) & 0xFFFF) / 256.0 ) << 8; 
+        result |= colorDigit( ((value) & 0xFFFF) / 256.0 ); 
+        return result;
     }
 
-    static int red( int rgb ) {
-        return (rgb >> 16) & 0xFF; 
+    static double alpha( double color ) {
+        double value = (Double.doubleToRawLongBits( color ) >>> 48) / (double)0XFFFF;
+        return Math.round( value * 10000 ) / 10000.0;
     }
 
-    static int green( int rgb ) {
-        return (rgb >> 8) & 0xFF; 
+    static int red( double color ) {
+        return colorDigit( ((Double.doubleToRawLongBits( color ) >> 32) & 0xFFFF) / 256.0 ); 
     }
 
-    static int blue( int rgb ) {
-        return rgb & 0xFF; 
+    static int green( double color ) {
+        return colorDigit( ((Double.doubleToRawLongBits( color ) >> 16 & 0xFFFF)) / 256.0 ); 
+    }
+
+    static int blue( double color ) {
+        return colorDigit( (Double.doubleToRawLongBits( color ) & 0xFFFF) / 256.0 ); 
     }
 
     private static double hsla_hue(double h, double m1, double m2) {
         h = h < 0 ? h + 1 : (h > 1 ? h - 1 : h);
         if      (h * 6 < 1) { return m1 + (m2 - m1) * h * 6; }
         else if (h * 2 < 1) { return m2; }
-        else if (h * 3 < 2) { return m1 + (m2 - m1) * (2.0/3 - h) * 6; }
+        else if (h * 3 < 2) { return m1 + (m2 - m1) * (2F/3 - h) * 6; }
         else                { return m1; }
     }
-    static int hsla (HSL hsl) {
+
+    static double hsla (HSL hsl) {
         return hsla(hsl.h, hsl.s, hsl.l, hsl.a);
     }
-    static int hsla (double h, double s, double l, double a) {
+
+    static double hsla( double h, double s, double l, double a ) {
 
         h = (h % 360) / 360;
         s = clamp(s); l = clamp(l); a = clamp(a);
@@ -116,10 +129,11 @@ class ColorUtils {
                      a);
     }
     
-    static double luma( int rgb ) {
-        double r = ((rgb >> 16) & 0xFF) / 255.0;
-        double g = ((rgb >> 8) & 0xFF) / 255.0;
-        double b = ((rgb >> 0) & 0xFF) / 255.0;
+    static double luma( double color ) {
+        long argb = Double.doubleToRawLongBits( color );
+        double r = ((argb >> 32) & 0xFFFF) / (double)0xFF00;
+        double g = ((argb >> 16) & 0xFFFF) / (double)0xFF00;
+        double b = ((argb) & 0xFFFF) / (double)0xFF00;
 
         r = (r <= 0.03928) ? r / 12.92 : Math.pow( ((r + 0.055) / 1.055), 2.4 );
         g = (g <= 0.03928) ? g / 12.92 : Math.pow( ((g + 0.055) / 1.055), 2.4 );
@@ -128,10 +142,10 @@ class ColorUtils {
         return 0.2126 * r + 0.7152 * g + 0.0722 * b;
     }
 
-    static int contrast( int color, int dark, int light, double threshold ) {
+    static double contrast( double color, double dark, double light, double threshold ) {
         //Figure out which is actually light and dark!
         if( luma( dark ) > luma( light ) ) {
-            int t = light;
+            double t = light;
             light = dark;
             dark = t;
         }
@@ -151,14 +165,16 @@ class ColorUtils {
             return (int)Math.round( value );
         }
     }
-    
-    static void appendColor( Appendable output, int rgb ) throws IOException {
-        output.append( '#' );
-        String hex = Integer.toHexString( rgb & 0xFFFFFF );
-        for( int i = hex.length(); i < 6; i++ ) {
-            output.append( '0' );
+
+    private static long colorLargeDigit( double value ) {
+        value *= 0x100;
+        if( value >= 0xFFFF ) {
+            return 0xFFFF;
+        } else if( value <= 0 ) {
+            return 0;
+        } else {
+            return Math.round( value );
         }
-        output.append( hex );
     }
 
     /**
