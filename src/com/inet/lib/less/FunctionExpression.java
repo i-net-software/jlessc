@@ -109,17 +109,6 @@ class FunctionExpression extends AbstractExpression implements Expression {
     @Override
     public void appendTo( CssFormatter formatter ) throws IOException {
         switch( super.toString() ) {
-            //TODO remove the list of CSS functions, wee need to support all
-//            case "attr":
-//            case "url":
-//            case "rotate":
-//            case "linear-gradient":
-//            case "radial-gradient":
-//            case "rect":
-//            case "ceil":
-//            case "translate":
-//                appendToCssFunction( formatter );
-//                return;
             case "%":
                 format( formatter );
                 return;
@@ -131,6 +120,29 @@ class FunctionExpression extends AbstractExpression implements Expression {
                 return;
             case "svg-gradient":
                 SvgGradient.svgGradient( formatter, parameters );
+                return;
+            case "replace":
+                String str = get( 0 ).stringValue( formatter );
+                formatter.setInineMode( true );
+                String pattern = get( 1 ).stringValue( formatter );
+                String replacement = get( 2 ).stringValue( formatter );
+                String flags = parameters.size() > 3 ? get( 3 ).stringValue( formatter ) : "";
+                formatter.setInineMode( false );
+                if( str.length() > 1 ) {
+                    char ch = str.charAt( 0 );
+                    boolean quote = false;
+                    if( ch == '\'' || ch == '\"' ) {
+                        if( str.charAt( str.length() - 1 ) == ch ) {
+                            str = str.substring( 1, str.length() - 1 );
+                            quote = true;
+                        }
+                    }
+                    str = new RegExp( pattern, flags ).replace( str, replacement );
+                    if( quote ) {
+                        str = ch + str + ch;
+                    }
+                }
+                formatter.append( str );
                 return;
         }
         if( type == UNKNOWN ) {
@@ -331,11 +343,21 @@ class FunctionExpression extends AbstractExpression implements Expression {
                     return;
                 case "contrast":
                     type = COLOR;
-                    double rgb = getDouble( 0, formatter );
+                    double color = getColor( 0, formatter );
                     double dark = getDouble( 1, BLACK, formatter );
                     double light = getDouble( 2, WHITE, formatter );
-                    double threshold = getDouble( 2, 0.43, formatter );
-                    doubleValue = contrast( rgb, dark, light, threshold );
+                    double threshold = getPercent( 3, 0.43, formatter );
+                    doubleValue = contrast( color, dark, light, threshold );
+                    return;
+                case "luma":
+                    type = PERCENT;
+                    color = getColor( 0, formatter );
+                    doubleValue = luma( color ) * 100;
+                    return;
+                case "luminance":
+                    type = PERCENT;
+                    color = getColor( 0, formatter );
+                    doubleValue = luminance( color ) * 100;
                     return;
                 case "unit":
                     type = NUMBER;
@@ -490,6 +512,37 @@ class FunctionExpression extends AbstractExpression implements Expression {
      */
     private double getPercent( int idx, CssFormatter formatter ) {
         return ColorUtils.getPercent( get( idx ), formatter );
+    }
+
+    /**
+     * Get the idx parameter from the parameter list as percent (range 0 - 1).
+     * 
+     * @param idx
+     *            the index starting with 0
+     * @return the the percent value
+     */
+    private double getPercent( int idx, double defaultValue, CssFormatter formatter ) {
+        if( parameters.size() <= idx ) {
+            return defaultValue;
+        }
+        return ColorUtils.getPercent( get( idx ), formatter );
+    }
+
+    /**
+     * Get the idx parameter from the parameter list as color value..
+     * 
+     * @param idx
+     *            the index starting with 0
+     * @return the the color value
+     */
+    private double getColor( int idx, CssFormatter formatter ) {
+        Expression exp = get( idx );
+        switch( exp.getDataType( formatter ) ) {
+            case COLOR:
+            case RGBA:
+                return exp.doubleValue( formatter );
+        }
+        throw new ParameterOutOfBoundsException();
     }
 
     /**
