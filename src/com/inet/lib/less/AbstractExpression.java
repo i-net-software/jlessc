@@ -77,15 +77,15 @@ abstract class AbstractExpression extends LessObject implements Expression {
                 formatter.appendValue( d, unit( formatter ) );
                 return;
             case COLOR:
-                formatter.appendColor( (int)doubleValue( formatter ), null );
+                formatter.appendColor( doubleValue( formatter ), null );
                 return;
             case RGBA:
                 formatter.append( "rgba(" );
-                int argb = (int)doubleValue( formatter );
-                formatter.append( red( argb ) ).append( ',' ).space();
-                formatter.append( green( argb ) ).append( ',' ).space();
-                formatter.append( blue( argb ) ).append( ',' ).space();
-                formatter.append( alpha( argb ) ).append( ')' );
+                double color = doubleValue( formatter );
+                formatter.append( red( color ) ).append( ',' ).space();
+                formatter.append( green( color ) ).append( ',' ).space();
+                formatter.append( blue( color ) ).append( ',' ).space();
+                formatter.append( alpha( color ) ).append( ')' );
                 return;
         }
         formatter.append( str );

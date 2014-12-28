@@ -26,7 +26,7 @@
  */
 package com.inet.lib.less;
 
-import static com.inet.lib.less.ColorUtils.colorDigit;
+import static com.inet.lib.less.ColorUtils.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -269,13 +269,13 @@ class Operation extends AbstractExpression implements Expression {
             }
             if( type == COLOR ) {
                 if( rightType == COLOR ) {
-                    value = doubleValue2Colors( (int)value, (int)right );
+                    value = doubleValue2Colors( value, right );
                 } else {
-                    value = doubleValueLeftColor( (int)value, right );
+                    value = doubleValueLeftColor( value, right );
                 }
             } else {
                 if( rightType == COLOR ) {
-                    value = doubleValueRightColor( value, (int)right );
+                    value = doubleValueRightColor( value, right );
                 } else {
                     value = doubleValue( value, right );
                 }
@@ -299,22 +299,22 @@ class Operation extends AbstractExpression implements Expression {
         }
     }
 
-    private double doubleValueLeftColor( int rgb, double right ) {
-        return colorDigit( doubleValue( (rgb & 0xFF), right ) ) //
-                        | colorDigit( doubleValue( ((rgb >> 8) & 0xFF), right ) ) << 8 //
-                        | colorDigit( doubleValue( ((rgb >> 16) & 0xFF), right ) ) << 16;
+    private double doubleValueLeftColor( double color, double right ) {
+        return rgba( doubleValue( red( color ), right ), //
+                        doubleValue( green( color ), right ), //
+                        doubleValue( blue( color ), right ), 1 );
     }
 
-    private double doubleValueRightColor( double left, int rgb ) {
-        return colorDigit( doubleValue( left, (rgb & 0xFF) ) ) //
-                        | colorDigit( doubleValue( left, ((rgb >> 8) & 0xFF) ) ) << 8 //
-                        | colorDigit( doubleValue( left, ((rgb >> 16) & 0xFF) ) ) << 16;
+    private double doubleValueRightColor( double left, double color ) {
+        return rgba( doubleValue( left, red( color ) ), //
+                        doubleValue( left, green( color ) ), //
+                        doubleValue( left, blue( color ) ), 1 );
     }
 
-    private double doubleValue2Colors( int left, int right ) {
-        return colorDigit( doubleValue( (left & 0xFF), (right & 0xFF) ) ) //
-                        | colorDigit( doubleValue( (left >> 8) & 0xFF, (right >> 8) & 0xFF ) ) << 8 //
-                        | colorDigit( doubleValue( (left >> 16) & 0xFF, (right >> 16) & 0xFF ) ) << 16;
+    private double doubleValue2Colors( double left, double right ) {
+        return rgba( doubleValue( red( left ), red( right ) ), //
+                        doubleValue( green( left ), green( right ) ), //
+                        doubleValue( blue( left ), blue( right ) ), 1 );
     }
 
     @Override
@@ -341,40 +341,61 @@ class Operation extends AbstractExpression implements Expression {
             case '≥':
             case '≤':
                 int type = maxOperadType( formatter );
-                if( type == STRING ) {
-                    String left = operands.get( 0 ).stringValue( formatter );
-                    String right = operands.get( 1 ).stringValue( formatter );
-                    switch( operator ) {
-                        case '>':
-                            return left.compareTo( right ) > 0;
-                        case '<':
-                            return left.compareTo( right ) < 0;
-                        case '=':
-                            return left.compareTo( right ) == 0;
-                        case '≥':
-                            return left.compareTo( right ) >= 0;
-                        case '≤':
-                            return left.compareTo( right ) <= 0;
+                switch( type ) {
+                    case STRING: {
+                        String left = operands.get( 0 ).stringValue( formatter );
+                        String right = operands.get( 1 ).stringValue( formatter );
+                        switch( operator ) {
+                            case '>':
+                                return left.compareTo( right ) > 0;
+                            case '<':
+                                return left.compareTo( right ) < 0;
+                            case '=':
+                                return left.compareTo( right ) == 0;
+                            case '≥':
+                                return left.compareTo( right ) >= 0;
+                            case '≤':
+                                return left.compareTo( right ) <= 0;
+                        }
+                        break;
                     }
-                } else {
-                    double left = operands.get( 0 ).doubleValue( formatter );
-                    double right = operands.get( 1 ).doubleValue( formatter );
-                    switch( operator ) {
-                        case '>':
-                            return left > right;
-                        case '<':
-                            return left < right;
-                        case '=':
-                            return left == right;
-                        case '≥':
-                            return left >= right;
-                        case '≤':
-                            return left <= right;
+                    case COLOR:
+                    case RGBA:{
+                        long left = Double.doubleToRawLongBits( operands.get( 0 ).doubleValue( formatter ) );
+                        long right = Double.doubleToRawLongBits( operands.get( 1 ).doubleValue( formatter ) );
+                        switch( operator ) {
+                            case '>':
+                                return left > right;
+                            case '<':
+                                return left < right;
+                            case '=':
+                                return left == right;
+                            case '≥':
+                                return left >= right;
+                            case '≤':
+                                return left <= right;
+                        }
+                    }
+                    default: {
+                        double left = operands.get( 0 ).doubleValue( formatter );
+                        double right = operands.get( 1 ).doubleValue( formatter );
+                        switch( operator ) {
+                            case '>':
+                                return left > right;
+                            case '<':
+                                return left < right;
+                            case '=':
+                                return left == right;
+                            case '≥':
+                                return left >= right;
+                            case '≤':
+                                return left <= right;
+                        }
                     }
                 }
             default:
-                throw createException( "Not supported Oprator '" + operator + "' for Expression '" + toString() + '\'' );
         }
+        throw createException( "Not supported Oprator '" + operator + "' for Expression '" + toString() + '\'' );
     }
 
     /**

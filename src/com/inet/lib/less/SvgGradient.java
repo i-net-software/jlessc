@@ -76,14 +76,14 @@ class SvgGradient {
 
         for( int i = 1; i < parameters.size(); i++ ) {
             Expression param = parameters.get( i );
-            int color;
+            double color;
             double position;
             if( param.getClass() == Operation.class && ((Operation)param).getOperator() == ' ' ) {
                 ArrayList<Expression> operands = ((Operation)param).getOperands();
-                color = (int)operands.get( 0 ).doubleValue( formatter );
+                color = operands.get( 0 ).doubleValue( formatter );
                 position = ColorUtils.getPercent( operands.get( 1 ), formatter );
             } else {
-                color = (int)param.doubleValue( formatter );
+                color = param.doubleValue( formatter );
                 position = (i - 1) / (parameters.size() - 2.0);
             }
             builder.append( "<stop offset=\"" );
@@ -94,7 +94,9 @@ class SvgGradient {
                 builder.append( formatter.getFormat().format( position ) );
             }
             builder.append( "%\" stop-color=\"" );
-            ColorUtils.appendColor( builder, color );
+            Appendable original = formatter.swapOutput( builder );
+            formatter.appendColor( color, null );
+            formatter.swapOutput( original );
             builder.append( '\"' );
             double alpha = ColorUtils.alpha( color );
             if( alpha < 1 ) {

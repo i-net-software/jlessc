@@ -124,13 +124,10 @@ class FunctionExpression extends AbstractExpression implements Expression {
                 format( formatter );
                 return;
             case "argb":
-                int argb = getInt( 0, formatter );
+                double color = getDouble( 0, formatter );
+                int argb = argb( color );
                 formatter.append( '#' );
-                String hex = Integer.toHexString( argb );
-                for( int i = hex.length(); i < 8; i++ ) {
-                    formatter.append( '0' );
-                }
-                formatter.append( hex );
+                formatter.appendHex( argb, 8 );
                 return;
             case "svg-gradient":
                 SvgGradient.svgGradient( formatter, parameters );
@@ -216,7 +213,7 @@ class FunctionExpression extends AbstractExpression implements Expression {
                     type = NUMBER;
                     switch( get( 0 ).getDataType( formatter ) ) {
                         case RGBA:
-                            doubleValue = alpha( getInt( 0, formatter ) );
+                            doubleValue = alpha( getDouble( 0, formatter ) );
                             break;
                         case COLOR:
                             doubleValue = 1;
@@ -227,15 +224,15 @@ class FunctionExpression extends AbstractExpression implements Expression {
                     return;
                 case "red":
                     type = NUMBER;
-                    doubleValue = red( getInt( 0, formatter ) );
+                    doubleValue = red( getDouble( 0, formatter ) );
                     return;
                 case "green":
                     type = NUMBER;
-                    doubleValue = green( getInt( 0, formatter ) );
+                    doubleValue = green( getDouble( 0, formatter ) );
                     return;
                 case "blue":
                     type = NUMBER;
-                    doubleValue = blue( getInt( 0, formatter ) );
+                    doubleValue = blue( getDouble( 0, formatter ) );
                     return;
                 case "rgba":
                     type = RGBA;
@@ -257,25 +254,25 @@ class FunctionExpression extends AbstractExpression implements Expression {
                     return;
                 case "saturate":
                     type = COLOR;
-                    HSL hsl = toHSL( getInt( 0, formatter ) );
+                    HSL hsl = toHSL( getDouble( 0, formatter ) );
                     hsl.s += getPercent( 1, formatter );
                     doubleValue = hsla( hsl );
                     return;
                 case "desaturate":
                     type = COLOR;
-                    hsl = toHSL( getInt( 0, formatter ) );
+                    hsl = toHSL( getDouble( 0, formatter ) );
                     hsl.s -= getPercent( 1, formatter );
                     doubleValue = hsla( hsl );
                     return;
                 case "greyscale":
                     type = COLOR;
-                    hsl = toHSL( getInt( 0, formatter ) );
+                    hsl = toHSL( getDouble( 0, formatter ) );
                     hsl.s = 0;
                     doubleValue = hsla( hsl );
                     return;
                 case "saturation":
                     type = PERCENT;
-                    hsl = toHSL( getInt( 0, formatter ) );
+                    hsl = toHSL( getDouble( 0, formatter ) );
                     doubleValue = hsl.s * 100;
                     return;
                 case "hsl":
@@ -288,55 +285,55 @@ class FunctionExpression extends AbstractExpression implements Expression {
                     return;
                 case "hue":
                     type = NUMBER;
-                    hsl = toHSL( getInt( 0, formatter ) );
+                    hsl = toHSL( getDouble( 0, formatter ) );
                     doubleValue = hsl.h;
                     return;
                 case "lightness":
                     type = PERCENT;
-                    hsl = toHSL( getInt( 0, formatter ) );
+                    hsl = toHSL( getDouble( 0, formatter ) );
                     doubleValue = hsl.l * 100;
                     return;
                 case "spin":
                     type = COLOR;
-                    hsl = toHSL( getInt( 0, formatter ) );
+                    hsl = toHSL( getDouble( 0, formatter ) );
                     hsl.h += getDouble( 1, formatter );
                     doubleValue = hsla( hsl );
                     return;
                 case "lighten":
                     type = COLOR;
-                    hsl = toHSL( getInt( 0, formatter ) );
+                    hsl = toHSL( getDouble( 0, formatter ) );
                     hsl.l += getPercent( 1, formatter );
                     doubleValue = hsla( hsl );
                     return;
                 case "darken":
                     type = COLOR;
-                    hsl = toHSL( getInt( 0, formatter ) );
+                    hsl = toHSL( getDouble( 0, formatter ) );
                     hsl.l -= getPercent( 1, formatter );
                     doubleValue = hsla( hsl );
                     return;
                 case "fadein":
                     type = RGBA;
-                    hsl = toHSL( getInt( 0, formatter ) );
+                    hsl = toHSL( getDouble( 0, formatter ) );
                     hsl.a += getPercent( 1, formatter );
                     doubleValue = hsla( hsl );
                     return;
                 case "fadeout":
                     type = RGBA;
-                    hsl = toHSL( getInt( 0, formatter ) );
+                    hsl = toHSL( getDouble( 0, formatter ) );
                     hsl.a -= getPercent( 1, formatter );
                     doubleValue = hsla( hsl );
                     return;
                 case "fade":
                     type = RGBA;
-                    hsl = toHSL( getInt( 0, formatter ) );
+                    hsl = toHSL( getDouble( 0, formatter ) );
                     hsl.a = getPercent( 1, formatter );
                     doubleValue = hsla( hsl );
                     return;
                 case "contrast":
                     type = COLOR;
-                    int rgb = getInt( 0, formatter );
-                    int dark = getInt( 1, 0, formatter );
-                    int light = getInt( 2, -1, formatter );
+                    double rgb = getDouble( 0, formatter );
+                    double dark = getDouble( 1, BLACK, formatter );
+                    double light = getDouble( 2, WHITE, formatter );
                     double threshold = getDouble( 2, 0.43, formatter );
                     doubleValue = contrast( rgb, dark, light, threshold );
                     return;
