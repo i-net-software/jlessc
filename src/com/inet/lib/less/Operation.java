@@ -60,8 +60,8 @@ class Operation extends AbstractExpression implements Expression {
 
         HashMap<String, Double> angle = new HashMap<>();
         putConvertion( angle, "rad", 1 / (2 * Math.PI) );
-        putConvertion( angle, "deg", 1 / 360 );
-        putConvertion( angle, "grad", 1 / 400 );
+        putConvertion( angle, "deg", 1 / 360.0 );
+        putConvertion( angle, "grad", 1 / 400.0 );
         putConvertion( angle, "turn", 1 );
     }
 
@@ -238,7 +238,7 @@ class Operation extends AbstractExpression implements Expression {
         super.appendTo( formatter );
     }
 
-    private double unitFactor( String leftUnit, String rightUnit ) {
+    static double unitFactor( String leftUnit, String rightUnit ) {
         if( leftUnit.length() == 0 || rightUnit.length() == 0 || leftUnit.equals( rightUnit ) ) {
             return 1;
         }
