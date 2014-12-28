@@ -26,7 +26,6 @@
  */
 package com.inet.lib.less;
 
-import java.io.IOException;
 
 /**
  * Some methods for calculating colors.
@@ -128,7 +127,15 @@ class ColorUtils {
                      hsla_hue(h - 1.0/3, m1, m2) * 255,
                      a);
     }
-    
+
+    static double luminance( double color ) {
+        long argb = Double.doubleToRawLongBits( color );
+        double r = ((argb >> 32) & 0xFFFF) / (double)0xFF00;
+        double g = ((argb >> 16) & 0xFFFF) / (double)0xFF00;
+        double b = ((argb) & 0xFFFF) / (double)0xFF00;
+        return (0.2126 * r) + (0.7152 * g) + (0.0722 * b);
+    }
+
     static double luma( double color ) {
         long argb = Double.doubleToRawLongBits( color );
         double r = ((argb >> 32) & 0xFFFF) / (double)0xFF00;
