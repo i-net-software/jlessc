@@ -351,7 +351,7 @@ class FunctionExpression extends AbstractExpression implements Expression {
                     return;
                 case "hsl":
                     type = COLOR;
-                    doubleValue = hsla( getDouble( 0, formatter ), getPercent( 1, formatter ), getPercent( 2, formatter ), 0 );
+                    doubleValue = hsla( getDouble( 0, formatter ), getPercent( 1, formatter ), getPercent( 2, formatter ), 1 );
                     return;
                 case "hsla":
                     type = RGBA;
@@ -374,14 +374,12 @@ class FunctionExpression extends AbstractExpression implements Expression {
                     doubleValue = hsla( hsl );
                     return;
                 case "lighten":
-                    type = COLOR;
-                    hsl = toHSL( getDouble( 0, formatter ) );
+                    hsl = toHSL( getColor( 0, formatter ) );
                     hsl.l += getPercent( 1, formatter );
                     doubleValue = hsla( hsl );
                     return;
                 case "darken":
-                    type = COLOR;
-                    hsl = toHSL( getDouble( 0, formatter ) );
+                    hsl = toHSL( getColor( 0, formatter ) );
                     hsl.l -= getPercent( 1, formatter );
                     doubleValue = hsla( hsl );
                     return;
@@ -404,7 +402,6 @@ class FunctionExpression extends AbstractExpression implements Expression {
                     doubleValue = hsla( hsl );
                     return;
                 case "contrast":
-                    type = COLOR;
                     double color = getColor( 0, formatter );
                     double dark = getDouble( 1, BLACK, formatter );
                     double light = getDouble( 2, WHITE, formatter );
@@ -412,13 +409,13 @@ class FunctionExpression extends AbstractExpression implements Expression {
                     doubleValue = contrast( color, dark, light, threshold );
                     return;
                 case "luma":
-                    type = PERCENT;
                     color = getColor( 0, formatter );
+                    type = PERCENT;
                     doubleValue = luma( color ) * 100;
                     return;
                 case "luminance":
-                    type = PERCENT;
                     color = getColor( 0, formatter );
+                    type = PERCENT;
                     doubleValue = luminance( color ) * 100;
                     return;
                 case "unit":
@@ -593,7 +590,7 @@ class FunctionExpression extends AbstractExpression implements Expression {
     }
 
     /**
-     * Get the idx parameter from the parameter list as color value..
+     * Get the idx parameter from the parameter list as color value. And set the type variable.
      * 
      * @param idx
      *            the index starting with 0
@@ -601,7 +598,8 @@ class FunctionExpression extends AbstractExpression implements Expression {
      */
     private double getColor( int idx, CssFormatter formatter ) {
         Expression exp = get( idx );
-        switch( exp.getDataType( formatter ) ) {
+        type = exp.getDataType( formatter );
+        switch( type ) {
             case COLOR:
             case RGBA:
                 return exp.doubleValue( formatter );
