@@ -35,8 +35,7 @@ class CompressCssFormatter extends CssFormatter {
 
     boolean wasSemicolon;
     
-    CompressCssFormatter( Appendable output ) {
-        super( output );
+    CompressCssFormatter() {
         getFormat().setMinimumIntegerDigits( 0 );
     }
 

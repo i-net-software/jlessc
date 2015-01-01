@@ -94,9 +94,9 @@ class SvgGradient {
                 builder.append( formatter.getFormat().format( position ) );
             }
             builder.append( "%\" stop-color=\"" );
-            Appendable original = formatter.swapOutput( builder );
+            formatter.addOutput();
             formatter.appendColor( color, null );
-            formatter.swapOutput( original );
+            builder.append( formatter.releaseOutput() );
             builder.append( '\"' );
             double alpha = ColorUtils.alpha( color );
             if( alpha < 1 ) {
