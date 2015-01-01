@@ -41,7 +41,11 @@ class CssFormatter {
 
     private final static char[]                          DIGITS         = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
-    private Appendable                                   output;
+    private final ArrayList<StringBuilder>               outputs = new ArrayList<>();
+
+    private int                                          outputIdx = -1;
+
+    private StringBuilder                                output;
 
     private LessExtendMap                                lessExtends;
 
@@ -59,18 +63,18 @@ class CssFormatter {
 
     private final DecimalFormat                          decFormat      = new DecimalFormat( "#.########", DecimalFormatSymbols.getInstance( Locale.ENGLISH ) );
 
-    CssFormatter( Appendable output ) {
-        this( output, false );
+    CssFormatter() {
+        this( false );
     }
 
-    CssFormatter( Appendable output, boolean toString ) {
-        this.output = output;
+    CssFormatter( boolean toString ) {
         if( toString ) {
             lessExtends = new LessExtendMap();
         }
     }
 
-    void format( LessParser parser ) throws IOException {
+    void format( LessParser parser, Appendable appendable ) throws IOException {
+        addOutput();
         lessExtends = parser.getExtends();
         addVariables( parser.getVariables() );
         for( Formattable rule : parser.getRules() ) {
@@ -81,19 +85,54 @@ class CssFormatter {
             }
         }
         removeVariables( parser.getVariables() );
+        appendable.append( output );
     }
 
     /**
-     * Replace the output target and returns the current output.
-     * 
-     * @param newOutput
-     *            new output
-     * @return old output
+     * Add a new output buffer to the formatter.
      */
-    Appendable swapOutput( Appendable newOutput ) {
-        Appendable temp = this.output;
-        this.output = newOutput;
-        return temp;
+    void addOutput() {
+        if( ++outputIdx == outputs.size() ) {
+            output = new StringBuilder();
+            outputs.add( output );
+        } else {
+            output = outputs.get( outputIdx );
+            output.setLength( 0 );
+        }
+    }
+
+    /**
+     * Release an output and delete it.
+     */
+    void freeOutput() {
+        output = outputs.get( --outputIdx );
+    }
+
+    /**
+     * Release an output buffer, return the content and restore the previous output. 
+     * @return the content of the current output
+     */
+    String releaseOutput() {
+        String str = output.toString();
+        freeOutput();
+        return str;
+    }
+
+    /**
+     * Release an output buffer, restore the previous output and add the content of the previous output.
+     */
+    void flushOutput() {
+        StringBuilder current = output;
+        freeOutput();
+        output.append( current );
+    }
+
+    /**
+     * Get the size of the curent content in the current output.
+     * @return the size
+     */
+    int getOutputSize() {
+        return output.length();
     }
 
     String[] concatenateExtends( String[] selectors ) {
@@ -195,7 +234,7 @@ class CssFormatter {
         return inlineMode;
     }
 
-    CssFormatter append( String str ) throws IOException {
+    CssFormatter append( String str ) {
         if( inlineMode && str.length() > 1 ) {
             char ch = str.charAt( 0 );
             if( ch == '\'' || ch == '\"' ) {

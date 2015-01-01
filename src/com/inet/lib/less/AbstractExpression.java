@@ -102,11 +102,9 @@ abstract class AbstractExpression extends LessObject implements Expression {
     @Override
     public String stringValue( CssFormatter formatter ) {
         try {
-            StringBuilder builder = new StringBuilder();
-            Appendable output = formatter.swapOutput( builder );
+            formatter.addOutput();
             appendTo( formatter );
-            formatter.swapOutput( output );
-            return builder.toString();
+            return formatter.releaseOutput();
         } catch( IOException ex ) {
             throw createException( ex );
         }
