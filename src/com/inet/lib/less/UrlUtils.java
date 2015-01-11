@@ -26,17 +26,39 @@
  */
 package com.inet.lib.less;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.xml.bind.DatatypeConverter;
 
 /**
- * Implementation of the function svg-Gradient
+ * Implementation of the function svg-Gradient and other URL utils.
  */
-class SvgGradient {
+class UrlUtils {
+
+    /**
+     * Remove a quote if exists.
+     * @param str a string 
+     * @return the str without quotes
+     */
+    static @Nonnull String removeQuote( @Nonnull String str ) {
+        if( str.length() > 1 ) {
+            char ch = str.charAt( 0 );
+            if( ch == '\'' || ch == '\"' ) {
+                if( str.charAt( str.length() - 1 ) == ch ) {
+                    return str.substring( 1, str.length() - 1 );
+                }
+            }
+        }
+        return str;
+    }
 
     /**
      * Implementation of the function svg-Gradient
@@ -108,9 +130,65 @@ class SvgGradient {
 
         byte[] bytes = builder.toString().getBytes( StandardCharsets.UTF_8 );
 
-        formatter.append( "url('data:image/svg+xml;base64," );
+        urlBase64( formatter, "image/svg+xml;base64", bytes );
+    }
+
+    static void dataUri( CssFormatter formatter, String relativeURL, final String urlString, String type ) throws IOException {
+        URL url = new URL( formatter.getBaseURL(), relativeURL );
+        String urlStr = removeQuote( urlString );
+        url = new URL( url, urlStr );
+        InputStream input;
+        try {
+            input = url.openStream();
+        } catch( Exception e ) {
+            formatter.append( "url(" ).append( urlString ).append( ')' );
+            return;
+        }
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+        int count;
+        byte[] data = new byte[16384];
+
+        while( (count = input.read( data, 0, data.length )) > 0 ) {
+            buffer.write( data, 0, count );
+        }
+
+        byte[] bytes = buffer.toByteArray();
+        if( type == null ) {
+            switch( urlStr.substring( urlStr.lastIndexOf( '.' ) + 1 ) ) {
+                case "gif": 
+                    type = "image/gif;base64";
+                    break;
+                case "png": 
+                    type = "image/png;base64";
+                    break;
+                case "jpg":
+                case "jpeg":
+                    type = "image/jpeg;base64";
+                    break;
+                default: 
+                    type = "text/html";
+            }
+        } else {
+            type = removeQuote( type );
+        }
+
+        if( bytes.length >= 32 * 1024 ) {
+            formatter.append( "url(" ).append( urlString ).append( ')' );
+        } else {
+            if( type.endsWith( "base64" ) ) {
+                urlBase64( formatter, type, bytes );
+            } else {
+                formatter.append( "url('data:" ).append( type ).append( ',' );
+                formatter.append( URLEncoder.encode( new String(bytes, StandardCharsets.ISO_8859_1), "ISO_8859_1" ) );
+                formatter.append( "\')" );
+            }
+        }
+    }
+
+    private static void urlBase64( CssFormatter formatter, String type, byte[] bytes ) {
+        formatter.append( "url('data:" ).append( type ).append( ',' );
         formatter.append( DatatypeConverter.printBase64Binary( bytes ) );
         formatter.append( "\')" );
     }
-
 }

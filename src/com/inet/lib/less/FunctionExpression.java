@@ -26,7 +26,19 @@
  */
 package com.inet.lib.less;
 
-import static com.inet.lib.less.ColorUtils.*;
+import static com.inet.lib.less.ColorUtils.alpha;
+import static com.inet.lib.less.ColorUtils.argb;
+import static com.inet.lib.less.ColorUtils.blue;
+import static com.inet.lib.less.ColorUtils.colorDigit;
+import static com.inet.lib.less.ColorUtils.contrast;
+import static com.inet.lib.less.ColorUtils.green;
+import static com.inet.lib.less.ColorUtils.hsla;
+import static com.inet.lib.less.ColorUtils.luma;
+import static com.inet.lib.less.ColorUtils.luminance;
+import static com.inet.lib.less.ColorUtils.red;
+import static com.inet.lib.less.ColorUtils.rgb;
+import static com.inet.lib.less.ColorUtils.rgba;
+import static com.inet.lib.less.ColorUtils.toHSL;
 
 import java.io.IOException;
 import java.net.URI;
@@ -126,7 +138,7 @@ class FunctionExpression extends AbstractExpression implements Expression {
                 formatter.appendHex( argb, 8 );
                 return;
             case "svg-gradient":
-                SvgGradient.svgGradient( formatter, parameters );
+                UrlUtils.svgGradient( formatter, parameters );
                 return;
             case "replace":
                 String str = get( 0 ).stringValue( formatter );
@@ -153,6 +165,58 @@ class FunctionExpression extends AbstractExpression implements Expression {
                 return;
             case "get-unit":
                 formatter.append( unit( formatter ) );
+                return;
+            case "url":
+                String url = get( 1 ).stringValue( formatter );
+                char quoteChar = 0;
+                boolean quote = false;
+                if( url.length() >= 2 ) {
+                    quoteChar = url.charAt( 0 );
+                    if( quoteChar == '\'' || quoteChar == '\"' ) {
+                        if( url.charAt( url.length() - 1 ) == quoteChar ) {
+                            url = url.substring( 1, url.length() - 1 );
+                            quote = true;
+                        }
+                    }
+                }
+                if( url.startsWith( "../" ) ) {
+                    String baseUrl = get( 0 ).stringValue( formatter );
+                    baseUrl = baseUrl.substring( 0, baseUrl.lastIndexOf( '/' ) + 1 );
+                    boolean append = false;
+                    do {
+                        if( baseUrl.length() > 0 ) {
+                            url = url.substring( 3 );
+                            baseUrl = baseUrl.substring( 0, baseUrl.lastIndexOf( '/', baseUrl.length() - 2 ) + 1 );
+                            append = true;
+                        } else {
+                            break;
+                        }
+                    } while( url.startsWith( "../" ) );
+                    if( append ) {
+                        url = baseUrl + url;
+                    }
+                }
+                formatter.append( "url(" );
+                if( quote ) {
+                    formatter.append( quoteChar );
+                }
+                formatter.append( url );
+                if( quote ) {
+                    formatter.append( quoteChar );
+                }
+                formatter.append( ")" );
+                return;
+            case "data-uri":
+                String baseUrl = get( 0 ).stringValue( formatter );
+                String type;
+                if( parameters.size() >= 3 ) {
+                    type = get( 1 ).stringValue( formatter );
+                    url = get( 2 ).stringValue( formatter );
+                } else {
+                    type = null;
+                    url = get( 1 ).stringValue( formatter );
+                }
+                UrlUtils.dataUri( formatter, baseUrl, url, type );
                 return;
         }
         if( type == UNKNOWN ) {

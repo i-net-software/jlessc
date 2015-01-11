@@ -108,8 +108,12 @@ class Operation extends AbstractExpression implements Expression {
      * Add the next operand. It must use the same operator like this operation.
      * @param right the next operand
      */
-    public void addOperand( Expression right ) {
+    void addOperand( Expression right ) {
         this.operands.add( right );
+    }
+
+    void addLeftOperand( Expression left ) {
+        this.operands.add( 0, left );
     }
 
     /**
