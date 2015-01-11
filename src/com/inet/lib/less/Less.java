@@ -39,7 +39,7 @@ public class Less {
         CssFormatter formatter = compress ? new CompressCssFormatter() : new CssFormatter();
         parser.parseLazy( formatter );
         try {
-            formatter.format( parser, builder );
+            formatter.format( parser, baseURL, builder );
         } catch( LessException ex ) {
             throw ex;
         } catch( Exception ex ) {
