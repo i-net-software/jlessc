@@ -30,7 +30,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -130,7 +129,9 @@ class UrlUtils {
 
         byte[] bytes = builder.toString().getBytes( StandardCharsets.UTF_8 );
 
-        urlBase64( formatter, "image/svg+xml;base64", bytes );
+        formatter.append( "url('data:image/svg+xml;base64," );
+        formatter.append( DatatypeConverter.printBase64Binary( bytes ) );
+        formatter.append( "\')" );
     }
 
     static void dataUri( CssFormatter formatter, String relativeURL, final String urlString, String type ) throws IOException {
@@ -177,18 +178,35 @@ class UrlUtils {
             formatter.append( "url(" ).append( urlString ).append( ')' );
         } else {
             if( type.endsWith( "base64" ) ) {
-                urlBase64( formatter, type, bytes );
+                formatter.append( "url(\"data:" ).append( type ).append( ',' );
+                formatter.append( DatatypeConverter.printBase64Binary( bytes ) );
+                formatter.append( "\")" );
             } else {
-                formatter.append( "url('data:" ).append( type ).append( ',' );
-                formatter.append( URLEncoder.encode( new String(bytes, StandardCharsets.ISO_8859_1), "ISO_8859_1" ) );
-                formatter.append( "\')" );
+                formatter.append( "url(\"data:" ).append( type ).append( ',' );
+                appendEncode( formatter, bytes );
+                formatter.append( "\")" );
             }
         }
     }
 
-    private static void urlBase64( CssFormatter formatter, String type, byte[] bytes ) {
-        formatter.append( "url('data:" ).append( type ).append( ',' );
-        formatter.append( DatatypeConverter.printBase64Binary( bytes ) );
-        formatter.append( "\')" );
+    private static void appendEncode( CssFormatter formatter, byte[] bytes ) {
+        for( byte b : bytes ) {
+            if ((b >= 'a' && b <= 'z' ) || (b >= 'A' && b <= 'Z' ) || (b >= '0' && b <= '9' )) {
+                formatter.append( (char )b );
+            } else {
+                switch( b ) {
+                    case '-':
+                    case '_':
+                    case '*':
+                    case '.':
+                        formatter.append( (char )b );
+                        break;
+                    default:
+                        formatter.append( '%' );
+                        formatter.append( Character.toUpperCase( Character.forDigit((b >> 4) & 0xF, 16) ) );
+                        formatter.append( Character.toUpperCase( Character.forDigit(b & 0xF, 16) ) );
+                }
+            }
+        }
     }
 }
