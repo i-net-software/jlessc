@@ -43,6 +43,8 @@ class LessParser implements FormattableContainer {
 
     private URL                         baseURL;
 
+    private URL                         relativeURL;
+
     private LessLookAheadReader         reader;
 
     private HashMap<String, Expression> variables     = new HashMap<>();
@@ -83,6 +85,11 @@ class LessParser implements FormattableContainer {
 
     void parse( URL baseURL, Reader input ) {
         this.baseURL = baseURL;
+        try {
+            this.relativeURL = new URL( "file", null, "" );
+        } catch( Exception th ) {
+            throw new LessException( th ); //should never occur
+        }
         this.reader = new LessLookAheadReader( input, null );
         parse();
     }
@@ -310,64 +317,6 @@ class LessParser implements FormattableContainer {
             }
         }
     }
-    
-/*    void parse( URL baseURL, Reader reader ) {
-        try {
-            this.reader = new LessLookAheadReader( reader );
-
-            Operation expr = null;
-            StringBuilder builder = cachesBuilder;
-            for( ;; ) {
-                int ch;
-                try {
-                    ch = reader.read();
-                } catch( IOException ex ) {
-                    throw new LessException( ex );
-                }
-                incLineColumn( ch );
-                switch( ch ) {
-                    case -1:
-                        return; //TODO
-                    case '@':
-                        throwUnrecognizedInputIfAny( builder, ch );
-                        variable( variables, null );
-                        break;
-                    case '{':
-                        Rule rule = rule( trim( builder ), expr );
-                        expr = null;
-                        rules.add( rule );
-                        String[] selectors = rule.getSelector().split( "," );
-                        for( String sel : selectors ) {
-                            mixins.put( sel.trim(), rule );
-                        }
-                        break;
-                    case '(':
-                        String name = trim( builder );
-                        expr = parseParameterList();
-                        builder.append( name );
-                        break;
-                    case '/':
-                        String comment = comment();
-                        if( comment != null && isWhitespace( builder ) ) {
-                            rules.add( new Comment( comment ) );
-                        }
-                        break;
-                    case ';': //double semicolon 
-                        throwUnrecognizedInputIfAny( builder, ch );
-                        break;
-                    default:
-                        builder.append( (char)ch );
-                }
-            }
-        } catch( LessException ex ) {
-            ex.setPosition( this.reader.getLine(), this.reader.getColumn() );
-            throw ex;
-        } catch( RuntimeException ex ) {
-            LessException lessEx = new LessException( ex );
-            lessEx.setPosition( this.reader.getLine(), this.reader.getColumn() );
-            throw lessEx;
-        }
-    }*/
 
     private void variable( HashMap<String, Expression> variables, FormattableContainer currentRule ) {
         StringBuilder builder = cachesBuilder;
@@ -408,42 +357,9 @@ class LessParser implements FormattableContainer {
         variables.put( name, value );
     }
 
-//    private void media( Rule currentRule ) {
-//        StringBuilder builder = cachesBuilder;
-//        builder.append( '@' );
-//        for( ;; ) {
-//            char ch = read();
-//            switch( ch ) {
-//                case '{':
-//                    String name = trim( builder );
-//                    media( name, currentRule );
-//                    return;   
-//                default:
-//                    builder.append( ch );
-//            }
-//        }
-//    }
-    
-//    private void media( String name, Rule currentRule ) {
-//        String oldMediaName = currentMediaName;
-//        if( oldMediaName != null ) {
-//            name = oldMediaName + " and " + name.substring( 6 ).trim();
-//        }
-//        currentMediaName = name;
-//        Media media = new Media( reader, name );
-//        rules.add( media );
-//        if( currentRule != null ) {
-//            Rule rule = rule( currentRule.getSelectors()[0], null, null );
-//            media.add( rule );
-//        } else {
-//            parseRule( media );
-//        }
-//        currentMediaName = oldMediaName;
-//    }
-//    
     private void importFile( FormattableContainer currentRule, String name ) {
         System.err.println("import: " + name );
-        Object[] old = { reader, baseURL }; //store on the heap to reduce the stack size
+        Object[] old = { reader, baseURL, relativeURL }; //store on the heap to reduce the stack size
         try {
             String filename = name;
             char chr0 = filename.charAt( 0 );
@@ -468,6 +384,7 @@ class LessParser implements FormattableContainer {
                 return;
             }
             baseURL = new URL( baseURL, filename );
+            relativeURL = new URL( relativeURL, filename );
             reader = new LessLookAheadReader( new InputStreamReader( baseURL.openStream(), StandardCharsets.UTF_8 ), filename );
             parse();
             reader.close();
@@ -478,6 +395,7 @@ class LessParser implements FormattableContainer {
         } finally {
             reader = (LessLookAheadReader)old[0];
             baseURL = (URL)old[1];
+            relativeURL = (URL)old[2];
         }
     }
 
@@ -724,8 +642,13 @@ class LessParser implements FormattableContainer {
                         case "url":
                             right = new FunctionExpression( reader, str, parseUrlParam() );
                             break;
-                        case "e":
+                        case "data-uri":
                             Operation op = parseParameterList();
+                            op.addLeftOperand( new ValueExpression( reader, relativeURL.getPath() ) );
+                            right = new FunctionExpression( reader, str, op );
+                            break;
+                        case "e":
+                            op = parseParameterList();
                             right = new Operation( reader, op.getOperands().get( 0 ), '~' );
                             break;
                         default:
@@ -845,6 +768,7 @@ class LessParser implements FormattableContainer {
     private Operation parseUrlParam() {
         StringBuilder builder = cachesBuilder;
         builder.setLength( 0 );
+        Operation op = new Operation( reader, new ValueExpression( reader, relativeURL.getPath() ), ';' );
         for( ;; ) {
             char ch = read();
             switch( ch ) {
@@ -859,10 +783,20 @@ class LessParser implements FormattableContainer {
                     builder.append( ch );
                     builder.append( read() );
                     break;
+                case '@':
+                    if( builder.length() == 0 ) {
+                        reader.back( ch );
+                        op.addOperand( parseExpression( (char)0 ) );
+                        read();
+                        return op;
+                    }
+                    builder.append( ch );
+                    break;
                 case ')':
                     val = builder.toString();
                     builder.setLength( 0 );
-                    return new Operation( reader, new ValueExpression( reader, val ), ';' );
+                    op.addOperand( new ValueExpression( reader, val ) );
+                    return op;
                 default:
                     builder.append( ch );
             }
@@ -870,7 +804,7 @@ class LessParser implements FormattableContainer {
     }
 
     /**
-     * Concat 2 expressions to one expression.
+     * Concatenate 2 expressions to one expression.
      * 
      * @param left
      *            the left, can be null

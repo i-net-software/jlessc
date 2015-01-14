@@ -36,10 +36,10 @@ public class Less {
         parser.parse( baseURL, new StringReader( lessData ) );
 
         StringBuilder builder = new StringBuilder();
-        CssFormatter formatter = compress ? new CompressCssFormatter( builder ) : new CssFormatter( builder );
+        CssFormatter formatter = compress ? new CompressCssFormatter() : new CssFormatter();
         parser.parseLazy( formatter );
         try {
-            formatter.format( parser );
+            formatter.format( parser, baseURL, builder );
         } catch( LessException ex ) {
             throw ex;
         } catch( Exception ex ) {

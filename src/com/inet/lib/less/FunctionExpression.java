@@ -26,7 +26,19 @@
  */
 package com.inet.lib.less;
 
-import static com.inet.lib.less.ColorUtils.*;
+import static com.inet.lib.less.ColorUtils.alpha;
+import static com.inet.lib.less.ColorUtils.argb;
+import static com.inet.lib.less.ColorUtils.blue;
+import static com.inet.lib.less.ColorUtils.colorDigit;
+import static com.inet.lib.less.ColorUtils.contrast;
+import static com.inet.lib.less.ColorUtils.green;
+import static com.inet.lib.less.ColorUtils.hsla;
+import static com.inet.lib.less.ColorUtils.luma;
+import static com.inet.lib.less.ColorUtils.luminance;
+import static com.inet.lib.less.ColorUtils.red;
+import static com.inet.lib.less.ColorUtils.rgb;
+import static com.inet.lib.less.ColorUtils.rgba;
+import static com.inet.lib.less.ColorUtils.toHSL;
 
 import java.io.IOException;
 import java.net.URI;
@@ -93,6 +105,13 @@ class FunctionExpression extends AbstractExpression implements Expression {
                 } else {
                     return get( 1 ).stringValue( formatter );
                 }
+            case "sin":
+            case "cos":
+            case "acos":
+            case "asin":
+            case "atan":
+            case "tan":
+                return "";
         }
         for( int i = 0; i < parameters.size(); i++ ) {
             String unit = parameters.get( i ).unit( formatter );
@@ -119,7 +138,7 @@ class FunctionExpression extends AbstractExpression implements Expression {
                 formatter.appendHex( argb, 8 );
                 return;
             case "svg-gradient":
-                SvgGradient.svgGradient( formatter, parameters );
+                UrlUtils.svgGradient( formatter, parameters );
                 return;
             case "replace":
                 String str = get( 0 ).stringValue( formatter );
@@ -143,6 +162,61 @@ class FunctionExpression extends AbstractExpression implements Expression {
                     }
                 }
                 formatter.append( str );
+                return;
+            case "get-unit":
+                formatter.append( unit( formatter ) );
+                return;
+            case "url":
+                String url = get( 1 ).stringValue( formatter );
+                char quoteChar = 0;
+                boolean quote = false;
+                if( url.length() >= 2 ) {
+                    quoteChar = url.charAt( 0 );
+                    if( quoteChar == '\'' || quoteChar == '\"' ) {
+                        if( url.charAt( url.length() - 1 ) == quoteChar ) {
+                            url = url.substring( 1, url.length() - 1 );
+                            quote = true;
+                        }
+                    }
+                }
+                if( url.startsWith( "../" ) ) {
+                    String baseUrl = get( 0 ).stringValue( formatter );
+                    baseUrl = baseUrl.substring( 0, baseUrl.lastIndexOf( '/' ) + 1 );
+                    boolean append = false;
+                    do {
+                        if( baseUrl.length() > 0 ) {
+                            url = url.substring( 3 );
+                            baseUrl = baseUrl.substring( 0, baseUrl.lastIndexOf( '/', baseUrl.length() - 2 ) + 1 );
+                            append = true;
+                        } else {
+                            break;
+                        }
+                    } while( url.startsWith( "../" ) );
+                    if( append ) {
+                        url = baseUrl + url;
+                    }
+                }
+                formatter.append( "url(" );
+                if( quote ) {
+                    formatter.append( quoteChar );
+                }
+                formatter.append( url );
+                if( quote ) {
+                    formatter.append( quoteChar );
+                }
+                formatter.append( ")" );
+                return;
+            case "data-uri":
+                String baseUrl = get( 0 ).stringValue( formatter );
+                String type;
+                if( parameters.size() >= 3 ) {
+                    type = get( 1 ).stringValue( formatter );
+                    url = get( 2 ).stringValue( formatter );
+                } else {
+                    type = null;
+                    url = get( 1 ).stringValue( formatter );
+                }
+                UrlUtils.dataUri( formatter, baseUrl, url, type );
                 return;
         }
         if( type == UNKNOWN ) {
@@ -188,13 +262,65 @@ class FunctionExpression extends AbstractExpression implements Expression {
                     type = PERCENT;
                     doubleValue = getDouble( 0, formatter ) * 100;
                     return;
-                case "floor":
-                    type = NUMBER;
-                    doubleValue = Math.floor( getDouble( 0, formatter ) );
+                case "abs":
+                    type = getNumberDataType( formatter );
+                    doubleValue = Math.abs( getDouble( 0, formatter ) );
                     return;
                 case "ceil":
-                    type = NUMBER;
+                    type = getNumberDataType( formatter );
                     doubleValue = Math.ceil( getDouble( 0, formatter ) );
+                    return;
+                case "floor":
+                    type = getNumberDataType( formatter );
+                    doubleValue = Math.floor( getDouble( 0, formatter ) );
+                    return;
+                case "mod":
+                    type = NUMBER;
+                    doubleValue = getDouble( 0, formatter ) % getDouble( 1, formatter );
+                    return;
+                case "pi":
+                    type = NUMBER;
+                    doubleValue = Math.PI;
+                    return;
+                case "round":
+                    type = getNumberDataType( formatter );
+                    int decimalPlaces = getInt( 1, 0, formatter );
+                    doubleValue = getDouble( 0, formatter );
+                    for( int i = 0; i < decimalPlaces; i++ ) {
+                        doubleValue *= 10;
+                    }
+                    doubleValue = Math.round( doubleValue );
+                    for( int i = 0; i < decimalPlaces; i++ ) {
+                        doubleValue /= 10;
+                    }
+                    return;
+                case "sqrt":
+                    type = NUMBER;
+                    doubleValue = Math.sqrt( getDouble( 0, formatter ) );
+                    return;
+                case "sin":
+                    type = NUMBER;
+                    doubleValue = Math.sin( getRadians( formatter ) );
+                    return;
+                case "cos":
+                    type = NUMBER;
+                    doubleValue = Math.cos( getRadians( formatter ) );
+                    return;
+                case "tan":
+                    type = NUMBER;
+                    doubleValue = Math.tan( getRadians( formatter ) );
+                    return;
+                case "acos":
+                    type = NUMBER;
+                    doubleValue = Math.acos( getRadians( formatter ) );
+                    return;
+                case "asin":
+                    type = NUMBER;
+                    doubleValue = Math.asin( getRadians( formatter ) );
+                    return;
+                case "atan":
+                    type = NUMBER;
+                    doubleValue = Math.atan( getRadians( formatter ) );
                     return;
                 case "increment":
                     type = NUMBER;
@@ -289,7 +415,7 @@ class FunctionExpression extends AbstractExpression implements Expression {
                     return;
                 case "hsl":
                     type = COLOR;
-                    doubleValue = hsla( getDouble( 0, formatter ), getPercent( 1, formatter ), getPercent( 2, formatter ), 0 );
+                    doubleValue = hsla( getDouble( 0, formatter ), getPercent( 1, formatter ), getPercent( 2, formatter ), 1 );
                     return;
                 case "hsla":
                     type = RGBA;
@@ -312,14 +438,12 @@ class FunctionExpression extends AbstractExpression implements Expression {
                     doubleValue = hsla( hsl );
                     return;
                 case "lighten":
-                    type = COLOR;
-                    hsl = toHSL( getDouble( 0, formatter ) );
+                    hsl = toHSL( getColor( 0, formatter ) );
                     hsl.l += getPercent( 1, formatter );
                     doubleValue = hsla( hsl );
                     return;
                 case "darken":
-                    type = COLOR;
-                    hsl = toHSL( getDouble( 0, formatter ) );
+                    hsl = toHSL( getColor( 0, formatter ) );
                     hsl.l -= getPercent( 1, formatter );
                     doubleValue = hsla( hsl );
                     return;
@@ -342,7 +466,6 @@ class FunctionExpression extends AbstractExpression implements Expression {
                     doubleValue = hsla( hsl );
                     return;
                 case "contrast":
-                    type = COLOR;
                     double color = getColor( 0, formatter );
                     double dark = getDouble( 1, BLACK, formatter );
                     double light = getDouble( 2, WHITE, formatter );
@@ -350,13 +473,13 @@ class FunctionExpression extends AbstractExpression implements Expression {
                     doubleValue = contrast( color, dark, light, threshold );
                     return;
                 case "luma":
-                    type = PERCENT;
                     color = getColor( 0, formatter );
+                    type = PERCENT;
                     doubleValue = luma( color ) * 100;
                     return;
                 case "luminance":
-                    type = PERCENT;
                     color = getColor( 0, formatter );
+                    type = PERCENT;
                     doubleValue = luminance( color ) * 100;
                     return;
                 case "unit":
@@ -371,15 +494,7 @@ class FunctionExpression extends AbstractExpression implements Expression {
                     type = get( 0 ).getDataType( formatter ) ;
                     doubleValue = -getDouble( 0, formatter );
                     return;
-                //TODO remove the list of CSS functions, wee need to support all
                 case "%":
-//                case "url": //CSS functions
-//                case "local":
-//                case "format":
-//                case "rotate":
-//                case "radial-gradient":
-//                case "linear-gradient":
-//                case "rect":
                     type = STRING;
                     return;
             }
@@ -392,8 +507,6 @@ class FunctionExpression extends AbstractExpression implements Expression {
         } catch (RuntimeException ex ) {
             throw createException( ex );
         }
-        //TODO remove exception, wee need to support all CSS functions
-//        throw createException( "Unknown function: " + super.toString() );
         type = STRING;
         return;
     }
@@ -446,6 +559,18 @@ class FunctionExpression extends AbstractExpression implements Expression {
                 formatter.append( ch );
             }
         }
+    }
+
+    /** 
+     * NUMBER or PERCENT as data type.
+     * @param formatter
+     * @return the type
+     */
+    private int getNumberDataType( CssFormatter formatter ) {
+        if( get( 0).getDataType( formatter ) == PERCENT ) {
+            return PERCENT;
+        }
+        return NUMBER;
     }
 
     /**
@@ -529,7 +654,7 @@ class FunctionExpression extends AbstractExpression implements Expression {
     }
 
     /**
-     * Get the idx parameter from the parameter list as color value..
+     * Get the idx parameter from the parameter list as color value. And set the type variable.
      * 
      * @param idx
      *            the index starting with 0
@@ -537,12 +662,24 @@ class FunctionExpression extends AbstractExpression implements Expression {
      */
     private double getColor( int idx, CssFormatter formatter ) {
         Expression exp = get( idx );
-        switch( exp.getDataType( formatter ) ) {
+        type = exp.getDataType( formatter );
+        switch( type ) {
             case COLOR:
             case RGBA:
                 return exp.doubleValue( formatter );
         }
         throw new ParameterOutOfBoundsException();
+    }
+
+    /**
+     * Get the value in radians.
+     * @param formatter the CSS formatter
+     * @return the radians
+     */
+    double getRadians( CssFormatter formatter ) {
+        final Expression exp = get( 0 );
+        String unit = exp.unit( formatter );
+        return exp.doubleValue( formatter ) * Operation.unitFactor( unit, "rad" );
     }
 
     /**

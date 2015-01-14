@@ -112,7 +112,7 @@ class SelectorUtils {
                         if( quote != 0 ) {
                             break;
                         }
-                        LOOP: for( nextIdx = i; nextIdx < str.length(); nextIdx++ ) {
+                        LOOP: for( nextIdx = i + 1; nextIdx < str.length(); nextIdx++ ) {
                             ch = str.charAt( nextIdx );
                             switch( ch ) {
                                 case ' ':

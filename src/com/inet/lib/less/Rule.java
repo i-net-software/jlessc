@@ -99,11 +99,9 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
                     if( sel == selectors ) {
                         sel = sel.clone(); // we does not want change the declaration of this selectors
                     }
-                    StringBuilder builder = new StringBuilder();
-                    Appendable output = formatter.swapOutput( builder );
+                    formatter.addOutput();
                     SelectorUtils.appendToWithPlaceHolder( formatter, selector, pos, this );
-                    formatter.swapOutput( output );
-                    sel[s] = builder.toString();
+                    sel[s] = formatter.releaseOutput();
                 }
             }
 
@@ -122,7 +120,8 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
             if( sel[0].startsWith( "@" ) ) {
                 ruleset( sel, formatter );
             } else {
-                if( properties.size() > 0 && hasProperties( formatter ) ) {
+                if( properties.size() > 0 ) {
+                    formatter.addOutput();
                     String[] sels = formatter.concatenateExtends( sel );
                     for( int i=0; i<sels.length; i++ ) {
                         if( i > 0 ) {
@@ -131,8 +130,15 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
                         formatter.appendSelector( sels[i] );
                     }
                     formatter.startBlock();
+                    int size = formatter.getOutputSize();
                     appendPropertiesTo( formatter );
-                    formatter.endBlock();
+                    if( size == formatter.getOutputSize() ) {
+                        formatter.endBlock();
+                        formatter.freeOutput();
+                    } else {
+                        formatter.endBlock();
+                        formatter.flushOutput();
+                    }
                 }
 
                 for( Formattable prop : properties ) {
@@ -156,17 +162,27 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
     }
 
     private void media( String mediaSelector, String[] blockSelector, CssFormatter formatter ) throws IOException {
-        if( properties.size() > 0 && hasProperties( formatter ) ) {
+        if( properties.size() > 0 ) {
+            formatter.addOutput();
             formatter.appendSelector( mediaSelector ).startBlock();
             formatter.appendSelector( blockSelector[0] ).startBlock();
+            int size1 = formatter.getOutputSize();
             appendPropertiesTo( formatter );
+            int size2 = formatter.getOutputSize();
             formatter.endBlock();
+            int size3 = formatter.getOutputSize();
             for( Formattable prop : properties ) {
                 if( prop instanceof Mixin ) {
                     ((Mixin)prop).appendSubRules( blockSelector, formatter );
                 }
             }
+            int size4 = formatter.getOutputSize();
             formatter.endBlock();
+            if( size1 == size2 && size3 == size4 ) {
+                formatter.freeOutput();
+            } else {
+                formatter.flushOutput();
+            }
         }
 
         for( Rule rule : subrules ) {
@@ -284,32 +300,6 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         }
     }
 
-    /**
-     * Will appendPropertiesTo() do any or is it empty.
-     * 
-     * @return false, if empty
-     */
-    boolean hasProperties( CssFormatter formatter ) {
-        for( Formattable prop : properties ) {
-            switch( prop.getType() ) {
-                case RULE:
-                    Rule rule = (Rule)prop;
-                    if( rule.isValidCSS( formatter ) && rule.isInlineRule( formatter ) ) {
-                        return true;
-                    }
-                    break;
-                case MIXIN:
-                    if( ((Mixin)prop).hasProperties( formatter ) ) {
-                        return true;
-                    }
-                    break;
-                default:
-                    return true;
-            }
-        }
-        return false;
-    }
-
     String[] getSelectors() {
         return selectors;
     }
@@ -350,14 +340,14 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
      */
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        CssFormatter formatter = new CssFormatter( builder, true );
+        CssFormatter formatter = new CssFormatter( true );
+        formatter.addOutput();
         try {
             appendTo( null, formatter );
         } catch( Exception ex ) {
-            builder.append( ex );
+            formatter.append( ex.toString() );
         }
-        return builder.toString();
+        return formatter.releaseOutput();
     }
 
     MixinMatch match( CssFormatter formatter, List<Expression> paramValues ) {
