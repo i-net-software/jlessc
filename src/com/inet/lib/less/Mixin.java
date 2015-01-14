@@ -109,19 +109,6 @@ class Mixin extends LessObject implements Formattable {
         }
     }
 
-    boolean hasProperties( CssFormatter formatter ) {
-        try {
-            for( MixinMatch match : getRules( formatter ) ) {
-                if( match.getRule().hasProperties( formatter ) ) {
-                    return true;
-                }
-            }
-        } catch( StackOverflowError soe ) {
-            throw createException( "Maximum call stack size exceeded in mixin: " + name );
-        }
-        return false;
-    }
-
     private List<MixinMatch> getRules( CssFormatter formatter ) {
         if( mixinRules != null && stackID == formatter.stackID() ) {
             return mixinRules;

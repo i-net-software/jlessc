@@ -35,8 +35,7 @@ class CompressCssFormatter extends CssFormatter {
 
     boolean wasSemicolon;
     
-    CompressCssFormatter( Appendable output ) {
-        super( output );
+    CompressCssFormatter() {
         getFormat().setMinimumIntegerDigits( 0 );
     }
 
@@ -56,7 +55,7 @@ class CompressCssFormatter extends CssFormatter {
     }
 
     @Override
-    CssFormatter comment( String msg ) throws IOException {
+    CssFormatter comment( String msg ) {
         checkSemicolon();
         if( msg.startsWith( "/*!" ) ) {
             return super.append( msg );
@@ -86,7 +85,7 @@ class CompressCssFormatter extends CssFormatter {
     }
 
     @Override
-    CssFormatter appendValue( double value, String unit ) throws IOException {
+    CssFormatter appendValue( double value, String unit ) {
         if( value == 0 ) {
             switch( unit ) {
                 case "deg":
@@ -100,12 +99,12 @@ class CompressCssFormatter extends CssFormatter {
     }
 
     @Override
-    CssFormatter semicolon() throws IOException {
+    CssFormatter semicolon() {
         wasSemicolon = true;
         return this;
     }
 
-    private void checkSemicolon() throws IOException {
+    private void checkSemicolon() {
         if( wasSemicolon ) {
             wasSemicolon = false;
             super.semicolon();
@@ -113,7 +112,7 @@ class CompressCssFormatter extends CssFormatter {
     }
 
     @Override
-    CssFormatter appendSelector( String selector ) throws IOException {
+    CssFormatter appendSelector( String selector ) {
         checkSemicolon();
         return super.appendSelector( selector );
     }
@@ -125,7 +124,7 @@ class CompressCssFormatter extends CssFormatter {
     }
 
     @Override
-    CssFormatter endBlock() throws IOException {
+    CssFormatter endBlock() {
         wasSemicolon = false;
         return super.endBlock();
     }

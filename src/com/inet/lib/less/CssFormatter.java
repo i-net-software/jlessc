@@ -27,6 +27,7 @@
 package com.inet.lib.less;
 
 import java.io.IOException;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -41,7 +42,13 @@ class CssFormatter {
 
     private final static char[]                          DIGITS         = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
-    private Appendable                                   output;
+    private final ArrayList<StringBuilder>               outputs = new ArrayList<>();
+
+    private int                                          outputIdx = -1;
+
+    private StringBuilder                                output;
+
+    private URL                                          baseURL;
 
     private LessExtendMap                                lessExtends;
 
@@ -59,18 +66,19 @@ class CssFormatter {
 
     private final DecimalFormat                          decFormat      = new DecimalFormat( "#.########", DecimalFormatSymbols.getInstance( Locale.ENGLISH ) );
 
-    CssFormatter( Appendable output ) {
-        this( output, false );
+    CssFormatter() {
+        this( false );
     }
 
-    CssFormatter( Appendable output, boolean toString ) {
-        this.output = output;
+    CssFormatter( boolean toString ) {
         if( toString ) {
             lessExtends = new LessExtendMap();
         }
     }
 
-    void format( LessParser parser ) throws IOException {
+    void format( LessParser parser, URL baseURL, Appendable appendable ) throws IOException {
+        addOutput();
+        this.baseURL = baseURL;
         lessExtends = parser.getExtends();
         addVariables( parser.getVariables() );
         for( Formattable rule : parser.getRules() ) {
@@ -81,23 +89,62 @@ class CssFormatter {
             }
         }
         removeVariables( parser.getVariables() );
+        appendable.append( output );
     }
 
     /**
-     * Replace the output target and returns the current output.
-     * 
-     * @param newOutput
-     *            new output
-     * @return old output
+     * Add a new output buffer to the formatter.
      */
-    Appendable swapOutput( Appendable newOutput ) {
-        Appendable temp = this.output;
-        this.output = newOutput;
-        return temp;
+    void addOutput() {
+        if( ++outputIdx == outputs.size() ) {
+            output = new StringBuilder();
+            outputs.add( output );
+        } else {
+            output = outputs.get( outputIdx );
+            output.setLength( 0 );
+        }
+    }
+
+    /**
+     * Release an output and delete it.
+     */
+    void freeOutput() {
+        output = outputs.get( --outputIdx );
+    }
+
+    /**
+     * Release an output buffer, return the content and restore the previous output. 
+     * @return the content of the current output
+     */
+    String releaseOutput() {
+        String str = output.toString();
+        freeOutput();
+        return str;
+    }
+
+    /**
+     * Release an output buffer, restore the previous output and add the content of the previous output.
+     */
+    void flushOutput() {
+        StringBuilder current = output;
+        freeOutput();
+        output.append( current );
+    }
+
+    /**
+     * Get the size of the curent content in the current output.
+     * @return the size
+     */
+    int getOutputSize() {
+        return output.length();
     }
 
     String[] concatenateExtends( String[] selectors ) {
         return lessExtends.concatenateExtends( selectors );
+    }
+
+    URL getBaseURL() {
+        return baseURL;
     }
 
     /**
@@ -195,14 +242,9 @@ class CssFormatter {
         return inlineMode;
     }
 
-    CssFormatter append( String str ) throws IOException {
-        if( inlineMode && str.length() > 1 ) {
-            char ch = str.charAt( 0 );
-            if( ch == '\'' || ch == '\"' ) {
-                if( str.charAt( str.length() - 1 ) == ch ) {
-                    str = str.substring( 1, str.length() - 1 );
-                }
-            }
+    CssFormatter append( String str ) {
+        if( inlineMode ) {
+            str = UrlUtils.removeQuote( str );
         }
         output.append( str );
         return this;
@@ -226,12 +268,12 @@ class CssFormatter {
         output.append( DIGITS[ value & 0xF ] );
     }
 
-    CssFormatter append( char ch ) throws IOException {
+    CssFormatter append( char ch ) {
         output.append( ch );
         return this;
     }
 
-    CssFormatter append( double value ) throws IOException {
+    CssFormatter append( double value ) {
         if( value == (int)value ) {
             output.append( Integer.toString( (int)value ) );
         } else {
@@ -240,15 +282,15 @@ class CssFormatter {
         return this;
     }
 
-    CssFormatter appendValue( double value, String unit ) throws IOException {
+    CssFormatter appendValue( double value, String unit ) {
         return append( value ).append( unit );
     }
 
-    CssFormatter appendSelector( String selector ) throws IOException {
+    CssFormatter appendSelector( String selector ) {
         return insets().append( selector );
     }
 
-    CssFormatter startBlock() throws IOException {
+    CssFormatter startBlock() {
         space();
         output.append( '{' );
         newline();
@@ -256,7 +298,7 @@ class CssFormatter {
         return this;
     }
 
-    CssFormatter endBlock() throws IOException {
+    CssFormatter endBlock() {
         insets.setLength( insets.length() - 2 );
         insets();
         output.append( '}' );
@@ -279,27 +321,27 @@ class CssFormatter {
         this.important = important;
     }
 
-    CssFormatter space() throws IOException {
+    CssFormatter space() {
         output.append( ' ' );
         return this;
     }
 
-    CssFormatter newline() throws IOException {
+    CssFormatter newline() {
         output.append( '\n' );
         return this;
     }
 
-    CssFormatter semicolon() throws IOException {
+    CssFormatter semicolon() {
         output.append( ';' );
         return this;
     }
 
-    CssFormatter insets() throws IOException {
+    CssFormatter insets() {
         output.append( insets );
         return this;
     }
 
-    CssFormatter comment( String msg ) throws IOException {
+    CssFormatter comment( String msg ) {
         output.append( insets ).append( msg ).append( '\n' );
         return this;
     }
