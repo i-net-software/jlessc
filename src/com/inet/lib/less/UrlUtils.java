@@ -99,6 +99,17 @@ class UrlUtils {
             Expression param = parameters.get( i );
             double color;
             double position;
+            UNPACK: do { // unpack packet expressions like parenthesis or variables
+                if( param.getClass() == FunctionExpression.class && ((FunctionExpression)param).toString().isEmpty() ) { //Parenthesis
+                    param = ((FunctionExpression)param).get( 0 );
+                    continue UNPACK;
+                }
+                if( param.getClass() == VariableExpression.class ) {
+                    param = ((VariableExpression)param).getValue( formatter );
+                    continue UNPACK;
+                }
+                break UNPACK;
+            } while(true);
             if( param.getClass() == Operation.class && ((Operation)param).getOperator() == ' ' ) {
                 ArrayList<Expression> operands = ((Operation)param).getOperands();
                 color = operands.get( 0 ).doubleValue( formatter );

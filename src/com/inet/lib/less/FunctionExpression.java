@@ -35,6 +35,7 @@ import static com.inet.lib.less.ColorUtils.green;
 import static com.inet.lib.less.ColorUtils.hsla;
 import static com.inet.lib.less.ColorUtils.luma;
 import static com.inet.lib.less.ColorUtils.luminance;
+import static com.inet.lib.less.ColorUtils.mix;
 import static com.inet.lib.less.ColorUtils.red;
 import static com.inet.lib.less.ColorUtils.rgb;
 import static com.inet.lib.less.ColorUtils.rgba;
@@ -408,6 +409,12 @@ class FunctionExpression extends AbstractExpression implements Expression {
                     hsl.s = 0;
                     doubleValue = hsla( hsl );
                     return;
+                case "mix":
+                    double c1 = getColor( 0, formatter );
+                    double c2 = getColor( 1, formatter );
+                    double weight = getPercent( 2, 0.5, formatter );
+                    doubleValue = mix( c1, c2, weight );
+                    return;
                 case "saturation":
                     type = PERCENT;
                     hsl = toHSL( getDouble( 0, formatter ) );
@@ -580,7 +587,7 @@ class FunctionExpression extends AbstractExpression implements Expression {
      *            the index starting with 0
      * @return the expression
      */
-    private Expression get( int idx ) {
+    Expression get( int idx ) {
         if( parameters.size() <= idx ) {
             throw new ParameterOutOfBoundsException();
         }
