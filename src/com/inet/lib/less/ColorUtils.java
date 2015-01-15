@@ -163,6 +163,43 @@ class ColorUtils {
         }
     }
 
+    /**
+     * Calculate the mix color of 2 colors.
+     * @param color1
+     * @param color2
+     * @param weight balance point between the two colors in range of 0 to 1. 
+     * @return the resulting color
+     */
+    static double mix( double color1, double color2, double weight ) {
+        long col1 = Double.doubleToRawLongBits( color1 );
+        long col2 = Double.doubleToRawLongBits( color2 );
+
+        int alpha1 = (int)(col1  >>> 48);
+        int red1 = (int)(col1  >> 32) & 0xFFFF;
+        int green1 = (int)(col1  >> 16) & 0xFFFF;
+        int blue1 = (int)(col1) & 0xFFFF;
+        int alpha2 = (int)(col2  >>> 48);
+        int red2 = (int)(col2  >> 32) & 0xFFFF;
+        int green2 = (int)(col2  >> 16) & 0xFFFF;
+        int blue2 = (int)(col2) & 0xFFFF;
+
+        double w = weight * 2 - 1;
+        double a = (alpha1 - alpha2) / (double)0XFFFF;
+
+        double w1 = (((w * a == -1) ? w : (w + a) / (1 + w * a)) + 1) / 2.0;
+        double w2 = 1 - w1;
+
+        long red = Math.round(red1 * w1 + red2 * w2);
+        long green = Math.round(green1 * w1 + green2 * w2);
+        long blue = Math.round(blue1 * w1 + blue2 * w2);
+
+        long alpha = Math.round(alpha1 * weight + alpha2 * (1 - weight));
+
+        long color = (alpha << 48) | (red << 32) | (green << 16) | (blue);
+        return Double.longBitsToDouble( color );
+
+    }
+
     static int colorDigit( double value ) {
         if( value >= 255 ) {
             return 255;
