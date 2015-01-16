@@ -57,10 +57,9 @@ public class LessTest {
     @Parameters( name = "{0}" )
     public static List<Object[]> params() throws Exception {
         ArrayList<Object[]> params = new ArrayList<>();
-        URL url = LessTest.class.getResource( LessTest.class.getSimpleName() + ".class" );
-        String dirStr = new File( url.getPath() ).getParent() + "/samples";
-        int baseLength = dirStr.length() + 1;
-        File dir = new File( dirStr );
+        URL url = LessTest.class.getResource("samples");
+        File dir = new File(url.toURI());
+        int baseLength = dir.getPath().length() + 1;
         params( params, dir, baseLength );
         return params;
     }
