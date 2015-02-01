@@ -793,8 +793,7 @@ class LessParser implements FormattableContainer {
                     builder.append( ch );
                     break;
                 case ')':
-                    val = builder.toString();
-                    builder.setLength( 0 );
+                    val = trim( builder );
                     op.addOperand( new ValueExpression( reader, val ) );
                     return op;
                 default:
