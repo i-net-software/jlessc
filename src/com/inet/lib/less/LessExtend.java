@@ -78,4 +78,30 @@ class LessExtend extends LessObject {
     String[] getExtendingSelectors() {
         return extendingSelectors;
     }
+    
+    /**
+     * For debugging
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for( int i=0; i<baseSelector.length; i++ ) {
+            if( i > 0 ) {
+                builder.append( ',' );
+            }
+            builder.append( baseSelector[i] );
+        }
+        builder.append( ":extend(" );
+        for( int i=0; i<extendingSelectors.length; i++ ) {
+            if( i > 0 ) {
+                builder.append( ' ' );
+            }
+            builder.append( extendingSelectors[i] );
+        }
+        if( all ) {
+            builder.append( " all" );
+        }
+        builder.append( ")" );
+        return builder.toString();
+    }
 }
