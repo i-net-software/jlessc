@@ -169,42 +169,42 @@ class FunctionExpression extends AbstractExpression implements Expression {
                 return;
             case "url":
                 String url = get( 1 ).stringValue( formatter );
-                char quoteChar = 0;
-                boolean quote = false;
-                if( url.length() >= 2 ) {
-                    quoteChar = url.charAt( 0 );
-                    if( quoteChar == '\'' || quoteChar == '\"' ) {
-                        if( url.charAt( url.length() - 1 ) == quoteChar ) {
-                            url = url.substring( 1, url.length() - 1 );
-                            quote = true;
-                        }
-                    }
-                }
-                if( url.startsWith( "../" ) ) {
-                    String baseUrl = get( 0 ).stringValue( formatter );
-                    baseUrl = baseUrl.substring( 0, baseUrl.lastIndexOf( '/' ) + 1 );
-                    boolean append = false;
-                    do {
-                        if( baseUrl.length() > 0 ) {
-                            url = url.substring( 3 );
-                            baseUrl = baseUrl.substring( 0, baseUrl.lastIndexOf( '/', baseUrl.length() - 2 ) + 1 );
-                            append = true;
-                        } else {
-                            break;
-                        }
-                    } while( url.startsWith( "../" ) );
-                    if( append ) {
-                        url = baseUrl + url;
-                    }
-                }
+//                char quoteChar = 0;
+//                boolean quote = false;
+//                if( url.length() >= 2 ) {
+//                    quoteChar = url.charAt( 0 );
+//                    if( quoteChar == '\'' || quoteChar == '\"' ) {
+//                        if( url.charAt( url.length() - 1 ) == quoteChar ) {
+//                            url = url.substring( 1, url.length() - 1 );
+//                            quote = true;
+//                        }
+//                    }
+//                }
+//                if( url.startsWith( "../" ) ) {
+//                    String baseUrl = get( 0 ).stringValue( formatter );
+//                    baseUrl = baseUrl.substring( 0, baseUrl.lastIndexOf( '/' ) + 1 );
+//                    boolean append = false;
+//                    do {
+//                        if( baseUrl.length() > 0 ) {
+//                            url = url.substring( 3 );
+//                            baseUrl = baseUrl.substring( 0, baseUrl.lastIndexOf( '/', baseUrl.length() - 2 ) + 1 );
+//                            append = true;
+//                        } else {
+//                            break;
+//                        }
+//                    } while( url.startsWith( "../" ) );
+//                    if( append ) {
+//                        url = baseUrl + url;
+//                    }
+//                }
                 formatter.append( "url(" );
-                if( quote ) {
-                    formatter.append( quoteChar );
-                }
+//                if( quote ) {
+//                    formatter.append( quoteChar );
+//                }
                 formatter.append( url );
-                if( quote ) {
-                    formatter.append( quoteChar );
-                }
+//                if( quote ) {
+//                    formatter.append( quoteChar );
+//                }
                 formatter.append( ")" );
                 return;
             case "data-uri":
