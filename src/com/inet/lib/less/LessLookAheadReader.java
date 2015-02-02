@@ -148,6 +148,7 @@ class LessLookAheadReader extends LessObject implements Closeable {
      * <li>(.clearfix all)
      * <li>(audio:not([controls]))
      * <li>(odd)
+     * <li>(@{color})
      * </ul>
      * Samples for mixin params<ul>
      * <li>(.65)
@@ -165,6 +166,7 @@ class LessLookAheadReader extends LessObject implements Closeable {
                 case ')':
                     return isFirst || !isBlock;
                 case '@':
+                    return cache.charAt( i+1 ) != '{';
                 case '~':
                     return true;
                 case '"':
