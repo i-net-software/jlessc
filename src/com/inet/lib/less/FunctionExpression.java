@@ -101,18 +101,21 @@ class FunctionExpression extends AbstractExpression implements Expression {
     public String unit( CssFormatter formatter ) {
         switch( super.toString() ) {
             case "unit":
-                if( parameters.size() == 1 ) {
+                if( parameters.size() <= 1 ) {
                     return "";
                 } else {
                     return get( 1 ).stringValue( formatter );
                 }
+            case "convert":
+                return get( 1 ).stringValue( formatter );
             case "sin":
             case "cos":
+            case "tan":
+                return "";
             case "acos":
             case "asin":
             case "atan":
-            case "tan":
-                return "";
+                return "rad";
             case "pow":
                 return get( 0 ).unit( formatter );
         }
@@ -254,7 +257,7 @@ class FunctionExpression extends AbstractExpression implements Expression {
 
     private void eval( CssFormatter formatter ) {
         try {
-            switch( super.toString() ) {
+            switch( super.toString().toLowerCase() ) {
                 case "": //parenthesis
                     type = get( 0 ).getDataType( formatter );
                     if( type != STRING ) {
