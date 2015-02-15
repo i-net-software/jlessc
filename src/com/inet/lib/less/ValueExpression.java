@@ -608,6 +608,10 @@ class ValueExpression extends AbstractExpression {
                     case "yellowgreen":
                         rgb = 0x9a00_cd00_3200L;
                         break;
+                    case "transparent":
+                        value = 0;
+                        type = RGBA;
+                        return;
                     default:
                         ParsePosition pos = new ParsePosition( 0 );
                         Number number = formatter.getFormat().parse( str, pos );
