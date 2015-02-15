@@ -1,0 +1,19 @@
+/* mixin1 */
+.abc {
+  position: top;
+}
+/* mixin2 */
+.xyz .foo {
+  position: bottom;
+}
+/* mixin3 */
+.foo {
+  position: relative;
+}
+/* mixin4 */
+.foo {
+  position: bottom;
+}
+.foo {
+  position: relative;
+}

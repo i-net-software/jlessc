@@ -1,0 +1,11 @@
+.mixin (@a) when (isnumber(@a)) and (@a > 0) {
+	value: @a;
+}
+.mixin (@a) when (@a > 10), (@a < -10) {
+	largevalue: @a;
+}
+
+.class1 { .mixin(-15) }
+.class2 { .mixin(-5) }
+.class3 { .mixin(5) }
+.class4 { .mixin(15) }

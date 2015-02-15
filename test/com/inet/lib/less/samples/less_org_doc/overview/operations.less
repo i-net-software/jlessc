@@ -1,0 +1,10 @@
+@base: 5%;
+@filler: @base * 2;
+@other: @base + @filler;
+@base-color: #123456;
+
+#abc {
+  color: #888 / 4;
+  background-color: @base-color + #111;
+  height: 100% / 2 + @other;
+}

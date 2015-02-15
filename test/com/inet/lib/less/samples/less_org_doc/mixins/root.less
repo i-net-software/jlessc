@@ -1,0 +1,39 @@
+.mixin1() {
+  .abc {
+    position: top;
+  }
+}
+/* mixin1 */
+.mixin1;
+
+.mixin2() {
+  .xyz {
+    .foo {
+      position: bottom;
+    }
+  }
+}
+/* mixin2 */
+.mixin2;
+
+.mixin3() {
+  .xyz() {
+    .foo {
+      position: relative;
+    }
+  }
+  .xyz;
+}
+/* mixin3 */
+.mixin3;
+
+.mixin4() {
+  .bar() {
+    .bla {
+      position: absolute;
+    }
+  }
+  .xyz;
+}
+/* mixin4 */
+.mixin4;
