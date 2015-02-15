@@ -113,6 +113,8 @@ class FunctionExpression extends AbstractExpression implements Expression {
             case "atan":
             case "tan":
                 return "";
+            case "pow":
+                return get( 0 ).unit( formatter );
         }
         for( int i = 0; i < parameters.size(); i++ ) {
             String unit = parameters.get( i ).unit( formatter );
@@ -263,6 +265,12 @@ class FunctionExpression extends AbstractExpression implements Expression {
                     type = PERCENT;
                     doubleValue = getDouble( 0, formatter ) * 100;
                     return;
+                case "convert":
+                    type = NUMBER;
+                    String unit = get( 1 ).stringValue( formatter );
+                    Expression param = get( 0 );
+                    doubleValue = param.doubleValue( formatter ) * Operation.unitFactor( param.unit( formatter ), unit );
+                    return;
                 case "abs":
                     type = getNumberDataType( formatter );
                     doubleValue = Math.abs( getDouble( 0, formatter ) );
@@ -295,9 +303,31 @@ class FunctionExpression extends AbstractExpression implements Expression {
                         doubleValue /= 10;
                     }
                     return;
+                case "min":
+                    type = NUMBER;
+                    doubleValue = get( 0 ).doubleValue( formatter );
+                    unit = unit( formatter );
+                    for( int i = 1; i < parameters.size(); i++ ) {
+                        param = parameters.get( i );
+                        doubleValue = Math.min( doubleValue, param.doubleValue( formatter ) / Operation.unitFactor( unit, param.unit( formatter ) ) );
+                    }
+                    return;
+                case "max":
+                    type = NUMBER;
+                    doubleValue = get( 0 ).doubleValue( formatter );
+                    unit = unit( formatter );
+                    for( int i = 1; i < parameters.size(); i++ ) {
+                        param = parameters.get( i );
+                        doubleValue = Math.max( doubleValue, param.doubleValue( formatter ) / Operation.unitFactor( unit, param.unit( formatter ) ) );
+                    }
+                    return;
                 case "sqrt":
                     type = NUMBER;
                     doubleValue = Math.sqrt( getDouble( 0, formatter ) );
+                    return;
+                case "pow":
+                    type = NUMBER;
+                    doubleValue = Math.pow( getDouble( 0, formatter ), getDouble( 1, formatter ) );
                     return;
                 case "sin":
                     type = NUMBER;
