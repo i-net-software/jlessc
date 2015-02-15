@@ -1,0 +1,26 @@
+#outer {
+  .inner {
+    color: red;
+  }
+}
+
+// all do the same thing
+.c{
+  #outer > .inner;
+}
+.d{
+  #outer > .inner();
+}
+.e{
+  #outer .inner;
+}
+.f{
+  #outer .inner();
+}
+.g{
+  #outer.inner;
+}
+.h{
+  #outer.inner();
+}
+

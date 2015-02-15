@@ -1,0 +1,13 @@
+a {
+  color: hover;
+  display: hover;
+}
+a color:hover {
+  color: green;
+}
+a display :hover {
+  color: red;
+}
+a display *:not(:last-child) {
+  color: blue;
+}

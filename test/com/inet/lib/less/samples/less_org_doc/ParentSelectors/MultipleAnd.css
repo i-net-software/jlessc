@@ -1,0 +1,24 @@
+.link + .link,
+.link + a,
+a + .link,
+a + a {
+  color: red;
+}
+.link .link,
+.link a,
+a .link,
+a a {
+  color: green;
+}
+.link.link,
+.linka,
+a.link,
+aa {
+  color: blue;
+}
+.link,
+a,
+.linkish,
+aish {
+  color: cyan;
+}
