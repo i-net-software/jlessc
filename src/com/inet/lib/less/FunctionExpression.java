@@ -33,6 +33,7 @@ import static com.inet.lib.less.ColorUtils.colorDigit;
 import static com.inet.lib.less.ColorUtils.contrast;
 import static com.inet.lib.less.ColorUtils.green;
 import static com.inet.lib.less.ColorUtils.hsla;
+import static com.inet.lib.less.ColorUtils.hsva;
 import static com.inet.lib.less.ColorUtils.luma;
 import static com.inet.lib.less.ColorUtils.luminance;
 import static com.inet.lib.less.ColorUtils.mix;
@@ -40,6 +41,7 @@ import static com.inet.lib.less.ColorUtils.red;
 import static com.inet.lib.less.ColorUtils.rgb;
 import static com.inet.lib.less.ColorUtils.rgba;
 import static com.inet.lib.less.ColorUtils.toHSL;
+import static com.inet.lib.less.ColorUtils.toHSV;
 
 import java.io.IOException;
 import java.net.URI;
@@ -504,6 +506,26 @@ class FunctionExpression extends AbstractExpression implements Expression {
                     hsl = toHSL( getDouble( 0, formatter ) );
                     hsl.a = getPercent( 1, formatter );
                     doubleValue = hsla( hsl );
+                    return;
+                case "hsv":
+                    type = COLOR;
+                    doubleValue = hsva( getPercent( 0, formatter ), getPercent( 1, formatter ), getPercent( 2, formatter ), 1 );
+                    return;
+                case "hsva":
+                    type = RGBA;
+                    doubleValue = hsva( getPercent( 0, formatter ), getPercent( 1, formatter ), getPercent( 2, formatter ), getPercent( 3, formatter ) );
+                    return;
+                case "hsvhue":
+                    doubleValue = toHSV( getColor( 0, formatter ) ).h;
+                    type = NUMBER;
+                    return;
+                case "hsvsaturation":
+                    doubleValue = toHSV( getColor( 0, formatter ) ).s * 100;
+                    type = PERCENT;
+                    return;
+                case "hsvvalue":
+                    doubleValue = toHSV( getColor( 0, formatter ) ).v * 100;
+                    type = PERCENT;
                     return;
                 case "contrast":
                     double color = getColor( 0, formatter );

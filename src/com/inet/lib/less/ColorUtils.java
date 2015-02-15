@@ -163,6 +163,55 @@ class ColorUtils {
         }
     }
 
+    static HSV toHSV( double color ) {
+        long argb = Double.doubleToRawLongBits( color );
+        double a = alpha( color );
+        double r = clamp( ((argb >> 32) & 0xFFFF) / (double)0xFF00 );
+        double g = clamp( ((argb >> 16) & 0xFFFF) / (double)0xFF00 );
+        double b = clamp( ((argb >> 0) & 0xFFFF) / (double)0xFF00 );
+
+        double max = Math.max(Math.max(r, g), b);
+        double min = Math.min(Math.min(r, g), b);
+        double h, s, v = max;
+
+        double d = max - min;
+        if (max == 0) {
+            s = 0;
+        } else {
+            s = d / max;
+        }
+
+        if (max == min) {
+            h = 0;
+        } else if( max == r ){
+            h = (g - b) / d + (g < b ? 6 : 0);
+        } else if( max == g ){
+            h = (b - r) / d + 2;
+        } else { //if( max == b ){
+            h = (r - g) / d + 4;
+        }
+        h /= 6;
+        return new HSV( h * 360, s, v,  a );
+    }
+
+    private static final int[][] HSVA_PERM = { { 0, 3, 1 }, //
+                    { 2, 0, 1 }, //
+                    { 1, 0, 3 }, //
+                    { 1, 2, 0 }, //
+                    { 3, 1, 0 }, //
+                    { 0, 1, 2 }           }; //
+
+    static double hsva( double hue, double saturation, double value, double alpha ) {
+        hue = ((hue % 360) / 360) * 360;
+
+        int i = (int)Math.floor( (hue / 60) % 6 );
+        double f = (hue / 60) - i;
+
+        double[] vs = { value, value * (1 - saturation), value * (1 - f * saturation), value * (1 - (1 - f) * saturation) };
+
+        return rgba( vs[HSVA_PERM[i][0]] * 255, vs[HSVA_PERM[i][1]] * 255, vs[HSVA_PERM[i][2]] * 255, alpha );
+    }
+
     /**
      * Calculate the mix color of 2 colors.
      * @param color1
