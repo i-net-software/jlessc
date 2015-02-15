@@ -29,19 +29,19 @@ package com.inet.lib.less;
 import java.util.HashMap;
 
 /**
- * A single match of a mxin to a rule.
+ * A single match of a mixin to a rule.
  */
 class MixinMatch {
 
     private Rule                        rule;
 
-    private HashMap<String, Expression> vars;
+    private HashMap<String, Expression> mixinParameters;
 
     private boolean                     guard;
 
-    MixinMatch( Rule rule, HashMap<String, Expression> vars, boolean guard ) {
+    MixinMatch( Rule rule, HashMap<String, Expression> mixinParameters, boolean guard ) {
         this.rule = rule;
-        this.vars = vars;
+        this.mixinParameters = mixinParameters;
         this.guard = guard;
     }
 
@@ -49,8 +49,8 @@ class MixinMatch {
         return rule;
     }
 
-    HashMap<String, Expression> getVars() {
-        return vars;
+    HashMap<String, Expression> getMixinParameters() {
+        return mixinParameters;
     }
 
     boolean getGuard() {
