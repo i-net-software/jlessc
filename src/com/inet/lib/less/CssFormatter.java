@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map.Entry;
 
 /**
  * A formatter for the CSS output. Hold some formting states.
@@ -56,6 +57,10 @@ class CssFormatter {
 
     private final ArrayList<HashMap<String, Expression>> variablesStack = new ArrayList<>();
 
+    private final ArrayList<HashMap<String, Expression>> mixinReturnStack = new ArrayList<>();
+    
+    private int                                          mixinReturnCount;
+
     private final ArrayList<Rule>                        rulesStack     = new ArrayList<>();
 
     private int                                          rulesStackModCount;
@@ -74,6 +79,8 @@ class CssFormatter {
         if( toString ) {
             lessExtends = new LessExtendMap();
         }
+        mixinReturnStack.add( new HashMap<String, Expression>() );
+        mixinReturnCount++;
     }
 
     void format( LessParser parser, URL baseURL, Appendable appendable ) throws IOException {
@@ -155,6 +162,13 @@ class CssFormatter {
      * @return the expression or null if not found
      */
     Expression getVariable( String name ) {
+        for( int i = mixinReturnCount - 1; i >= 0; i-- ) {
+            HashMap<String, Expression> variables = mixinReturnStack.get( i );
+            Expression variable = variables.get( name );
+            if( variable != null ) {
+                return variable;
+            }
+        }
         for( int i = variablesStack.size() - 1; i >= 0; i-- ) {
             HashMap<String, Expression> variables = variablesStack.get( i );
             Expression variable = variables.get( name );
@@ -166,26 +180,98 @@ class CssFormatter {
     }
 
     /**
-     * Add variables to the stack.
+     * Add mixin parameters to the stack.
+     * 
+     * @param mixinParameters
+     *            the mixinParameters, can be null if the current mixin has no parameters.
+     */
+    void addMixinParams( HashMap<String, Expression> mixinParameters ) {
+        if( mixinParameters != null ) {
+            variablesStack.add( mixinParameters );
+        }
+    }
+
+    /**
+     * Remove mixin parameters from the stack.
+     * 
+     * @param mixinParameters
+     *            the mixinParameters, can be null if the current mixin has no parameters.
+     */
+    void removeMixinParams( HashMap<String, Expression> mixinParameters ) {
+        if( mixinParameters != null ) {
+            variablesStack.remove( variablesStack.size() - 1 );
+        }
+    }
+
+    /**
+     * Add rule variables to the stack.
      * 
      * @param variables
-     *            the variables, can be null if the current mixin has no variables.
+     *            the variables, can be null if the current rule has no parameters.
      */
     void addVariables( HashMap<String, Expression> variables ) {
         if( variables != null ) {
             variablesStack.add( variables );
         }
+        while( mixinReturnStack.size() <= mixinReturnCount ) {
+            mixinReturnStack.add( new HashMap<String, Expression>() );
+        }
+        mixinReturnStack.get( mixinReturnCount++ ).clear();
     }
 
     /**
-     * Remove variables from the stack.
+     * Remove rule variables from the stack.
      * 
      * @param variables
-     *            the variables, can be null if the current mixin has no variables.
+     *            the variables, can be null if the current rule has no parameters.
      */
     void removeVariables( HashMap<String, Expression> variables ) {
         if( variables != null ) {
             variablesStack.remove( variablesStack.size() - 1 );
+        }
+        mixinReturnCount--;
+    }
+
+    /**
+     * Add variables of a mixin to the stack.
+     * 
+     * @param variables
+     *            the variables, can be null if the current mixin has no variables.
+     */
+    void addMixinVariables( HashMap<String, Expression> variables ) {
+        addMixinParams( variables );
+        while( mixinReturnStack.size() <= mixinReturnCount ) {
+            mixinReturnStack.add( new HashMap<String, Expression>() );
+        }
+        mixinReturnStack.get( mixinReturnCount++ ).clear();
+    }
+
+    /**
+     * Remove variables of a mixin from the stack.
+     * 
+     * @param variables
+     *            the variables, can be null if the current mixin has no variables.
+     */
+    void removeMixinVariables( HashMap<String, Expression> variables ) {
+        mixinReturnCount--;
+        if( variables != null ) {
+            int last = variablesStack.size() - 1;
+            variablesStack.remove( last-- );
+            HashMap<String, Expression> previousReturn = mixinReturnStack.get( mixinReturnCount );
+            if( last >= 0 ) {
+                HashMap<String, Expression> currentReturn = mixinReturnStack.get( mixinReturnCount - 1 );
+                HashMap<String, Expression> parent = variablesStack.get( last );
+                for( Entry<String, Expression> entry : variables.entrySet() ) {
+                    if( !parent.containsKey( entry.getKey() ) && !currentReturn.containsKey( entry.getKey() ) ) {
+                        currentReturn.put( entry.getKey(), ValueExpression.eval( this, entry.getValue() ) );
+                    }
+                }
+                for( Entry<String, Expression> entry : previousReturn.entrySet() ) {
+                    if( !parent.containsKey( entry.getKey() ) && !currentReturn.containsKey( entry.getKey() ) ) {
+                        currentReturn.put( entry.getKey(), entry.getValue() );
+                    }
+                }
+            }
         }
     }
 

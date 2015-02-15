@@ -247,7 +247,13 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         }
     }
 
-    private HashMap<String, Expression> getVars( CssFormatter formatter, List<Expression> paramValues ) {
+    /**
+     * Get the mixin parameters as map if the given param values match to this rule.
+     * @param formatter current formatter
+     * @param paramValues the values of the caller
+     * @return null, if empty list match; NO_MATCH, if the values not match to the params of this list, Or the map with the parameters
+     */
+    private HashMap<String, Expression> getMixinParams( CssFormatter formatter, List<Expression> paramValues ) {
         if( (params == null && paramValues == null) || (paramValues == null && params.size() == 0) || (params == null && paramValues.size() == 0) ) {
             return null;
         }
@@ -354,25 +360,25 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         if( guard == null && formatter.containsRule( this ) ) {
             return null;
         }
-        HashMap<String, Expression> vars = getVars( formatter, paramValues );
-        if( vars == NO_MATCH ) {
+        HashMap<String, Expression> mixinParameters = getMixinParams( formatter, paramValues );
+        if( mixinParameters == NO_MATCH ) {
             return null;
         }
         boolean matching = true;
 
         if( guard != null ) {
-            if( vars != null ) {
-                formatter.addVariables( vars );
+            if( mixinParameters != null ) {
+                formatter.addVariables( mixinParameters );
             }
 
             matching = guard.booleanValue( formatter );
 
-            if( vars != null ) {
-                formatter.removeVariables( vars );
+            if( mixinParameters != null ) {
+                formatter.removeVariables( mixinParameters );
             }
         }
 
-        return new MixinMatch( this, vars, matching);
+        return new MixinMatch( this, mixinParameters, matching);
     }
 
     boolean isMixin() {
