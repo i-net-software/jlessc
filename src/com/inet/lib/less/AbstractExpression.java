@@ -81,15 +81,19 @@ abstract class AbstractExpression extends LessObject implements Expression {
                 return;
             case RGBA:
                 double color = doubleValue( formatter );
-                final double alpha = alpha( color );
-                if( alpha >= 1 ) {
-                    formatter.appendColor( color, null );
+                if( color == 0 && Double.doubleToRawLongBits( color ) == 0 ) {
+                    formatter.append( "transparent" );
                 } else {
-                    formatter.append( "rgba(" );
-                    formatter.append( red( color ) ).append( ',' ).space();
-                    formatter.append( green( color ) ).append( ',' ).space();
-                    formatter.append( blue( color ) ).append( ',' ).space();
-                    formatter.append( alpha ).append( ')' );
+                    final double alpha = alpha( color );
+                    if( alpha >= 1 ) {
+                        formatter.appendColor( color, null );
+                    } else {
+                        formatter.append( "rgba(" );
+                        formatter.append( red( color ) ).append( ',' ).space();
+                        formatter.append( green( color ) ).append( ',' ).space();
+                        formatter.append( blue( color ) ).append( ',' ).space();
+                        formatter.append( alpha ).append( ')' );
+                    }
                 }
                 return;
         }
