@@ -37,6 +37,7 @@ import static com.inet.lib.less.ColorUtils.hsva;
 import static com.inet.lib.less.ColorUtils.luma;
 import static com.inet.lib.less.ColorUtils.luminance;
 import static com.inet.lib.less.ColorUtils.mix;
+import static com.inet.lib.less.ColorUtils.multiply;
 import static com.inet.lib.less.ColorUtils.red;
 import static com.inet.lib.less.ColorUtils.rgb;
 import static com.inet.lib.less.ColorUtils.rgba;
@@ -543,6 +544,9 @@ class FunctionExpression extends AbstractExpression implements Expression {
                     color = getColor( 0, formatter );
                     type = PERCENT;
                     doubleValue = luminance( color ) * 100;
+                    return;
+                case "multiply":
+                    doubleValue = multiply( getColor( 0, formatter ), getColor( 1, formatter ) );
                     return;
                 case "unit":
                     type = NUMBER;
