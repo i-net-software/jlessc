@@ -1,0 +1,32 @@
+apply plugin: 'java'
+
+repositories {
+    flatDir {
+        dirs '../lib'
+    }
+}
+
+dependencies {
+    compile ':inet-annotations'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+        resources {
+            srcDir 'src'
+        }
+    }
+    test {
+        java {
+            srcDir 'test'
+        }
+        resources {
+            srcDir 'test'
+        }
+    }
+}
+
+compileJava.options.encoding = 'UTF-8'
