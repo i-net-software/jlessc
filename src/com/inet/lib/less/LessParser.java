@@ -145,7 +145,7 @@ class LessParser implements FormattableContainer {
         LOOP: for( ;; ) {
             char ch;
             try {
-                ch = reader.read();
+                ch = read();
             } catch( Exception e ) {
                 ch = ';'; // a not terminated line is like a lime with semicolon
             }
@@ -170,6 +170,18 @@ class LessParser implements FormattableContainer {
                     currentRule.add( new RuleProperty( name, value ) );
                     return;
                 case '@':
+                    ch = read();
+                    if( ch == '{' ) { // @{  --> a inline variable and not a variable declaration
+                        builder.append( '@' );
+                        builder.append( ch );
+                        do {
+                            ch = read();
+                            builder.append( (char)ch );
+                        } while( ch != '}' );
+                        break;
+                    } else {
+                        back( ch );
+                    }
                     throwUnrecognizedInputIfAny( builder, ch );
                     variable( currentRule.getVariables(), currentRule );
                     return;
@@ -531,7 +543,7 @@ class LessParser implements FormattableContainer {
                              } else {
                                 if( isIdentifier( builder ) ) {
                                     builder.append( ch );
-                                    builder.append( ch2 );
+                                    back( ch2 );
                                     wasWhite = false;
                                     break;
                                 } else {

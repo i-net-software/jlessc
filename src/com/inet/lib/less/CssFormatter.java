@@ -394,7 +394,8 @@ class CssFormatter {
 
     void appendProperty( String name, Expression value ) throws IOException {
         insets();
-        output.append( name ).append( ':' );
+        SelectorUtils.appendToWithPlaceHolder( this, name, 0, (LessObject)value );
+        output.append( ':' );
         space();
         value.appendTo( this );
         if( important ) {
