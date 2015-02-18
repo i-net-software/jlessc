@@ -93,6 +93,16 @@ class LessLookAheadReader extends LessObject implements Closeable {
                         }
                         break;
                     case '{':
+                        if( cache.length() > 1 && cache.charAt( cache.length() - 2 ) == '@' ) { // @{  --> a inline variable and not a block start
+                            do {
+                                ch = reader.read();
+                                if( ch < 0 ) {
+                                    throw createException( "Unrecognized input: '" + cache.toString().trim() + "'" );
+                                }
+                                cache.append( (char)ch );
+                            } while( ch != '}' );
+                            break;
+                        }
                     case '}':
                     case ';':
                         if( parenthesis == 0 ) {
