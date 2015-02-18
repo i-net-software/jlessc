@@ -559,6 +559,11 @@ class LessParser implements FormattableContainer {
                         builder.append( ch );
                         break;
                     }
+                    if( builder.length() == 0 && left == null ) {
+                        builder.append( ch );
+                        wasWhite = false;
+                        break;
+                    }
                 case '*':
                 case '/':
                 case ',':
