@@ -41,6 +41,8 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
     private String[]                    selectors;
 
     private final List<Expression>      params;
+    
+    private VariableExpression          varArg;
 
     private Expression                  guard;
 
@@ -56,7 +58,22 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         for( int i = 0; i < this.selectors.length; i++ ) {
             this.selectors[i] = this.selectors[i].trim();
         }
-        this.params = params == null ? null : params.getOperands();
+        if( params == null ) {
+            this.params = null;
+        } else {
+            this.params = params.getOperands();
+            int count = this.params.size();
+            if( count > 0 ) {
+                Expression lastEx = this.params.get( count-1 );
+                if( lastEx.getClass() == VariableExpression.class ) {
+                    String name = lastEx.toString();
+                    if( name.endsWith( "..." ) ) {
+                        varArg = new VariableExpression( (VariableExpression)lastEx, name.substring( 0, name.length() - 3 ) );
+                        this.params.remove( count-1 );
+                    }
+                }
+            }
+        }
         this.guard = guard;
     }
 
@@ -257,14 +274,18 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         if( (params == null && paramValues == null) || (paramValues == null && params.size() == 0) || (params == null && paramValues.size() == 0) ) {
             return null;
         }
-        if( (params == null && paramValues != null) || (params.size() < paramValues.size()) ) {
+        if( params == null && paramValues != null ) {
+            return NO_MATCH;
+        }
+        if( params.size() < paramValues.size() && varArg == null ) {
             return NO_MATCH;
         }
 
         try {
             HashMap<String, Expression> vars = new HashMap<>();
             // Set the parameters with default values first
-            for( int i = 0; i < params.size(); i++ ) {
+            int paramsCount = params.size();
+            for( int i = 0; i < paramsCount; i++ ) {
                 Expression param = params.get( i );
                 Class<?> paramType = param.getClass();
                 if( paramType ==  Operation.class && ((Operation)param).getOperator() == ':' && ((Operation)param).getOperands().size() == 2 ) {
@@ -273,9 +294,10 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
                     vars.put( name, keyValue.get( 1 ) );
                 }
             }
-    
+
             // Set the calling values as parameters
-            for( int i = 0; i < paramValues.size(); i++ ) {
+            paramsCount = Math.min( paramsCount, paramValues.size() );
+            for( int i = 0; i < paramsCount; i++ ) {
                 Expression value = paramValues.get( i );
                 Class<?> valueType = value.getClass();
                 Expression param = params.get( i );
@@ -296,6 +318,17 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
                 }
             }
 
+            if( varArg != null ) {
+                Operation value = new Operation( varArg );
+                for( int i = params.size(); i < paramValues.size(); i++ ) {
+                    value.addOperand( ValueExpression.eval( formatter, paramValues.get( i ) ) );
+                }
+                if( vars.size() == params.size() ) {
+                    vars.put( varArg.toString(), value );
+                    return vars;
+                }
+                return NO_MATCH;
+            }
             if( vars.size() == params.size() ) {
                 return vars;
             }
