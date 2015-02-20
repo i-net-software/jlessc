@@ -35,7 +35,7 @@ import java.util.HashMap;
 /**
  * A arithmetic operation.
  */
-class Operation extends AbstractExpression implements Expression {
+class Operation extends AbstractExpression {
 
     private final ArrayList<Expression> operands = new ArrayList<>();
 
@@ -70,7 +70,7 @@ class Operation extends AbstractExpression implements Expression {
         group.put( unit, factor );
     }
 
-    Operation( LessLookAheadReader reader, Expression left, char operator ) {
+    Operation( LessObject reader, Expression left, char operator ) {
         super( reader, String.valueOf( operator ) );
         if( left != null ) {
             this.operands.add( left );
@@ -81,7 +81,7 @@ class Operation extends AbstractExpression implements Expression {
     /**
      * Empty parameter list
      */
-    Operation( LessLookAheadReader reader ) {
+    Operation( LessObject reader ) {
         super( reader, "," );
         this.operator = ',';
     }

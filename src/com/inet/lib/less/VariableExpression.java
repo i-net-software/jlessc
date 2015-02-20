@@ -33,7 +33,7 @@ import java.io.IOException;
  */
 class VariableExpression extends AbstractExpression {
 
-    VariableExpression( LessLookAheadReader reader, String name ) {
+    VariableExpression( LessObject reader, String name ) {
         super( reader, name );
     }
 
