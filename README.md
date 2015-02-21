@@ -19,7 +19,7 @@ MIT License
 
 Alternative libraries
 ----
-+ <a href="https://github.com/localmatters/lesscss4j">LessCSS4j</a> uses on ANTLR
-+ <a href="https://github.com/asual/lesscss-engine">LESS Engine</a> uses Rhino
-+ <a href="https://github.com/marceloverdijk/lesscss-java">Official LESS CSS Compiler for Java</a> uses Rhino
++ <a href="https://github.com/localmatters/lesscss4j">LessCSS4j</a> used ANTLR
++ <a href="https://github.com/asual/lesscss-engine">LESS Engine</a> used Rhino
++ <a href="https://github.com/marceloverdijk/lesscss-java">Official LESS CSS Compiler for Java</a> used Rhino
 
