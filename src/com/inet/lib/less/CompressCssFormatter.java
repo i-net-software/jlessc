@@ -34,26 +34,45 @@ import java.io.IOException;
 class CompressCssFormatter extends CssFormatter {
 
     boolean wasSemicolon;
-    
+
+    /**
+     * Create an instance.
+     */
     CompressCssFormatter() {
+        super( false );
         getFormat().setMinimumIntegerDigits( 0 );
     }
 
+    /**
+     * Do nothing.
+     * {@inheritDoc}
+     */
     @Override
     CssFormatter space() {
         return this;
     }
 
+    /**
+     * Do nothing.
+     * {@inheritDoc}
+     */
     @Override
     CssFormatter newline() {
         return this;
     }
 
+    /**
+     * Do nothing.
+     * {@inheritDoc}
+     */
     @Override
     CssFormatter insets() {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     CssFormatter comment( String msg ) {
         checkSemicolon();
@@ -63,6 +82,10 @@ class CompressCssFormatter extends CssFormatter {
         return this;
     }
 
+    /**
+     * Write a 3 digit color definition if possible.
+     * {@inheritDoc}
+     */
     @Override
     CssFormatter appendColor( double color, String hint ) throws IOException {
         if( !inlineMode() ) {
@@ -84,6 +107,10 @@ class CompressCssFormatter extends CssFormatter {
         return super.appendColor( color, null );
     }
 
+    /**
+     * Remove units if value is zero.
+     * {@inheritDoc}
+     */
     @Override
     CssFormatter appendValue( double value, String unit ) {
         if( value == 0 ) {
@@ -98,6 +125,9 @@ class CompressCssFormatter extends CssFormatter {
         return super.appendValue( value, unit );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     CssFormatter semicolon() {
         wasSemicolon = true;
@@ -111,18 +141,27 @@ class CompressCssFormatter extends CssFormatter {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     CssFormatter appendSelector( String selector ) {
         checkSemicolon();
         return super.appendSelector( selector );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     void appendProperty( String name, Expression value ) throws IOException {
         checkSemicolon();
         super.appendProperty( name, value );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     CssFormatter endBlock() {
         wasSemicolon = false;
