@@ -37,7 +37,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -67,36 +66,31 @@ public class LessTest {
     private static void params( ArrayList<Object[]> params, File dir, int baseLength ) {
         for( File file : dir.listFiles() ) {
             if( file.getName().endsWith( ".less" ) ) {
-                String name = file.getName();
-                name = name.substring( 0, name.length() - 5 ) + ".css";
-                File cssfile = new File( file.getParent(), name );
+                String basename = file.getName();
+                basename = basename.substring( 0, basename.length() - 5 );
+                String cssname = basename + ".css";
+                File cssfile = new File( file.getParent(), cssname );
                 if( cssfile.exists() ) {
-                    params.add( new Object[] { file.getPath().substring( baseLength ), file, cssfile } );
+                    params.add( new Object[] { cssfile.getPath().substring( baseLength ), file, cssfile } );
+                }
+                cssname = basename + ".css_x";
+                cssfile = new File( file.getParent(), cssname );
+                if( cssfile.exists() ) {
+                    params.add( new Object[] { cssfile.getPath().substring( baseLength ), file, cssfile } );
                 }
             } else if( file.isDirectory() ) {
                 params( params, file, baseLength );
             }
         }
     }
-    
+
     @Test
     public void compile() throws Exception {
         URI uri = lessFile.toURI();
         String lessData = new String( Files.readAllBytes( Paths.get( uri ) ), StandardCharsets.UTF_8 );
         String cssData = new String( Files.readAllBytes( Paths.get( cssFile.toURI() ) ), StandardCharsets.UTF_8 );
 
-        assertEquals( cssData, Less.compile( uri.toURL(), lessData, lessFile.getParentFile().getName().equals( "compression" ) ) );
-    }
-
-
-//    @Test
-    public void compress() throws Exception {
-        URI uri = lessFile.toURI();
-        String lessData = new String( Files.readAllBytes( Paths.get( uri ) ), StandardCharsets.UTF_8 );
-        String name = lessFile.getName();
-        name = name.substring( 0, name.length() - 5 ) + ".css_x";
-        String cssData = new String( Files.readAllBytes( Paths.get( lessFile.getParent(), name ) ), StandardCharsets.UTF_8 );
-
-        assertEquals( cssData, Less.compile( uri.toURL(), lessData, true ) );
+        boolean compress = cssFile.getName().endsWith( ".css_x" ) || lessFile.getParentFile().getName().equals( "compression" );
+        assertEquals( cssData, Less.compile( uri.toURL(), lessData, compress ) );
     }
 }
