@@ -255,9 +255,7 @@ class ValueExpression extends AbstractExpression {
                         rgb = 0xb800_8600_0b00L;
                         break;
                     case "darkgray":
-                        rgb = 0xa900_a900_a900L;
-                        break;
-                    case "darkgrey":
+                    case "darkgrey": //British
                         rgb = 0xa900_a900_a900L;
                         break;
                     case "darkgreen":
@@ -291,9 +289,7 @@ class ValueExpression extends AbstractExpression {
                         rgb = 0x4800_3d00_8b00L;
                         break;
                     case "darkslategray":
-                        rgb = 0x2f00_4f00_4f00L;
-                        break;
-                    case "darkslategrey":
+                    case "darkslategrey": //British
                         rgb = 0x2f00_4f00_4f00L;
                         break;
                     case "darkturquoise":
@@ -309,6 +305,7 @@ class ValueExpression extends AbstractExpression {
                         rgb = 0x0000_bf00_ff00L;
                         break;
                     case "dimgray":
+                    case "dimgrey": //British
                         rgb = 0x6900_6900_6900L;
                         break;
                     case "dodgerblue":
@@ -339,6 +336,7 @@ class ValueExpression extends AbstractExpression {
                         rgb = 0xda00_a500_2000L;
                         break;
                     case "gray":
+                    case "grey": //British
                         rgb = 0x8000_8000_8000L;
                         break;
                     case "green":
@@ -390,6 +388,7 @@ class ValueExpression extends AbstractExpression {
                         rgb = 0xfa00_fa00_d200L;
                         break;
                     case "lightgray":
+                    case "lightgrey": //British
                         rgb = 0xd300_d300_d300L;
                         break;
                     case "lightgreen":
@@ -408,6 +407,7 @@ class ValueExpression extends AbstractExpression {
                         rgb = 0x8700_ce00_fa00L;
                         break;
                     case "lightslategray":
+                    case "lightslategrey": //British
                         rgb = 0x7700_8800_9900L;
                         break;
                     case "lightsteelblue":
@@ -564,6 +564,7 @@ class ValueExpression extends AbstractExpression {
                         rgb = 0x6a00_5a00_cd00L;
                         break;
                     case "slategray":
+                    case "slategrey": //British
                         rgb = 0x7000_8000_9000L;
                         break;
                     case "snow":
