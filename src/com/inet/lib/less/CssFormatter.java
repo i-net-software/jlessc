@@ -139,7 +139,7 @@ class CssFormatter {
     }
 
     /**
-     * Get the size of the curent content in the current output.
+     * Get the size of the current content in the current output.
      * @return the size
      */
     int getOutputSize() {
