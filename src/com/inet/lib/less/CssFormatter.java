@@ -37,7 +37,7 @@ import java.util.Locale;
 import java.util.Map.Entry;
 
 /**
- * A formatter for the CSS output. Hold some formting states.
+ * A formatter for the CSS output. Hold some formating states.
  */
 class CssFormatter {
 
