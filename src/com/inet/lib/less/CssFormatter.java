@@ -39,7 +39,7 @@ import java.util.Map.Entry;
 /**
  * A formatter for the CSS output. Hold some formating states.
  */
-class CssFormatter {
+abstract class CssFormatter {
 
     private final static char[]                          DIGITS         = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
@@ -70,10 +70,6 @@ class CssFormatter {
     private boolean                                      inlineMode;
 
     private final DecimalFormat                          decFormat      = new DecimalFormat( "#.########", DecimalFormatSymbols.getInstance( Locale.ENGLISH ) );
-
-    CssFormatter() {
-        this( false );
-    }
 
     CssFormatter( boolean toString ) {
         if( toString ) {
