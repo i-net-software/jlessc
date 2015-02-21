@@ -36,7 +36,7 @@ public class Less {
         parser.parse( baseURL, new StringReader( lessData ) );
 
         StringBuilder builder = new StringBuilder();
-        CssFormatter formatter = compress ? new CompressCssFormatter() : new CssFormatter();
+        CssFormatter formatter = compress ? new CompressCssFormatter() : new DefaultFormatter();
         parser.parseLazy( formatter );
         try {
             formatter.format( parser, baseURL, builder );

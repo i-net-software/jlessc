@@ -379,7 +379,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
      */
     @Override
     public String toString() {
-        CssFormatter formatter = new CssFormatter( true );
+        CssFormatter formatter = new DefaultFormatter( true );
         formatter.addOutput();
         try {
             appendTo( null, formatter );
