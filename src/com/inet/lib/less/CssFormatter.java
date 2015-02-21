@@ -368,11 +368,18 @@ abstract class CssFormatter {
         return append( value ).append( unit );
     }
 
-    CssFormatter appendSelector( String selector ) {
-        return insets().append( selector );
-    }
-
-    CssFormatter startBlock() {
+    /**
+     * Start a new block with a list of selectors.
+     * @param selectors the selectors
+     * @return this
+     */
+    CssFormatter startBlock( String[] selectors ) {
+        for( int i=0; i<selectors.length; i++ ) {
+            if( i > 0 ) {
+                append( ',' ).newline();
+            }
+            insets().append( selectors[i] );
+        }
         space();
         output.append( '{' );
         newline();

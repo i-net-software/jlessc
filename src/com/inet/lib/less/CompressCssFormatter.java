@@ -145,9 +145,9 @@ class CompressCssFormatter extends CssFormatter {
      * {@inheritDoc}
      */
     @Override
-    CssFormatter appendSelector( String selector ) {
+    CssFormatter startBlock( String[] selectors ) {
         checkSemicolon();
-        return super.appendSelector( selector );
+        return super.startBlock( selectors );
     }
 
     /**
