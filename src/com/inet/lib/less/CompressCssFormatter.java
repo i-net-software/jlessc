@@ -75,8 +75,8 @@ class CompressCssFormatter extends CssFormatter {
      */
     @Override
     CssFormatter comment( String msg ) {
-        checkSemicolon();
         if( msg.startsWith( "/*!" ) ) {
+            checkSemicolon();
             return super.append( msg );
         }
         return this;
