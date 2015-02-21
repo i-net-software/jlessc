@@ -126,7 +126,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
                 //sel = sel;
             } else if( sel[0].charAt( 0 ) == '@' ) {
                 // media
-                media( sel[0], mainSelector, formatter );
+                media( sel, mainSelector, formatter );
                 return;
             } else {
                 sel = SelectorUtils.merge( mainSelector, sel );
@@ -140,13 +140,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
                 if( properties.size() > 0 ) {
                     formatter.addOutput();
                     String[] sels = formatter.concatenateExtends( sel );
-                    for( int i=0; i<sels.length; i++ ) {
-                        if( i > 0 ) {
-                            formatter.append( ',' ).newline();
-                        }
-                        formatter.appendSelector( sels[i] );
-                    }
-                    formatter.startBlock();
+                    formatter.startBlock( sels );
                     int size = formatter.getOutputSize();
                     appendPropertiesTo( formatter );
                     if( size == formatter.getOutputSize() ) {
@@ -178,11 +172,11 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         }
     }
 
-    private void media( String mediaSelector, String[] blockSelector, CssFormatter formatter ) throws IOException {
+    private void media( String[] mediaSelector, String[] blockSelector, CssFormatter formatter ) throws IOException {
         if( properties.size() > 0 ) {
             formatter.addOutput();
-            formatter.appendSelector( mediaSelector ).startBlock();
-            formatter.appendSelector( blockSelector[0] ).startBlock();
+            formatter.startBlock( mediaSelector );
+            formatter.startBlock( blockSelector );
             int size1 = formatter.getOutputSize();
             appendPropertiesTo( formatter );
             int size2 = formatter.getOutputSize();
@@ -205,7 +199,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         for( Rule rule : subrules ) {
             String name = rule.getSelectors()[0];
             if( name.startsWith( "@media" ) ) {
-                rule.media( mediaSelector + " and " + name.substring( 6 ).trim(), blockSelector, formatter );
+                rule.media( new String[]{mediaSelector[0] + " and " + name.substring( 6 ).trim()}, blockSelector, formatter );
             } else {
                 rule.media( mediaSelector, new String[]{blockSelector[0] + ' ' + name}, formatter ); //TODO are we in the right switch
             }
@@ -219,7 +213,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
      * @throws IOException
      */
     private void ruleset( String[] sel, CssFormatter formatter ) throws IOException {
-        formatter.appendSelector( sel[0] ).startBlock();
+        formatter.startBlock( sel );
         appendPropertiesTo( formatter );
 
         for( Formattable prop : properties ) {
