@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 Volker Berlin
+ * Copyright (c) 2014 - 2015 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,9 +44,9 @@ abstract class CssFormatter {
 
     private final static char[]                          DIGITS         = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
-    private final ArrayList<StringBuilder>               outputs = new ArrayList<>();
+    private final StringBuilderPool                      pool;
 
-    private int                                          outputIdx = -1;
+    private final ArrayDeque<StringBuilder>              outputs = new ArrayDeque<>();
 
     private StringBuilder                                output;
 
@@ -71,16 +72,24 @@ abstract class CssFormatter {
 
     private final DecimalFormat                          decFormat      = new DecimalFormat( "#.########", DecimalFormatSymbols.getInstance( Locale.ENGLISH ) );
 
+    private CssFormatter                                 header;
+
     CssFormatter( boolean toString ) {
         if( toString ) {
             lessExtends = new LessExtendMap();
         }
         mixinReturnStack.add( new HashMap<String, Expression>() );
         mixinReturnCount++;
+        pool = new StringBuilderPool();
+        output = pool.get();
+    }
+
+    CssFormatter( CssFormatter parent ) {
+        pool = parent.pool;
+        output = pool.get();
     }
 
     void format( LessParser parser, URL baseURL, Appendable appendable ) throws IOException {
-        addOutput();
         this.baseURL = baseURL;
         lessExtends = parser.getExtends();
         addVariables( parser.getVariables() );
@@ -92,27 +101,44 @@ abstract class CssFormatter {
             }
         }
         removeVariables( parser.getVariables() );
+        if( header != null ) {
+            appendable.append( header.output );
+        }
         appendable.append( output );
+    }
+
+    /**
+     * Get the StringBuilder for this formatter 
+     * @return the StringBuilderPool
+     */
+    StringBuilderPool getPool() {
+        return pool;
+    }
+
+    /**
+     * Get the formatter for CSS directives. 
+     * @return the header formatter
+     */
+    CssFormatter getHeader() {
+        if( header == null ) {
+            header = new RuleFormatter( this );
+        }
+        return header;
     }
 
     /**
      * Add a new output buffer to the formatter.
      */
     void addOutput() {
-        if( ++outputIdx == outputs.size() ) {
-            output = new StringBuilder();
-            outputs.add( output );
-        } else {
-            output = outputs.get( outputIdx );
-            output.setLength( 0 );
-        }
+        outputs.addLast( output );
+        output = pool.get();
     }
 
     /**
      * Release an output and delete it.
      */
     void freeOutput() {
-        output = outputs.get( --outputIdx );
+        output = outputs.removeLast();
     }
 
     /**

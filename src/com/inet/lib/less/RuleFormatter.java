@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015 Volker Berlin
+ * Copyright (c) 2015 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,46 +26,21 @@
  */
 package com.inet.lib.less;
 
-import java.io.IOException;
+class RuleFormatter extends CssFormatter {
 
-/**
- * A CSS rule that start with an @ character
- */
-class CssAtRule extends LessObject implements Formattable {
+    private final CssFormatter formatter;
 
-    private final String css;
-
-    /**
-     * Create CSS at-rule that have no special handling. Known CSS at rules are @charset, @document, @font-face,
-     * @import, @keyframes, @media, @namespace, @page, @supports
-     * 
-     * @param reader
-     *            the reader with parse position
-     * @param css
-     *            the content of the rule
-     */
-    public CssAtRule( LessObject reader, String css ) {
-        super( reader );
-        this.css = css;
+    RuleFormatter( CssFormatter formatter ) {
+        super( formatter );
+        this.formatter = formatter;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public final int getType() {
-        return CSS_AT_RULE;
+    Expression getVariable( String name ) {
+        return formatter.getVariable( name );
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void appendTo( CssFormatter formatter ) throws IOException {
-        if( css.startsWith( "@charset" ) || css.startsWith( "@import" ) ) {
-            formatter = formatter.getHeader();
-        }
-        SelectorUtils.appendToWithPlaceHolder( formatter, css, 1, this );
-        formatter.newline();
-    }
 }
