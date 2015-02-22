@@ -74,6 +74,8 @@ abstract class CssFormatter {
 
     private CssFormatter                                 header;
 
+    boolean                                              charsetDirective;
+
     CssFormatter( boolean toString ) {
         if( toString ) {
             lessExtends = new LessExtendMap();
