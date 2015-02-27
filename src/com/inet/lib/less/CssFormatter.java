@@ -104,7 +104,7 @@ abstract class CssFormatter {
         }
         removeVariables( parser.getVariables() );
         if( header != null ) {
-            appendable.append( header.output );
+            header.appendTo( appendable );
         }
         appendable.append( output );
     }
@@ -126,6 +126,15 @@ abstract class CssFormatter {
             header = new RuleFormatter( this );
         }
         return header;
+    }
+
+    /**
+     * Write this to the appendable.
+     * @param appendable the target
+     * @throws IOException if any I/O error occurs
+     */
+    void appendTo( Appendable appendable ) throws IOException {
+        appendable.append( output );
     }
 
     /**
