@@ -50,7 +50,7 @@ public class Less {
         parser.parse( baseURL, new StringReader( lessData ) );
 
         StringBuilder builder = new StringBuilder();
-        CssFormatter formatter = new DefaultFormatter( compress ? new CompressCssFormatter() : new PlainCssFormatter() );
+        CssFormatter formatter = new CssFormatter( compress ? new CompressCssFormatter() : new PlainCssFormatter(), false );
         parser.parseLazy( formatter );
         try {
             formatter.format( parser, baseURL, builder );

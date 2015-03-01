@@ -36,6 +36,14 @@ class CompressCssFormatter extends PlainCssFormatter {
     boolean wasSemicolon;
 
     /**
+     * {@inheritDoc}
+     */
+    void clean() {
+        super.clean();
+        wasSemicolon = false;
+    }
+
+    /**
      * Create an instance.
      */
     CompressCssFormatter() {
@@ -47,7 +55,7 @@ class CompressCssFormatter extends PlainCssFormatter {
      * {@inheritDoc}
      */
     @Override
-    void space( StringBuilder output ) {
+    void space( Appendable output ) {
     }
 
     /**
@@ -55,7 +63,7 @@ class CompressCssFormatter extends PlainCssFormatter {
      * {@inheritDoc}
      */
     @Override
-    void newline( StringBuilder output ) {
+    void newline( Appendable output ) {
     }
 
     /**
@@ -63,14 +71,15 @@ class CompressCssFormatter extends PlainCssFormatter {
      * {@inheritDoc}
      */
     @Override
-    void insets( StringBuilder output ) {
+    void insets( Appendable output ) {
     }
 
     /**
      * {@inheritDoc}
+     * @throws IOException 
      */
     @Override
-    void comment( StringBuilder output, String msg ) {
+    void comment( StringBuilder output, String msg ) throws IOException {
         if( msg.startsWith( "/*!" ) ) {
             checkSemicolon( output );
             super.append( output, msg );
@@ -105,9 +114,10 @@ class CompressCssFormatter extends PlainCssFormatter {
     /**
      * Remove units if value is zero.
      * {@inheritDoc}
+     * @throws IOException 
      */
     @Override
-    void appendValue( StringBuilder output, double value, String unit ) {
+    void appendValue( StringBuilder output, double value, String unit ) throws IOException {
         if( value == 0 ) {
             switch( unit ) {
                 case "deg":
@@ -125,11 +135,11 @@ class CompressCssFormatter extends PlainCssFormatter {
      * {@inheritDoc}
      */
     @Override
-    void semicolon( StringBuilder output ) {
+    void semicolon( Appendable output ) {
         wasSemicolon = true;
     }
 
-    private void checkSemicolon( StringBuilder output ) {
+    private void checkSemicolon( Appendable output ) throws IOException {
         if( wasSemicolon ) {
             wasSemicolon = false;
             super.semicolon( output );
@@ -138,9 +148,10 @@ class CompressCssFormatter extends PlainCssFormatter {
 
     /**
      * {@inheritDoc}
+     * @throws IOException 
      */
     @Override
-    void startBlock( StringBuilder output, String[] selectors ) {
+    void startBlock( Appendable output, String[] selectors ) throws IOException {
         checkSemicolon( output );
         super.startBlock( output, selectors );
     }
@@ -156,9 +167,10 @@ class CompressCssFormatter extends PlainCssFormatter {
 
     /**
      * {@inheritDoc}
+     * @throws IOException 
      */
     @Override
-    void endBlock( StringBuilder output ) {
+    void endBlock( Appendable output ) throws IOException {
         wasSemicolon = false;
         super.endBlock( output );
     }

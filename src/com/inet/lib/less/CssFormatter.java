@@ -38,55 +38,62 @@ import java.util.Map.Entry;
 /**
  * A formatter for the CSS output. Hold some formating states.
  */
-abstract class CssFormatter {
+class CssFormatter {
 
-    private final StringBuilderPool                      pool;
+    private class SharedState {
+        private final StringBuilderPool                      pool             = new StringBuilderPool();
 
-    private final ArrayDeque<StringBuilder>              outputs = new ArrayDeque<>();
+        private URL                                          baseURL;
 
-    private StringBuilder                                output;
+        private LessExtendMap                                lessExtends;
 
-    private URL                                          baseURL;
+        private final ArrayList<HashMap<String, Expression>> variablesStack   = new ArrayList<>();
 
-    private LessExtendMap                                lessExtends;
+        private final ArrayList<HashMap<String, Expression>> mixinReturnStack = new ArrayList<>();
 
-    private final ArrayList<HashMap<String, Expression>> variablesStack = new ArrayList<>();
+        private int                                          mixinReturnCount;
 
-    private final ArrayList<HashMap<String, Expression>> mixinReturnStack = new ArrayList<>();
+        private final ArrayList<Rule>                        rulesStack       = new ArrayList<>();
 
-    private int                                          mixinReturnCount;
+        private int                                          rulesStackModCount;
 
-    private final ArrayList<Rule>                        rulesStack     = new ArrayList<>();
+        private PlainCssFormatter                            formatter;
 
-    private int                                          rulesStackModCount;
+        private final List<CssOutput>                        results          = new ArrayList<>();
 
-    private final PlainCssFormatter                      formatter;
+        private boolean                                      charsetDirective;
 
-    private List<RuleFormatter>                          results = new ArrayList<>();
+        private CssFormatter                                 header;
+    }
 
-    boolean                                              charsetDirective;
+    private final SharedState               state;
+
+    private final ArrayDeque<StringBuilder> outputs = new ArrayDeque<>();
+
+    private StringBuilder                   output;
+
+    private int                             blockDeep;
 
     CssFormatter( PlainCssFormatter formatter, boolean toString ) {
-        this.formatter = formatter;
+        state = new SharedState();
+        state.formatter = formatter;
         if( toString ) {
-            lessExtends = new LessExtendMap();
+            state.lessExtends = new LessExtendMap();
         }
-        mixinReturnStack.add( new HashMap<String, Expression>() );
-        mixinReturnCount++;
-        pool = new StringBuilderPool();
-        output = pool.get();
-        results.add( new RuleFormatter( this ) ); // header
+        state.mixinReturnStack.add( new HashMap<String, Expression>() );
+        state.mixinReturnCount++;
+        state.header = new CssFormatter( this );
+        state.results.add( new CssPlainOutput( state.header.output ) ); // header
     }
 
     CssFormatter( CssFormatter parent ) {
-        formatter = parent.formatter;
-        pool = parent.pool;
-        output = pool.get();
+        state = parent.state;
+        output = state.pool.get();
     }
 
     void format( LessParser parser, URL baseURL, Appendable appendable ) throws IOException {
-        this.baseURL = baseURL;
-        lessExtends = parser.getExtends();
+        state.baseURL = baseURL;
+        state.lessExtends = parser.getExtends();
         addVariables( parser.getVariables() );
         for( Formattable rule : parser.getRules() ) {
             if( rule.getClass() == Mixin.class ) {
@@ -96,18 +103,9 @@ abstract class CssFormatter {
             }
         }
         removeVariables( parser.getVariables() );
-        for( RuleFormatter result : results ) {
-            result.appendTo( appendable );
+        for( CssOutput result : state.results ) {
+            result.appendTo( appendable, state.formatter );
         }
-        appendable.append( output );
-    }
-
-    /**
-     * Get the StringBuilder for this formatter 
-     * @return the StringBuilderPool
-     */
-    StringBuilderPool getPool() {
-        return pool;
     }
 
     /**
@@ -115,7 +113,7 @@ abstract class CssFormatter {
      * @return the header formatter
      */
     CssFormatter getHeader() {
-        return results.get( 0 );
+        return state.header;//results.get( 0 );
     }
 
     /**
@@ -127,19 +125,29 @@ abstract class CssFormatter {
         appendable.append( output );
     }
 
+    boolean isCharsetDirective(){
+        return state.charsetDirective;
+    }
+    
+    void setCharsetDirective() {
+        state.charsetDirective = true;
+    }
+
     /**
      * Add a new output buffer to the formatter.
      */
     void addOutput() {
-        outputs.addLast( output );
-        output = pool.get();
+        if( output != null ) {
+            outputs.addLast( output );
+        }
+        output = state.pool.get();
     }
 
     /**
      * Release an output and delete it.
      */
     void freeOutput() {
-        output = outputs.removeLast();
+        output = outputs.size() > 0 ? outputs.removeLast() : null;
     }
 
     /**
@@ -166,15 +174,19 @@ abstract class CssFormatter {
      * @return the size
      */
     int getOutputSize() {
-        return output.length();
+        return output == null ? -1 : output.length();
+    }
+
+    void setOutputSize( int size ) {
+        output.setLength( size );
     }
 
     String[] concatenateExtends( String[] selectors ) {
-        return lessExtends.concatenateExtends( selectors );
+        return state.lessExtends.concatenateExtends( selectors );
     }
 
     URL getBaseURL() {
-        return baseURL;
+        return state.baseURL;
     }
 
     /**
@@ -185,15 +197,15 @@ abstract class CssFormatter {
      * @return the expression or null if not found
      */
     Expression getVariable( String name ) {
-        for( int i = mixinReturnCount - 1; i >= 0; i-- ) {
-            HashMap<String, Expression> variables = mixinReturnStack.get( i );
+        for( int i = state.mixinReturnCount - 1; i >= 0; i-- ) {
+            HashMap<String, Expression> variables = state.mixinReturnStack.get( i );
             Expression variable = variables.get( name );
             if( variable != null ) {
                 return variable;
             }
         }
-        for( int i = variablesStack.size() - 1; i >= 0; i-- ) {
-            HashMap<String, Expression> variables = variablesStack.get( i );
+        for( int i = state.variablesStack.size() - 1; i >= 0; i-- ) {
+            HashMap<String, Expression> variables = state.variablesStack.get( i );
             Expression variable = variables.get( name );
             if( variable != null ) {
                 return variable;
@@ -210,7 +222,7 @@ abstract class CssFormatter {
      */
     void addMixinParams( HashMap<String, Expression> mixinParameters ) {
         if( mixinParameters != null ) {
-            variablesStack.add( mixinParameters );
+            state.variablesStack.add( mixinParameters );
         }
     }
 
@@ -222,7 +234,7 @@ abstract class CssFormatter {
      */
     void removeMixinParams( HashMap<String, Expression> mixinParameters ) {
         if( mixinParameters != null ) {
-            variablesStack.remove( variablesStack.size() - 1 );
+            state.variablesStack.remove( state.variablesStack.size() - 1 );
         }
     }
 
@@ -234,12 +246,12 @@ abstract class CssFormatter {
      */
     void addVariables( HashMap<String, Expression> variables ) {
         if( variables != null ) {
-            variablesStack.add( variables );
+            state.variablesStack.add( variables );
         }
-        while( mixinReturnStack.size() <= mixinReturnCount ) {
-            mixinReturnStack.add( new HashMap<String, Expression>() );
+        while( state.mixinReturnStack.size() <= state.mixinReturnCount ) {
+            state.mixinReturnStack.add( new HashMap<String, Expression>() );
         }
-        mixinReturnStack.get( mixinReturnCount++ ).clear();
+        state.mixinReturnStack.get( state.mixinReturnCount++ ).clear();
     }
 
     /**
@@ -250,9 +262,9 @@ abstract class CssFormatter {
      */
     void removeVariables( HashMap<String, Expression> variables ) {
         if( variables != null ) {
-            variablesStack.remove( variablesStack.size() - 1 );
+            state.variablesStack.remove( state.variablesStack.size() - 1 );
         }
-        mixinReturnCount--;
+        state.mixinReturnCount--;
     }
 
     /**
@@ -263,10 +275,10 @@ abstract class CssFormatter {
      */
     void addMixinVariables( HashMap<String, Expression> variables ) {
         addMixinParams( variables );
-        while( mixinReturnStack.size() <= mixinReturnCount ) {
-            mixinReturnStack.add( new HashMap<String, Expression>() );
+        while( state.mixinReturnStack.size() <= state.mixinReturnCount ) {
+            state.mixinReturnStack.add( new HashMap<String, Expression>() );
         }
-        mixinReturnStack.get( mixinReturnCount++ ).clear();
+        state.mixinReturnStack.get( state.mixinReturnCount++ ).clear();
     }
 
     /**
@@ -276,14 +288,14 @@ abstract class CssFormatter {
      *            the variables, can be null if the current mixin has no variables.
      */
     void removeMixinVariables( HashMap<String, Expression> variables ) {
-        mixinReturnCount--;
+        state.mixinReturnCount--;
         if( variables != null ) {
-            int last = variablesStack.size() - 1;
-            variablesStack.remove( last-- );
-            HashMap<String, Expression> previousReturn = mixinReturnStack.get( mixinReturnCount );
+            int last = state.variablesStack.size() - 1;
+            state.variablesStack.remove( last-- );
+            HashMap<String, Expression> previousReturn = state.mixinReturnStack.get( state.mixinReturnCount );
             if( last >= 0 ) {
-                HashMap<String, Expression> currentReturn = mixinReturnStack.get( mixinReturnCount - 1 );
-                HashMap<String, Expression> parent = variablesStack.get( last );
+                HashMap<String, Expression> currentReturn = state.mixinReturnStack.get( state.mixinReturnCount - 1 );
+                HashMap<String, Expression> parent = state.variablesStack.get( last );
                 for( Entry<String, Expression> entry : variables.entrySet() ) {
                     if( !parent.containsKey( entry.getKey() ) && !currentReturn.containsKey( entry.getKey() ) ) {
                         currentReturn.put( entry.getKey(), ValueExpression.eval( this, entry.getValue() ) );
@@ -299,13 +311,13 @@ abstract class CssFormatter {
     }
 
     void addRule( Rule rule ) {
-        rulesStack.add( rule );
-        rulesStackModCount++;
+        state.rulesStack.add( rule );
+        state.rulesStackModCount++;
     }
 
     void removeRule( Rule rule ) {
-        rulesStack.remove( rulesStack.size() - 1 );
-        rulesStackModCount++;
+        state.rulesStack.remove( state.rulesStack.size() - 1 );
+        state.rulesStackModCount++;
     }
 
     /**
@@ -315,7 +327,7 @@ abstract class CssFormatter {
      * @return true, if the mixin is currently formatting
      */
     boolean containsRule( Rule rule ) {
-        return rulesStack.contains( rule );
+        return state.rulesStack.contains( rule );
     }
 
     /**
@@ -326,11 +338,11 @@ abstract class CssFormatter {
      * @return the mixin or null
      */
     List<Rule> getMixin( String name ) {
-        for( int i = rulesStack.size() - 1; i >= 0; i-- ) {
-            List<Rule> rules = rulesStack.get( i ).getMixin( name );
+        for( int i = state.rulesStack.size() - 1; i >= 0; i-- ) {
+            List<Rule> rules = state.rulesStack.get( i ).getMixin( name );
             if( rules != null ) {
                 for( int r = 0; r < rules.size(); r++ ) {
-                    if( !rulesStack.contains( rules.get( r ) ) ) {
+                    if( !state.rulesStack.contains( rules.get( r ) ) ) {
                         return rules;
                     }
                 }
@@ -340,25 +352,34 @@ abstract class CssFormatter {
     }
 
     int stackID() {
-        return rulesStackModCount;
+        return state.rulesStackModCount;
+    }
+
+    StringBuilder getOutput() {
+        if( output == null ) {
+            CssFormatter block = new CssFormatter( this );
+            state.results.add( new CssPlainOutput( block.output ) );
+            output = block.output;
+        }
+        return output;
     }
 
     void setInineMode( boolean mode ) {
-        formatter.setInineMode( mode );
+        state.formatter.setInineMode( mode );
     }
 
-    CssFormatter append( String str ) {
-        formatter.append( output, str );
+    CssFormatter append( String str ) throws IOException {
+        state.formatter.append( output, str );
         return this;
     }
 
     CssFormatter appendColor( double color, String hint ) throws IOException {
-        formatter.appendColor( output, color, hint );
+        state.formatter.appendColor( output, color, hint );
         return this;
     }
 
     void appendHex( int value, int digits ) throws IOException {
-        formatter.appendHex( output, value, digits );
+        state.formatter.appendHex( output, value, digits );
     }
 
     CssFormatter append( char ch ) {
@@ -367,54 +388,70 @@ abstract class CssFormatter {
     }
 
     CssFormatter append( double value ) {
-        formatter.append( output, value );
+        state.formatter.append( output, value );
         return this;
     }
 
-    CssFormatter appendValue( double value, String unit ) {
-        formatter.appendValue( output, value, unit );
+    CssFormatter appendValue( double value, String unit ) throws IOException {
+        state.formatter.appendValue( output, value, unit );
         return this;
     }
 
     void incInsets() {
-        formatter.incInsets();
+        state.formatter.incInsets();
     }
 
     /**
      * Start a new block with a list of selectors.
      * @param selectors the selectors
      * @return this
+     * @throws IOException 
      */
-    CssFormatter startBlock( String[] selectors ) {
-        formatter.startBlock( output, selectors );
-        return this;
+    CssFormatter startBlock( String[] selectors ) throws IOException {
+        if( blockDeep == 0 ) {
+            output = null;
+            CssFormatter block = new CssFormatter( this );
+            state.formatter.incInsets();
+            state.results.add( new CssRuleOutput( selectors, block.output ) );
+            block.blockDeep = 1;
+            return block;
+        } else {
+            blockDeep++;
+            state.formatter.startBlock( output, selectors );
+            return this;
+        }
     }
 
-    CssFormatter endBlock() {
-        formatter.endBlock( output );
+    CssFormatter endBlock() throws IOException {
+        blockDeep--;
+        if( blockDeep == 0 ) {
+            state.formatter.clean();
+        } else {
+            state.formatter.endBlock( output );
+        }
         return this;
     }
 
     void appendProperty( String name, Expression value ) throws IOException {
-        formatter.appendProperty( output, this, name, value );
+        state.formatter.appendProperty( output, this, name, value );
     }
 
     void setImportant( boolean important ) {
-        formatter.setImportant( important );
+        state.formatter.setImportant( important );
     }
 
-    CssFormatter space() {
-        formatter.space( output );
+    CssFormatter space() throws IOException {
+        state.formatter.space( output );
         return this;
     }
 
-    CssFormatter newline() {
-        formatter.newline( output );
+    CssFormatter newline() throws IOException {
+        state.formatter.newline( output );
         return this;
     }
 
-    CssFormatter comment( String msg ) {
-        formatter.comment( output, msg );
+    CssFormatter comment( String msg ) throws IOException {
+        state.formatter.comment( getOutput(), msg );
         return this;
     }
 
@@ -424,6 +461,6 @@ abstract class CssFormatter {
      * @return the format
      */
     DecimalFormat getFormat() {
-        return formatter.getFormat();
+        return state.formatter.getFormat();
     }
 }

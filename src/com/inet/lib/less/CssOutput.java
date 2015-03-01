@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2015 Volker Berlin
+ * Copyright (c) 2014 - 2015 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,21 +26,18 @@
  */
 package com.inet.lib.less;
 
-class RuleFormatter extends CssFormatter {
+import java.io.IOException;
 
-    private final CssFormatter formatter;
-
-    RuleFormatter( CssFormatter formatter ) {
-        super( formatter );
-        this.formatter = formatter;
-    }
+/**
+ * Container for formatted CSS result.
+ */
+abstract class CssOutput {
 
     /**
-     * {@inheritDoc}
+     * Write the this output to the Appendable
+     * @param appendable the target
+     * @param formatter a formatter
+     * @throws IOException if any I/O error occur
      */
-    @Override
-    Expression getVariable( String name ) {
-        return formatter.getVariable( name );
-    }
-
+    abstract void appendTo( Appendable appendable, PlainCssFormatter formatter ) throws IOException;
 }

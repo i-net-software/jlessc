@@ -29,50 +29,32 @@ package com.inet.lib.less;
 import java.io.IOException;
 
 /**
- * A CSS rule that start with an @ character
+ * A CSS output of a single rule.
  */
-class CssAtRule extends LessObject implements Formattable {
+class CssRuleOutput extends CssOutput {
 
-    private final String css;
+    private String[] selectors;
+    private StringBuilder output;
 
     /**
-     * Create CSS at-rule that have no special handling. Known CSS at rules are @charset, @document, @font-face,
-     * @import, @keyframes, @media, @namespace, @page, @supports
-     * 
-     * @param reader
-     *            the reader with parse position
-     * @param css
-     *            the content of the rule
+     * Create a instance.
+     * @param selectors the selectors of the rule
+     * @param output a buffer for the content of the rule. 
      */
-    public CssAtRule( LessObject reader, String css ) {
-        super( reader );
-        this.css = css;
+    CssRuleOutput( String[] selectors, StringBuilder output ) {
+        this.selectors = selectors;
+        this.output = output;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public final int getType() {
-        return CSS_AT_RULE;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void appendTo( CssFormatter formatter ) throws IOException {
-        if( css.startsWith( "@charset" ) ) {
-            if( formatter.isCharsetDirective() ) {
-                return; // write charset only once
-            }
-            formatter.setCharsetDirective();
-            formatter = formatter.getHeader(); 
-        } else if( css.startsWith( "@import" ) ) {
-            formatter = formatter.getHeader();
+    void appendTo( Appendable appendable, PlainCssFormatter formatter ) throws IOException {
+        if( output.length() > 0 ) {
+            formatter.startBlock( appendable, selectors );
+            appendable.append( output );
+            formatter.endBlock( appendable );
         }
-        formatter.getOutput();
-        SelectorUtils.appendToWithPlaceHolder( formatter, css, 1, this );
-        formatter.newline();
     }
 }

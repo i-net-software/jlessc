@@ -26,25 +26,24 @@
  */
 package com.inet.lib.less;
 
-/**
- * A version of the CssFormatter that produce an uncompressed output.
- */
-class DefaultFormatter extends CssFormatter {
+import java.io.IOException;
 
-    /**
-     * Create a standard instance.
-     */
-    DefaultFormatter( PlainCssFormatter formatter ) {
-        super( formatter, false );
+/**
+ * A CSS output that has not the layout of a rule like comments and directives.
+ */
+class CssPlainOutput extends CssOutput {
+
+    private StringBuilder output;
+
+    CssPlainOutput( StringBuilder output ) {
+        this.output = output;
     }
 
     /**
-     * Create an instance.
-     * 
-     * @param toString
-     *            true, format is called without a parser
+     * {@inheritDoc}
      */
-    DefaultFormatter( boolean toString ) {
-        super( new PlainCssFormatter(), toString );
+    @Override
+    void appendTo( Appendable appendable, PlainCssFormatter formatter ) throws IOException {
+        appendable.append( output );
     }
 }
