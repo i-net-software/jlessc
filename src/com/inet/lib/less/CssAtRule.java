@@ -63,14 +63,15 @@ class CssAtRule extends LessObject implements Formattable {
     @Override
     public void appendTo( CssFormatter formatter ) throws IOException {
         if( css.startsWith( "@charset" ) ) {
-            if( formatter.charsetDirective ) {
+            if( formatter.isCharsetDirective() ) {
                 return; // write charset only once
             }
-            formatter.charsetDirective = true;
+            formatter.setCharsetDirective();
             formatter = formatter.getHeader(); 
         } else if( css.startsWith( "@import" ) ) {
             formatter = formatter.getHeader();
         }
+        formatter.getOutput();
         SelectorUtils.appendToWithPlaceHolder( formatter, css, 1, this );
         formatter.newline();
     }

@@ -26,39 +26,18 @@
  */
 package com.inet.lib.less;
 
-import java.io.StringReader;
-import java.net.URL;
+import java.io.IOException;
 
 /**
- * The main class of JLessC library. Its contain all start points for converting LESS to CSS files.
+ * Container for formatted CSS result.
  */
-public class Less {
+abstract class CssOutput {
 
     /**
-     * Compile the less data from a string.
-     * 
-     * @param baseURL
-     *            the baseURL for import of external less data.
-     * @param lessData
-     *            the input less data
-     * @param compress
-     *            true, if the CSS data should be compressed without any extra formating characters.
-     * @return the resulting less data
+     * Write the this output to the Appendable
+     * @param appendable the target
+     * @param formatter a formatter
+     * @throws IOException if any I/O error occur
      */
-    public static String compile( URL baseURL, String lessData, boolean compress ) {
-        LessParser parser = new LessParser();
-        parser.parse( baseURL, new StringReader( lessData ) );
-
-        StringBuilder builder = new StringBuilder();
-        CssFormatter formatter = new CssFormatter( compress ? new CompressCssFormatter() : new PlainCssFormatter(), false );
-        parser.parseLazy( formatter );
-        try {
-            formatter.format( parser, baseURL, builder );
-        } catch( LessException ex ) {
-            throw ex;
-        } catch( Exception ex ) {
-            throw new LessException( ex );
-        }
-        return builder.toString();
-    }
+    abstract void appendTo( Appendable appendable, PlainCssFormatter formatter ) throws IOException;
 }

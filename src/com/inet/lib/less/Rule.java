@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 Volker Berlin
+ * Copyright (c) 2014 - 2015 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -138,17 +138,15 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
                 ruleset( sel, formatter );
             } else {
                 if( properties.size() > 0 ) {
-                    formatter.addOutput();
                     String[] sels = formatter.concatenateExtends( sel );
-                    formatter.startBlock( sels );
-                    int size = formatter.getOutputSize();
-                    appendPropertiesTo( formatter );
-                    if( size == formatter.getOutputSize() ) {
-                        formatter.endBlock();
-                        formatter.freeOutput();
-                    } else {
-                        formatter.endBlock();
-                        formatter.flushOutput();
+                    int size0 = formatter.getOutputSize();
+                    CssFormatter block = formatter.startBlock( sels );
+                    int size1 = block.getOutputSize();
+                    appendPropertiesTo( block );
+                    int size2 = block.getOutputSize();
+                    block.endBlock();
+                    if( block == formatter && size1 == size2 ) {
+                        formatter.setOutputSize( size0 );
                     }
                 }
 
@@ -169,30 +167,33 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         } catch( LessException ex ) {
             ex.addPosition( filename, line, column );
             throw ex;
+        } catch( Exception ex ) {
+            throw createException( ex );
         }
     }
 
     private void media( String[] mediaSelector, String[] blockSelector, CssFormatter formatter ) throws IOException {
         if( properties.size() > 0 ) {
-            formatter.addOutput();
-            formatter.startBlock( mediaSelector );
-            formatter.startBlock( blockSelector );
-            int size1 = formatter.getOutputSize();
-            appendPropertiesTo( formatter );
-            int size2 = formatter.getOutputSize();
-            formatter.endBlock();
-            int size3 = formatter.getOutputSize();
+            int size0 = formatter.getOutputSize();
+            CssFormatter block = formatter.startBlock( mediaSelector );
+            if( block != formatter ) {
+                size0 = block.getOutputSize();
+            }
+            block.startBlock( blockSelector );
+            int size1 = block.getOutputSize();
+            appendPropertiesTo( block );
+            int size2 = block.getOutputSize();
+            block.endBlock();
+            int size3 = block.getOutputSize();
             for( Formattable prop : properties ) {
                 if( prop instanceof Mixin ) {
-                    ((Mixin)prop).appendSubRules( blockSelector, formatter );
+                    ((Mixin)prop).appendSubRules( blockSelector, block );
                 }
             }
-            int size4 = formatter.getOutputSize();
-            formatter.endBlock();
+            int size4 = block.getOutputSize();
+            block.endBlock();
             if( size1 == size2 && size3 == size4 ) {
-                formatter.freeOutput();
-            } else {
-                formatter.flushOutput();
+                block.setOutputSize( size0 );
             }
         }
 
@@ -213,7 +214,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
      * @throws IOException
      */
     private void ruleset( String[] sel, CssFormatter formatter ) throws IOException {
-        formatter.startBlock( sel );
+        formatter = formatter.startBlock( sel );
         appendPropertiesTo( formatter );
 
         for( Formattable prop : properties ) {
@@ -373,12 +374,16 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
      */
     @Override
     public String toString() {
-        CssFormatter formatter = new DefaultFormatter( true );
+        CssFormatter formatter = new CssFormatter( new PlainCssFormatter(), true );
         formatter.addOutput();
         try {
             appendTo( null, formatter );
         } catch( Exception ex ) {
-            formatter.append( ex.toString() );
+            try {
+                formatter.append( ex.toString() );
+            } catch( IOException e ) {
+                e.printStackTrace();
+            }
         }
         return formatter.releaseOutput();
     }

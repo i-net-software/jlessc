@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2015 Volker Berlin
+ * Copyright (c) 2014 - 2015 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,21 +26,24 @@
  */
 package com.inet.lib.less;
 
-class RuleFormatter extends CssFormatter {
+import java.io.IOException;
 
-    private final CssFormatter formatter;
+/**
+ * A CSS output that has not the layout of a rule like comments and directives.
+ */
+class CssPlainOutput extends CssOutput {
 
-    RuleFormatter( CssFormatter formatter ) {
-        super( formatter );
-        this.formatter = formatter;
+    private StringBuilder output;
+
+    CssPlainOutput( StringBuilder output ) {
+        this.output = output;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    Expression getVariable( String name ) {
-        return formatter.getVariable( name );
+    void appendTo( Appendable appendable, PlainCssFormatter formatter ) throws IOException {
+        appendable.append( output );
     }
-
 }

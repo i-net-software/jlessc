@@ -46,6 +46,12 @@ class PlainCssFormatter {
 
     private final DecimalFormat                          decFormat      = new DecimalFormat( "#.########", DecimalFormatSymbols.getInstance( Locale.ENGLISH ) );
 
+
+    void clean() {
+        insets.setLength( 0 );
+        inlineMode = false;
+    }
+
     void setInineMode( boolean mode ) {
         inlineMode = mode;
     }
@@ -54,7 +60,7 @@ class PlainCssFormatter {
         return inlineMode;
     }
 
-    void append( StringBuilder output, String str ) {
+    void append( Appendable output, String str ) throws IOException {
         if( inlineMode ) {
             str = UrlUtils.removeQuote( str );
         }
@@ -86,7 +92,7 @@ class PlainCssFormatter {
         }
     }
 
-    void appendValue( StringBuilder output, double value, String unit ) {
+    void appendValue( StringBuilder output, double value, String unit ) throws IOException {
         append( output, value );
         append( output, unit );
     }
@@ -95,11 +101,16 @@ class PlainCssFormatter {
         insets.append( "  " );
     }
 
+    void decInsets() {
+        insets.setLength( insets.length() - 2 );
+    }
+
     /**
      * Start a new block with a list of selectors.
      * @param selectors the selectors
+     * @throws IOException 
      */
-    void startBlock( StringBuilder output, String[] selectors ) {
+    void startBlock( Appendable output, String[] selectors ) throws IOException {
         for( int i=0; i<selectors.length; i++ ) {
             if( i > 0 ) {
                 output.append( ',' );
@@ -114,8 +125,8 @@ class PlainCssFormatter {
         incInsets();
     }
 
-    void endBlock( StringBuilder output ) {
-        insets.setLength( insets.length() - 2 );
+    void endBlock( Appendable output ) throws IOException {
+        decInsets();
         insets( output );
         output.append( '}' );
         newline( output );
@@ -138,23 +149,23 @@ class PlainCssFormatter {
         this.important = important;
     }
 
-    void space( StringBuilder output ) {
+    void space( Appendable output ) throws IOException {
         output.append( ' ' );
     }
 
-    void newline( StringBuilder output ) {
+    void newline( Appendable output ) throws IOException {
         output.append( '\n' );
     }
 
-    void semicolon( StringBuilder output ) {
+    void semicolon( Appendable output ) throws IOException {
         output.append( ';' );
     }
 
-    void insets( StringBuilder output ) {
+    void insets( Appendable output ) throws IOException {
         output.append( insets );
     }
 
-    void comment( StringBuilder output, String msg ) {
+    void comment( StringBuilder output, String msg ) throws IOException {
         output.append( insets ).append( msg ).append( '\n' );
     }
 

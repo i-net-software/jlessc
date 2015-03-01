@@ -26,25 +26,35 @@
  */
 package com.inet.lib.less;
 
+import java.io.IOException;
+
 /**
- * A version of the CssFormatter that produce an uncompressed output.
+ * A CSS output of a single rule.
  */
-class DefaultFormatter extends CssFormatter {
+class CssRuleOutput extends CssOutput {
+
+    private String[] selectors;
+    private StringBuilder output;
 
     /**
-     * Create a standard instance.
+     * Create a instance.
+     * @param selectors the selectors of the rule
+     * @param output a buffer for the content of the rule. 
      */
-    DefaultFormatter( PlainCssFormatter formatter ) {
-        super( formatter, false );
+    CssRuleOutput( String[] selectors, StringBuilder output ) {
+        this.selectors = selectors;
+        this.output = output;
     }
 
     /**
-     * Create an instance.
-     * 
-     * @param toString
-     *            true, format is called without a parser
+     * {@inheritDoc}
      */
-    DefaultFormatter( boolean toString ) {
-        super( new PlainCssFormatter(), toString );
+    @Override
+    void appendTo( Appendable appendable, PlainCssFormatter formatter ) throws IOException {
+        if( output.length() > 0 ) {
+            formatter.startBlock( appendable, selectors );
+            appendable.append( output );
+            formatter.endBlock( appendable );
+        }
     }
 }
