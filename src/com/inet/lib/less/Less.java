@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 Volker Berlin
+ * Copyright (c) 2014 - 2015 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,14 +29,28 @@ package com.inet.lib.less;
 import java.io.StringReader;
 import java.net.URL;
 
+/**
+ * The main class of JLessC library. Its contain all start points for converting LESS to CSS files.
+ */
 public class Less {
 
+    /**
+     * Compile the less data from a string.
+     * 
+     * @param baseURL
+     *            the baseURL for import of external less data.
+     * @param lessData
+     *            the input less data
+     * @param compress
+     *            true, if the CSS data should be compressed without any extra formating characters.
+     * @return the resulting less data
+     */
     public static String compile( URL baseURL, String lessData, boolean compress ) {
         LessParser parser = new LessParser();
         parser.parse( baseURL, new StringReader( lessData ) );
 
         StringBuilder builder = new StringBuilder();
-        CssFormatter formatter = compress ? new CompressCssFormatter() : new DefaultFormatter();
+        CssFormatter formatter = new DefaultFormatter( compress ? new CompressCssFormatter() : new PlainCssFormatter() );
         parser.parseLazy( formatter );
         try {
             formatter.format( parser, baseURL, builder );

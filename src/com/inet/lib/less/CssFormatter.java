@@ -29,20 +29,16 @@ package com.inet.lib.less;
 import java.io.IOException;
 import java.net.URL;
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map.Entry;
 
 /**
  * A formatter for the CSS output. Hold some formating states.
  */
 abstract class CssFormatter {
-
-    private final static char[]                          DIGITS         = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
     private final StringBuilderPool                      pool;
 
@@ -54,29 +50,24 @@ abstract class CssFormatter {
 
     private LessExtendMap                                lessExtends;
 
-    private StringBuilder                                insets         = new StringBuilder();
-
     private final ArrayList<HashMap<String, Expression>> variablesStack = new ArrayList<>();
 
     private final ArrayList<HashMap<String, Expression>> mixinReturnStack = new ArrayList<>();
-    
+
     private int                                          mixinReturnCount;
 
     private final ArrayList<Rule>                        rulesStack     = new ArrayList<>();
 
     private int                                          rulesStackModCount;
 
-    private boolean                                      important;
+    private final PlainCssFormatter                      formatter;
 
-    private boolean                                      inlineMode;
-
-    private final DecimalFormat                          decFormat      = new DecimalFormat( "#.########", DecimalFormatSymbols.getInstance( Locale.ENGLISH ) );
-
-    private CssFormatter                                 header;
+    private List<RuleFormatter>                          results = new ArrayList<>();
 
     boolean                                              charsetDirective;
 
-    CssFormatter( boolean toString ) {
+    CssFormatter( PlainCssFormatter formatter, boolean toString ) {
+        this.formatter = formatter;
         if( toString ) {
             lessExtends = new LessExtendMap();
         }
@@ -84,9 +75,11 @@ abstract class CssFormatter {
         mixinReturnCount++;
         pool = new StringBuilderPool();
         output = pool.get();
+        results.add( new RuleFormatter( this ) ); // header
     }
 
     CssFormatter( CssFormatter parent ) {
+        formatter = parent.formatter;
         pool = parent.pool;
         output = pool.get();
     }
@@ -103,8 +96,8 @@ abstract class CssFormatter {
             }
         }
         removeVariables( parser.getVariables() );
-        if( header != null ) {
-            header.appendTo( appendable );
+        for( RuleFormatter result : results ) {
+            result.appendTo( appendable );
         }
         appendable.append( output );
     }
@@ -122,10 +115,7 @@ abstract class CssFormatter {
      * @return the header formatter
      */
     CssFormatter getHeader() {
-        if( header == null ) {
-            header = new RuleFormatter( this );
-        }
-        return header;
+        return results.get( 0 );
     }
 
     /**
@@ -354,37 +344,21 @@ abstract class CssFormatter {
     }
 
     void setInineMode( boolean mode ) {
-        inlineMode = mode;
-    }
-
-    boolean inlineMode() {
-        return inlineMode;
+        formatter.setInineMode( mode );
     }
 
     CssFormatter append( String str ) {
-        if( inlineMode ) {
-            str = UrlUtils.removeQuote( str );
-        }
-        output.append( str );
+        formatter.append( output, str );
         return this;
     }
 
     CssFormatter appendColor( double color, String hint ) throws IOException {
-        if( !inlineMode && hint != null ) {
-            output.append( hint );
-        } else {
-            int argb = ColorUtils.argb( color );
-            output.append( '#' );
-            appendHex( argb, 6 );
-        }
+        formatter.appendColor( output, color, hint );
         return this;
     }
 
     void appendHex( int value, int digits ) throws IOException {
-        if( digits > 1 ) {
-            appendHex( value >>> 4, digits-1 );
-        }
-        output.append( DIGITS[ value & 0xF ] );
+        formatter.appendHex( output, value, digits );
     }
 
     CssFormatter append( char ch ) {
@@ -393,16 +367,17 @@ abstract class CssFormatter {
     }
 
     CssFormatter append( double value ) {
-        if( value == (int)value ) {
-            output.append( Integer.toString( (int)value ) );
-        } else {
-            output.append( decFormat.format( value ) );
-        }
+        formatter.append( output, value );
         return this;
     }
 
     CssFormatter appendValue( double value, String unit ) {
-        return append( value ).append( unit );
+        formatter.appendValue( output, value, unit );
+        return this;
+    }
+
+    void incInsets() {
+        formatter.incInsets();
     }
 
     /**
@@ -411,65 +386,35 @@ abstract class CssFormatter {
      * @return this
      */
     CssFormatter startBlock( String[] selectors ) {
-        for( int i=0; i<selectors.length; i++ ) {
-            if( i > 0 ) {
-                append( ',' ).newline();
-            }
-            insets().append( selectors[i] );
-        }
-        space();
-        output.append( '{' );
-        newline();
-        insets.append( "  " );
+        formatter.startBlock( output, selectors );
         return this;
     }
 
     CssFormatter endBlock() {
-        insets.setLength( insets.length() - 2 );
-        insets();
-        output.append( '}' );
-        newline();
+        formatter.endBlock( output );
         return this;
     }
 
     void appendProperty( String name, Expression value ) throws IOException {
-        insets();
-        SelectorUtils.appendToWithPlaceHolder( this, name, 0, (LessObject)value );
-        output.append( ':' );
-        space();
-        value.appendTo( this );
-        if( important ) {
-            output.append( " !important" );
-        }
-        semicolon().newline();
+        formatter.appendProperty( output, this, name, value );
     }
 
     void setImportant( boolean important ) {
-        this.important = important;
+        formatter.setImportant( important );
     }
 
     CssFormatter space() {
-        output.append( ' ' );
+        formatter.space( output );
         return this;
     }
 
     CssFormatter newline() {
-        output.append( '\n' );
-        return this;
-    }
-
-    CssFormatter semicolon() {
-        output.append( ';' );
-        return this;
-    }
-
-    CssFormatter insets() {
-        output.append( insets );
+        formatter.newline( output );
         return this;
     }
 
     CssFormatter comment( String msg ) {
-        output.append( insets ).append( msg ).append( '\n' );
+        formatter.comment( output, msg );
         return this;
     }
 
@@ -479,6 +424,6 @@ abstract class CssFormatter {
      * @return the format
      */
     DecimalFormat getFormat() {
-        return decFormat;
+        return formatter.getFormat();
     }
 }

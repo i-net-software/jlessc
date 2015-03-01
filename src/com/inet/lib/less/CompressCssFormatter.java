@@ -31,7 +31,7 @@ import java.io.IOException;
 /**
  * A version of the CssFormatter that produce a compressed output.
  */
-class CompressCssFormatter extends DefaultFormatter {
+class CompressCssFormatter extends PlainCssFormatter {
 
     boolean wasSemicolon;
 
@@ -39,7 +39,6 @@ class CompressCssFormatter extends DefaultFormatter {
      * Create an instance.
      */
     CompressCssFormatter() {
-        super( false );
         getFormat().setMinimumIntegerDigits( 0 );
     }
 
@@ -48,8 +47,7 @@ class CompressCssFormatter extends DefaultFormatter {
      * {@inheritDoc}
      */
     @Override
-    CssFormatter space() {
-        return this;
+    void space( StringBuilder output ) {
     }
 
     /**
@@ -57,8 +55,7 @@ class CompressCssFormatter extends DefaultFormatter {
      * {@inheritDoc}
      */
     @Override
-    CssFormatter newline() {
-        return this;
+    void newline( StringBuilder output ) {
     }
 
     /**
@@ -66,20 +63,18 @@ class CompressCssFormatter extends DefaultFormatter {
      * {@inheritDoc}
      */
     @Override
-    CssFormatter insets() {
-        return this;
+    void insets( StringBuilder output ) {
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    CssFormatter comment( String msg ) {
+    void comment( StringBuilder output, String msg ) {
         if( msg.startsWith( "/*!" ) ) {
-            checkSemicolon();
-            return super.append( msg );
+            checkSemicolon( output );
+            super.append( output, msg );
         }
-        return this;
     }
 
     /**
@@ -87,7 +82,7 @@ class CompressCssFormatter extends DefaultFormatter {
      * {@inheritDoc}
      */
     @Override
-    CssFormatter appendColor( double color, String hint ) throws IOException {
+    void appendColor( StringBuilder output, double color, String hint ) throws IOException {
         if( !inlineMode() ) {
             int red = ColorUtils.red( color );
             if( red % 17 == 0 ) {
@@ -95,16 +90,16 @@ class CompressCssFormatter extends DefaultFormatter {
                 if( green % 17 == 0 ) {
                     int blue = ColorUtils.blue( color );
                     if( blue % 17 == 0 ) {
-                        append( '#' )
+                        output.append( '#' )
                         .append( Character.forDigit( red / 17, 16 ) )
                         .append( Character.forDigit( green / 17, 16 ) )
                         .append( Character.forDigit( blue / 17, 16 ) );
-                        return this;
+                        return;
                     }
                 }
             }
         }
-        return super.appendColor( color, null );
+        super.appendColor( output, color, null );
     }
 
     /**
@@ -112,32 +107,32 @@ class CompressCssFormatter extends DefaultFormatter {
      * {@inheritDoc}
      */
     @Override
-    CssFormatter appendValue( double value, String unit ) {
+    void appendValue( StringBuilder output, double value, String unit ) {
         if( value == 0 ) {
             switch( unit ) {
                 case "deg":
                 case "s":
                     break;
                 default:
-                    return super.append( '0' );
+                    output.append( '0' );
+                    return;
             }
         }
-        return super.appendValue( value, unit );
+        super.appendValue( output, value, unit );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    CssFormatter semicolon() {
+    void semicolon( StringBuilder output ) {
         wasSemicolon = true;
-        return this;
     }
 
-    private void checkSemicolon() {
+    private void checkSemicolon( StringBuilder output ) {
         if( wasSemicolon ) {
             wasSemicolon = false;
-            super.semicolon();
+            super.semicolon( output );
         }
     }
 
@@ -145,26 +140,26 @@ class CompressCssFormatter extends DefaultFormatter {
      * {@inheritDoc}
      */
     @Override
-    CssFormatter startBlock( String[] selectors ) {
-        checkSemicolon();
-        return super.startBlock( selectors );
+    void startBlock( StringBuilder output, String[] selectors ) {
+        checkSemicolon( output );
+        super.startBlock( output, selectors );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    void appendProperty( String name, Expression value ) throws IOException {
-        checkSemicolon();
-        super.appendProperty( name, value );
+    void appendProperty( StringBuilder output, CssFormatter formatter, String name, Expression value ) throws IOException {
+        checkSemicolon( output );
+        super.appendProperty( output, formatter, name, value );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    CssFormatter endBlock() {
+    void endBlock( StringBuilder output ) {
         wasSemicolon = false;
-        return super.endBlock();
+        super.endBlock( output );
     }
 }
