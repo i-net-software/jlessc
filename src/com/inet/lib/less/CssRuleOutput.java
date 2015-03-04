@@ -50,8 +50,9 @@ class CssRuleOutput extends CssOutput {
      * {@inheritDoc}
      */
     @Override
-    void appendTo( Appendable appendable, PlainCssFormatter formatter ) throws IOException {
+    void appendTo( Appendable appendable, LessExtendMap lessExtends, PlainCssFormatter formatter ) throws IOException {
         if( output.length() > 0 ) {
+            selectors = lessExtends.concatenateExtends( selectors );
             formatter.startBlock( appendable, selectors );
             appendable.append( output );
             formatter.endBlock( appendable );

@@ -39,5 +39,5 @@ abstract class CssOutput {
      * @param formatter a formatter
      * @throws IOException if any I/O error occur
      */
-    abstract void appendTo( Appendable appendable, PlainCssFormatter formatter ) throws IOException;
+    abstract void appendTo( Appendable appendable, LessExtendMap lessExtends, PlainCssFormatter formatter ) throws IOException;
 }

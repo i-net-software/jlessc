@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 Volker Berlin
+ * Copyright (c) 2014 - 2015 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -55,8 +55,6 @@ class LessParser implements FormattableContainer {
 
     private HashMultimap<String, Rule>  mixins        = new HashMultimap<>();
 
-    private LessExtendMap               lessExtends   = new LessExtendMap();
-
     /**
      * A StringBuilder which can reused inside one method. Do not call another method that also use it.
      */
@@ -77,10 +75,6 @@ class LessParser implements FormattableContainer {
 
     public HashMap<String, Expression> getVariables() {
         return variables;
-    }
-
-    LessExtendMap getExtends() {
-        return lessExtends;
     }
 
     void parse( URL baseURL, Reader input ) {
@@ -210,7 +204,7 @@ class LessParser implements FormattableContainer {
                     }
                     if( selector != null ) {
                         if( selector.contains( ":extend(" ) ) {
-                            lessExtends.add( new LessExtend( reader, selector, ruleStack ) );
+                            currentRule.add( new LessExtend( reader, selector, ruleStack ) );
                         } else {
                             Mixin mixin = new Mixin( reader, selector, params, mixins );
                             currentRule.add( mixin );
@@ -248,7 +242,7 @@ class LessParser implements FormattableContainer {
                     }
                     if( selector.contains( ":extend(" ) ) {
                         LessExtend lessExtend = new LessExtend( reader, selector, ruleStack );
-                        lessExtends.add( lessExtend );
+                        currentRule.add( lessExtend );
                         selector = lessExtend.getSelector();
                     }
                     Rule rule = rule( selector, expr, guard );
