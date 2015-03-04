@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 Volker Berlin
+ * Copyright (c) 2014 - 2015 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,8 +27,6 @@
 package com.inet.lib.less;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Some utilities methods.
@@ -74,17 +72,6 @@ class SelectorUtils {
             }
         }
         return sel;
-    }
-
-    static String[] concatenate( String[] selectors, List<String> lessExtends ) {
-        if( lessExtends != null ) {
-            int off = selectors.length;
-            selectors = Arrays.copyOf( selectors, off + lessExtends.size() );
-            for( int i = 0; i < lessExtends.size(); i++ ) {
-                selectors[off + i] = lessExtends.get( i );
-            }
-        }
-        return selectors;
     }
 
     static void appendToWithPlaceHolder( CssFormatter formatter, String str, int i, LessObject caller ) throws IOException {

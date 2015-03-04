@@ -138,9 +138,8 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
                 ruleset( sel, formatter );
             } else {
                 if( properties.size() > 0 ) {
-                    String[] sels = formatter.concatenateExtends( sel );
                     int size0 = formatter.getOutputSize();
-                    CssFormatter block = formatter.startBlock( sels );
+                    CssFormatter block = formatter.startBlock( sel );
                     int size1 = block.getOutputSize();
                     appendPropertiesTo( block );
                     int size2 = block.getOutputSize();

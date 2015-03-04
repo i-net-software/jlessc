@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 Volker Berlin
+ * Copyright (c) 2014 - 2015 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,11 +26,12 @@
  */
 package com.inet.lib.less;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
- * Hold all extends that was parsed.
+ * Hold all extends that was executed.
  */
 class LessExtendMap {
 
@@ -38,7 +39,8 @@ class LessExtendMap {
 
     private final HashMultimap<String, LessExtend> exact        = new HashMultimap<>();
 
-    private ArrayList<String>                      selectorList = new ArrayList<>();
+    // use a LinkedHashSet as cache to remove duplicates and hold the original order
+    private LinkedHashSet<String> selectorList                  = new LinkedHashSet<>();
 
     void add( LessExtend lessExtend ) {
         if( lessExtend.isAll() ) {
@@ -61,6 +63,11 @@ class LessExtendMap {
         }
     }
 
+    /**
+     * Add to the given selectors all possible extends and return the resulting selectors.
+     * @param selectors current selectors
+     * @return the selectors concatenate with extends or the original if there are no etends.
+     */
     public String[] concatenateExtends( String[] selectors ) {
         selectorList.clear();
         for( String selector : selectors ) {
@@ -93,6 +100,13 @@ class LessExtendMap {
             } while( true );
         }
 
-        return SelectorUtils.concatenate( selectors, selectorList );
+        if( selectorList.size() > 0 ) {
+            int off = selectors.length;
+            selectors = Arrays.copyOf( selectors, off + selectorList.size() );
+            for( String str : selectorList ) {
+                selectors[off++] = str;
+            }
+        }
+        return selectors;
     }
 }

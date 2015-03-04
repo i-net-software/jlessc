@@ -45,7 +45,7 @@ class CssFormatter {
 
         private URL                                          baseURL;
 
-        private LessExtendMap                                lessExtends;
+        private final LessExtendMap                          lessExtends      = new LessExtendMap();
 
         private final ArrayList<HashMap<String, Expression>> variablesStack   = new ArrayList<>();
 
@@ -77,9 +77,6 @@ class CssFormatter {
     CssFormatter( PlainCssFormatter formatter, boolean toString ) {
         state = new SharedState();
         state.formatter = formatter;
-        if( toString ) {
-            state.lessExtends = new LessExtendMap();
-        }
         state.mixinReturnStack.add( new HashMap<String, Expression>() );
         state.mixinReturnCount++;
         state.header = new CssFormatter( this );
@@ -93,7 +90,6 @@ class CssFormatter {
 
     void format( LessParser parser, URL baseURL, Appendable appendable ) throws IOException {
         state.baseURL = baseURL;
-        state.lessExtends = parser.getExtends();
         addVariables( parser.getVariables() );
         for( Formattable rule : parser.getRules() ) {
             if( rule.getClass() == Mixin.class ) {
@@ -103,8 +99,9 @@ class CssFormatter {
             }
         }
         removeVariables( parser.getVariables() );
+
         for( CssOutput result : state.results ) {
-            result.appendTo( appendable, state.formatter );
+            result.appendTo( appendable, state.lessExtends, state.formatter );
         }
     }
 
@@ -181,8 +178,8 @@ class CssFormatter {
         output.setLength( size );
     }
 
-    String[] concatenateExtends( String[] selectors ) {
-        return state.lessExtends.concatenateExtends( selectors );
+    void add( LessExtend lessExtend ) {
+        state.lessExtends.add( lessExtend );
     }
 
     URL getBaseURL() {
