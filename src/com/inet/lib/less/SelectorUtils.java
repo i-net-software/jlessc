@@ -36,28 +36,18 @@ class SelectorUtils {
     static String[] merge( String[] mainSelector, String[] base ) {
         int count = 0;
 
-        if( mainSelector.length == 1 ) {
-            String[] sel = new String[ base.length ];
-            for( int j = 0; j < base.length; j++ ) {
-                final String selector = base[j];
-                if( selector.indexOf( "&" ) >= 0 ){
-                    sel[j] = selector.replace( "&", mainSelector[0] );
-                } else {
-                    sel[j] = mainSelector[0] + ' ' + selector;
-                }
+        // counting the & characters and calculate the resulting selectors
+        int[] counts = new int[base.length];
+        for( int j = 0; j < base.length; j++ ) {
+            String selector = base[j];
+            int andCount = 0;
+            int idx = -1;
+            while( (idx = selector.indexOf( '&', idx + 1 )) >= 0 ) {
+                andCount++;
             }
-            return sel;
-        } else {
-            // is there an & operator in the selector?
-            for( String s : base ) {
-                int andCount = 0;
-                int idx = -1;
-                while( (idx = s.indexOf( '&', idx + 1 )) >= 0 ) {
-                    andCount++;
-                }
-                count += mainSelector.length * Math.max( 1, andCount );
-            }
+            count += counts[j] = (int)Math.pow( mainSelector.length, Math.max( 1, andCount ) );
         }
+
         String[] sel = new String[count];
         for( int j = 0, t = 0; j < base.length; j++ ) {
             String selector = base[j];
@@ -68,20 +58,18 @@ class SelectorUtils {
                 }
             } else {
                 int off = t;
-                int andCount;
+                count = counts[j];
                 do {
                     int a = (t - off);
                     int idx2 = idx;
                     selector = base[j];
-                    andCount = 0;
                     do {
                         int x = a % mainSelector.length;
                         selector = selector.substring( 0, idx2 ) + mainSelector[x] + selector.substring( idx2 + 1 );
                         a /= mainSelector.length;
-                        andCount++;
                     } while( (idx2 = selector.lastIndexOf( '&', idx2 - 1 )) >= 0 );
                     sel[t++] = selector;
-                } while( (t - off) < (mainSelector.length * andCount) );
+                } while( (t - off) < count );
             }
         }
         return sel;
