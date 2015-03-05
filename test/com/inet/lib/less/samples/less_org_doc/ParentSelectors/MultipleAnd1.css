@@ -1,0 +1,13 @@
+.link + .link {
+  color: red;
+}
+.link .link {
+  color: green;
+}
+.link.link {
+  color: blue;
+}
+.link,
+.linkish {
+  color: cyan;
+}
