@@ -73,8 +73,6 @@ p a span {
 }
 .foo + .foo {
   background: amber;
-}
-.foo + .foo {
   background: amber;
 }
 .foo + .foo,

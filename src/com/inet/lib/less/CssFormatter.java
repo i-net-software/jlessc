@@ -31,6 +31,7 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -116,9 +117,21 @@ class CssFormatter {
         state.results.add( new CssPlainOutput( state.header.output ) ); // header
     }
 
+    /**
+     * Create a formatter for a single rule 
+     * @param parent the parent CssFormatter
+     */
     CssFormatter( CssFormatter parent ) {
-        state = parent.state;
-        output = state.pool.get();
+        this( parent, parent.state.pool.get() );
+    }
+
+    /**
+     * Create a formatter for a single rule with existing output. 
+     * @param parent the parent CssFormatter
+     */
+    CssFormatter( CssFormatter parent, StringBuilder output ) {
+        this.state = parent.state;
+        this.output = output;
     }
 
     void format( LessParser parser, URL baseURL, Appendable appendable ) throws IOException {
@@ -405,9 +418,21 @@ class CssFormatter {
     CssFormatter startBlock( String[] selectors ) throws IOException {
         if( blockDeep == 0 ) {
             output = null;
-            CssFormatter block = new CssFormatter( this );
             state.formatter.incInsets();
-            state.results.add( new CssRuleOutput( selectors, block.output ) );
+            final List<CssOutput> results = state.results;
+            if( results.size() > 0 ) {
+                CssOutput cssOutput = results.get( results.size() - 1 );
+                if( cssOutput.getClass() == CssRuleOutput.class ) {
+                    CssRuleOutput ruleOutput = (CssRuleOutput)cssOutput;
+                    if( Arrays.equals( selectors, ruleOutput.getSelectors() ) ) {
+                        CssFormatter block = new CssFormatter( this, ruleOutput.getOutput() );
+                        block.blockDeep++;
+                        return block;
+                    }
+                }
+            }
+            CssFormatter block = new CssFormatter( this );
+            results.add( new CssRuleOutput( selectors, block.output ) );
             block.blockDeep = 1;
             return block;
         } else {

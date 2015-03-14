@@ -58,4 +58,20 @@ class CssRuleOutput extends CssOutput {
             formatter.endBlock( appendable );
         }
     }
+
+    /**
+     * Get the selectors of this rule.
+     * @return the selectors
+     */
+    String[] getSelectors() {
+        return selectors;
+    }
+
+    /**
+     * Get the output of this rule.
+     * @return the output
+     */
+    StringBuilder getOutput() {
+        return output;
+    }
 }
