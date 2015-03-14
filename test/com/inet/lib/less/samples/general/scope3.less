@@ -1,0 +1,9 @@
+.polluteMixin() {
+    @a: 'pollution';
+}
+.testPollution {
+    @a: 'no-pollution';
+    a: @a;
+    .polluteMixin();
+    b: @a;
+}

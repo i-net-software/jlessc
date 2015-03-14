@@ -1,0 +1,16 @@
+.input-size( @font-size ) {
+  font-size: @font-size;
+}
+.input-size2( @font-size) {
+  font-size2: @font-size;
+}
+
+.input-lg {
+  .input-size( @font-size-large );
+  .input-size2( @font-size-large );
+  font-size3: @font-size;
+}
+
+@font-size: 13px;
+@font-size-large: @font-size * 2;
+
