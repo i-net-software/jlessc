@@ -13,7 +13,5 @@
 /* mixin4 */
 .foo {
   position: bottom;
-}
-.foo {
   position: relative;
 }

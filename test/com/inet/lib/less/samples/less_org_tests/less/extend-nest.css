@@ -32,8 +32,6 @@
 }
 .button2 :hover {
   nested: white;
-}
-.button2 :hover {
   notnested: black;
 }
 .amp-test-h,
