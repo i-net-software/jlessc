@@ -1,0 +1,16 @@
+.heightIsSet {
+  height3: 2;
+  height3: 1;
+  height2: 2;
+  height1: 2;
+}
+/*.abc {
+    height2: @height2;
+    height1: @height1;
+}*/
+.heightIsSet {
+  height: 1024px;
+}
+.useHeightInMixinCall {
+  mixin-height: 1024px;
+}

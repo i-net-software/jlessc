@@ -1,0 +1,10 @@
+@mix: none;
+
+.mixin {
+  @mix: #989;
+}
+@mix: blue;
+.tiny-scope {
+  .mixin;
+  color: @mix; // #989
+}

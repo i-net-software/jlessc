@@ -1,0 +1,8 @@
+.close {
+  opacity: 0.2;
+  filter: alpha(opacity=20);
+}
+.close:focus {
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+}

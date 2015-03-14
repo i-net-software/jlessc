@@ -1,0 +1,39 @@
+.setHeight1(@h) { 
+    @height1: @h;
+}
+
+.setHeight2(@h) { 
+    @height2: @h;
+    .setHeight1(@height2);
+    height3: @height1;
+}
+
+//@height1: 0;
+//@height2: 0;
+
+.heightIsSet { 
+.setHeight2(2);
+.setHeight2(1);
+
+    height2: @height2;
+    height1: @height1;
+}
+
+/*.abc {
+    height2: @height2;
+    height1: @height1;
+}*/
+.setHeight(@h) { 
+    @height: 1024px; 
+}
+.useHeightInMixinCall(@h) { 
+    .useHeightInMixinCall { 
+        mixin-height: @h; 
+    } 
+}
+@mainHeight: 50%;
+.setHeight(@mainHeight);
+.heightIsSet { 
+    height: @height; 
+}
+.useHeightInMixinCall(@height);

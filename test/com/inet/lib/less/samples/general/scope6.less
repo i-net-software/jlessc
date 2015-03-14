@@ -1,0 +1,12 @@
+.close {
+  .opacity(.2);
+
+  &:focus {
+    .opacity(.5);
+  }
+}
+.opacity(@opacity) {
+  opacity: @opacity;
+  @opacity-ie: (@opacity * 100);
+  filter: ~"alpha(opacity=@{opacity-ie})";
+}
