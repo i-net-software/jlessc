@@ -40,20 +40,55 @@ import java.util.Map.Entry;
  */
 class CssFormatter {
 
-    private class SharedState {
+    /**
+     * The scope of a single stack element.
+     */
+    private static class Scope {
+        private Rule mixin;
+        private HashMap<String, Expression> parameters;
+        private HashMap<String, Expression> variables;
+        private final HashMap<String, Expression> returns = new HashMap<>();
+
+        /**
+         * Get a variable expression from this scope
+         * 
+         * @param name
+         *            the name of the variable starting with @
+         * @return the expression or null if not found
+         */
+        Expression getVariable( String name ) {
+            if( parameters != null ) {
+                Expression variable = parameters.get( name );
+                if( variable != null ) {
+                    return variable;
+                }
+            }
+            if( variables != null ) {
+                Expression variable = variables.get( name );
+                if( variable != null ) {
+                    return variable;
+                }
+            }
+            if( returns != null ) {
+                Expression variable = returns.get( name );
+                if( variable != null ) {
+                    return variable;
+                }
+            }
+            return null;
+        }
+    }
+
+    private static class SharedState {
         private final StringBuilderPool                      pool             = new StringBuilderPool();
 
         private URL                                          baseURL;
 
+        private final ArrayList<Scope>                       stack = new ArrayList<>();
+
+        private int                                          stackIdx;
+
         private final LessExtendMap                          lessExtends      = new LessExtendMap();
-
-        private final ArrayList<HashMap<String, Expression>> variablesStack   = new ArrayList<>();
-
-        private final ArrayList<HashMap<String, Expression>> mixinReturnStack = new ArrayList<>();
-
-        private int                                          mixinReturnCount;
-
-        private final ArrayList<Rule>                        rulesStack       = new ArrayList<>();
 
         private int                                          rulesStackModCount;
 
@@ -77,8 +112,6 @@ class CssFormatter {
     CssFormatter( PlainCssFormatter formatter, boolean toString ) {
         state = new SharedState();
         state.formatter = formatter;
-        state.mixinReturnStack.add( new HashMap<String, Expression>() );
-        state.mixinReturnCount++;
         state.header = new CssFormatter( this );
         state.results.add( new CssPlainOutput( state.header.output ) ); // header
     }
@@ -194,16 +227,8 @@ class CssFormatter {
      * @return the expression or null if not found
      */
     Expression getVariable( String name ) {
-        for( int i = state.mixinReturnCount - 1; i >= 0; i-- ) {
-            HashMap<String, Expression> variables = state.mixinReturnStack.get( i );
-            Expression variable = variables.get( name );
-            if( variable != null ) {
-                return variable;
-            }
-        }
-        for( int i = state.variablesStack.size() - 1; i >= 0; i-- ) {
-            HashMap<String, Expression> variables = state.variablesStack.get( i );
-            Expression variable = variables.get( name );
+        for( int i = state.stackIdx - 1; i >= 0; i-- ) {
+            Expression variable = state.stack.get( i ).getVariable( name );
             if( variable != null ) {
                 return variable;
             }
@@ -212,27 +237,54 @@ class CssFormatter {
     }
 
     /**
-     * Add mixin parameters to the stack.
-     * 
-     * @param mixinParameters
-     *            the mixinParameters, can be null if the current mixin has no parameters.
+     * Add the scope of a mixin to the stack.
+     * @param mixin the mixin
+     * @param parameters the calling parameters
+     * @param variables the variables of the mixin
      */
-    void addMixinParams( HashMap<String, Expression> mixinParameters ) {
-        if( mixinParameters != null ) {
-            state.variablesStack.add( mixinParameters );
+    void addMixin( Rule mixin, HashMap<String, Expression> parameters, HashMap<String, Expression> variables ) {
+        int idx = state.stackIdx++;
+        Scope scope;
+        if( state.stack.size() <= idx ) {
+            scope = new Scope();
+            state.stack.add( scope );
+        } else {
+            scope = state.stack.get( idx );
+            scope.returns.clear();
         }
+        scope.mixin = mixin;
+        scope.parameters = parameters;
+        scope.variables = variables;
     }
 
     /**
-     * Remove mixin parameters from the stack.
-     * 
-     * @param mixinParameters
-     *            the mixinParameters, can be null if the current mixin has no parameters.
+     * Remove the scope of a mixin.
      */
-    void removeMixinParams( HashMap<String, Expression> mixinParameters ) {
-        if( mixinParameters != null ) {
-            state.variablesStack.remove( state.variablesStack.size() - 1 );
+    void removeMixin() {
+        int idx = state.stackIdx - 1;
+        Scope current = state.stack.get( idx );
+        if( idx > 0 ) {
+            Scope previous = state.stack.get( idx - 1 );
+            HashMap<String, Expression> currentReturn = previous.returns;
+            HashMap<String, Expression> vars = current.variables;
+            if( vars != null ) {
+                for( Entry<String, Expression> entry : vars.entrySet() ) {
+                    if( previous.getVariable( entry.getKey() ) == null ) {
+                        currentReturn.put( entry.getKey(), ValueExpression.eval( this, entry.getValue() ) );
+                    }
+                }
+            }
+            vars = current.returns;
+            if( vars != null ) {
+                for( Entry<String, Expression> entry : vars.entrySet() ) {
+                    if( previous.getVariable( entry.getKey() ) == null ) {
+                        currentReturn.put( entry.getKey(), ValueExpression.eval( this, entry.getValue() ) );
+                    }
+                }
+            }
         }
+        state.stackIdx--;
+        state.rulesStackModCount++;
     }
 
     /**
@@ -242,13 +294,7 @@ class CssFormatter {
      *            the variables, can be null if the current rule has no parameters.
      */
     void addVariables( HashMap<String, Expression> variables ) {
-        if( variables != null ) {
-            state.variablesStack.add( variables );
-        }
-        while( state.mixinReturnStack.size() <= state.mixinReturnCount ) {
-            state.mixinReturnStack.add( new HashMap<String, Expression>() );
-        }
-        state.mixinReturnStack.get( state.mixinReturnCount++ ).clear();
+        addMixin( null, null, variables );
     }
 
     /**
@@ -258,63 +304,7 @@ class CssFormatter {
      *            the variables, can be null if the current rule has no parameters.
      */
     void removeVariables( HashMap<String, Expression> variables ) {
-        if( variables != null ) {
-            state.variablesStack.remove( state.variablesStack.size() - 1 );
-        }
-        state.mixinReturnCount--;
-    }
-
-    /**
-     * Add variables of a mixin to the stack.
-     * 
-     * @param variables
-     *            the variables, can be null if the current mixin has no variables.
-     */
-    void addMixinVariables( HashMap<String, Expression> variables ) {
-        addMixinParams( variables );
-        while( state.mixinReturnStack.size() <= state.mixinReturnCount ) {
-            state.mixinReturnStack.add( new HashMap<String, Expression>() );
-        }
-        state.mixinReturnStack.get( state.mixinReturnCount++ ).clear();
-    }
-
-    /**
-     * Remove variables of a mixin from the stack.
-     * 
-     * @param variables
-     *            the variables, can be null if the current mixin has no variables.
-     */
-    void removeMixinVariables( HashMap<String, Expression> variables ) {
-        state.mixinReturnCount--;
-        if( variables != null ) {
-            int last = state.variablesStack.size() - 1;
-            state.variablesStack.remove( last-- );
-            HashMap<String, Expression> previousReturn = state.mixinReturnStack.get( state.mixinReturnCount );
-            if( last >= 0 ) {
-                HashMap<String, Expression> currentReturn = state.mixinReturnStack.get( state.mixinReturnCount - 1 );
-                HashMap<String, Expression> parent = state.variablesStack.get( last );
-                for( Entry<String, Expression> entry : variables.entrySet() ) {
-                    if( !parent.containsKey( entry.getKey() ) && !currentReturn.containsKey( entry.getKey() ) ) {
-                        currentReturn.put( entry.getKey(), ValueExpression.eval( this, entry.getValue() ) );
-                    }
-                }
-                for( Entry<String, Expression> entry : previousReturn.entrySet() ) {
-                    if( !parent.containsKey( entry.getKey() ) && !currentReturn.containsKey( entry.getKey() ) ) {
-                        currentReturn.put( entry.getKey(), entry.getValue() );
-                    }
-                }
-            }
-        }
-    }
-
-    void addRule( Rule rule ) {
-        state.rulesStack.add( rule );
-        state.rulesStackModCount++;
-    }
-
-    void removeRule( Rule rule ) {
-        state.rulesStack.remove( state.rulesStack.size() - 1 );
-        state.rulesStackModCount++;
+        removeMixin();
     }
 
     /**
@@ -324,7 +314,12 @@ class CssFormatter {
      * @return true, if the mixin is currently formatting
      */
     boolean containsRule( Rule rule ) {
-        return state.rulesStack.contains( rule );
+        for( int i = state.stackIdx - 1; i >= 0; i-- ) {
+            if( rule == state.stack.get( i ).mixin ) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -335,12 +330,15 @@ class CssFormatter {
      * @return the mixin or null
      */
     List<Rule> getMixin( String name ) {
-        for( int i = state.rulesStack.size() - 1; i >= 0; i-- ) {
-            List<Rule> rules = state.rulesStack.get( i ).getMixin( name );
-            if( rules != null ) {
-                for( int r = 0; r < rules.size(); r++ ) {
-                    if( !state.rulesStack.contains( rules.get( r ) ) ) {
-                        return rules;
+        for( int i = state.stackIdx - 1; i >= 0; i-- ) {
+            Rule mixin = state.stack.get( i ).mixin;
+            if( mixin != null ) {
+                List<Rule> rules = mixin.getMixin( name );
+                if( rules != null ) {
+                    for( int r = 0; r < rules.size(); r++ ) {
+                        if( !containsRule( rules.get( r ) ) ) {
+                            return rules;
+                        }
                     }
                 }
             }

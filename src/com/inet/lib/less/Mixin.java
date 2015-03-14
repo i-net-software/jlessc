@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 Volker Berlin
+ * Copyright (c) 2014 - 2015 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -68,14 +68,10 @@ class Mixin extends LessObject implements Formattable {
         formatter.setImportant( important );
         try {
             for( MixinMatch match : getRules( formatter ) ) {
-                formatter.addMixinParams( match.getMixinParameters() );
                 Rule rule = match.getRule();
-                formatter.addRule( rule );
-                formatter.addMixinVariables( rule.getVariables() );
+                formatter.addMixin( rule, match.getMixinParameters(), rule.getVariables() );
                 rule.appendPropertiesTo( formatter );
-                formatter.removeMixinVariables( rule.getVariables() );
-                formatter.removeRule( rule );
-                formatter.removeMixinParams( match.getMixinParameters() );
+                formatter.removeMixin();
             }
         } catch( LessException ex ) {
             ex.addPosition( filename, line, column );
@@ -89,19 +85,15 @@ class Mixin extends LessObject implements Formattable {
     void appendSubRules( String[] parentSelector, CssFormatter formatter ) throws IOException {
         try {
             for( MixinMatch match : getRules( formatter ) ) {
-                formatter.addMixinParams( match.getMixinParameters() );
                 Rule rule = match.getRule();
-                formatter.addRule( rule );
-                formatter.addMixinVariables( rule.getVariables() );
+                formatter.addMixin( rule, match.getMixinParameters(), rule.getVariables() );
                 rule.appendMixinsTo( formatter );
                 for( Rule subMixin : rule.getSubrules() ) {
                     if( !subMixin.isMixin() && (parentSelector == null || !subMixin.isInlineRule( formatter ) ) ) {
                         subMixin.appendTo( parentSelector, formatter );
                     }
                 }
-                formatter.removeMixinVariables( rule.getVariables() );
-                formatter.removeRule( rule );
-                formatter.removeMixinParams( match.getMixinParameters() );
+                formatter.removeMixin();
             }
         } catch( LessException ex ) {
             ex.addPosition( filename, line, column );

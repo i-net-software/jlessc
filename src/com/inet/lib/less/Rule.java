@@ -131,8 +131,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
             } else {
                 sel = SelectorUtils.merge( mainSelector, sel );
             }
-            formatter.addVariables( variables );
-            formatter.addRule( this );
+            formatter.addMixin( this, null, variables );
 
             if( sel[0].startsWith( "@" ) ) {
                 ruleset( sel, formatter );
@@ -161,8 +160,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
                     }
                 }
             }
-            formatter.removeRule( this );
-            formatter.removeVariables( variables );
+            formatter.removeMixin();
         } catch( LessException ex ) {
             ex.addPosition( filename, line, column );
             throw ex;
@@ -374,11 +372,11 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
     @Override
     public String toString() {
         CssFormatter formatter = new CssFormatter( new PlainCssFormatter(), true );
-        formatter.addOutput();
         try {
             appendTo( null, formatter );
         } catch( Exception ex ) {
             try {
+                formatter.getOutput();
                 formatter.append( ex.toString() );
             } catch( IOException e ) {
                 e.printStackTrace();
