@@ -226,11 +226,11 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         formatter.endBlock();
     }
 
-    void appendMixinsTo( CssFormatter formatter ) throws IOException {
+    void appendMixinsTo( String[] parentSelector, CssFormatter formatter ) throws IOException {
         for( Formattable prop : properties ) {
             switch( prop.getType()) {
                 case MIXIN:
-                    ((Mixin)prop).appendSubRules( null, formatter );
+                    ((Mixin)prop).appendSubRules( parentSelector, formatter );
                     break;
                 case CSS_AT_RULE:
                 case COMMENT:
