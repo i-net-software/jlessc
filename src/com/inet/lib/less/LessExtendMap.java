@@ -43,9 +43,14 @@ class LessExtendMap {
     private LinkedHashSet<String> selectorList                  = new LinkedHashSet<>();
 
     void add( LessExtend lessExtend ) {
+        String[] selectors = lessExtend.getSelectors();
+        if( selectors[0].startsWith( "@media" ) ) {
+            //TODO handling of scope
+            return;
+        }
+        String[] extendingSelectors = lessExtend.getExtendingSelectors();
         if( lessExtend.isAll() ) {
-            String[] selectors = lessExtend.getExtendingSelectors();
-            for( String selector : selectors ) {
+            for( String selector : extendingSelectors ) {
                 SelectorTokenizer tokenizer = new SelectorTokenizer( selector );
                 do {
                     String token = tokenizer.next();
@@ -56,8 +61,7 @@ class LessExtendMap {
                 } while( true );
             }
         } else {
-            String[] selectors = lessExtend.getExtendingSelectors();
-            for( String selector : selectors ) {
+            for( String selector : extendingSelectors ) {
                 exact.add( selector, lessExtend );
             }
         }
