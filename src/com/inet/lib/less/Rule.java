@@ -195,11 +195,12 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         }
 
         for( Rule rule : subrules ) {
-            String name = rule.getSelectors()[0];
+            final String[] ruleSelector = rule.getSelectors();
+            String name = ruleSelector[0];
             if( name.startsWith( "@media" ) ) {
                 rule.media( new String[]{mediaSelector[0] + " and " + name.substring( 6 ).trim()}, blockSelector, formatter );
             } else {
-                rule.media( mediaSelector, new String[]{blockSelector[0] + ' ' + name}, formatter ); //TODO are we in the right switch
+                rule.media( mediaSelector, SelectorUtils.merge( blockSelector, ruleSelector ), formatter );
             }
         }
     }
