@@ -87,7 +87,7 @@ class Mixin extends LessObject implements Formattable {
             for( MixinMatch match : getRules( formatter ) ) {
                 Rule rule = match.getRule();
                 formatter.addMixin( rule, match.getMixinParameters(), rule.getVariables() );
-                rule.appendMixinsTo( formatter );
+                rule.appendMixinsTo( parentSelector, formatter );
                 for( Rule subMixin : rule.getSubrules() ) {
                     if( !subMixin.isMixin() && (parentSelector == null || !subMixin.isInlineRule( formatter ) ) ) {
                         subMixin.appendTo( parentSelector, formatter );
