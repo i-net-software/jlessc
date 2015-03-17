@@ -389,7 +389,11 @@ class LessParser implements FormattableContainer {
                 lazyImports.add( lazy );
                 return;
             }
-            baseURL = new URL( baseURL, filename );
+            if( filename.startsWith( "url(" ) && filename.endsWith( ")" ) ) {
+                baseURL = new URL( filename.substring( 4, filename.length()-1 ) );
+            } else {
+                baseURL = baseURL == null ? new URL( filename ) : new URL( baseURL, filename );
+            }
             relativeURL = new URL( relativeURL, filename );
             reader = new LessLookAheadReader( new InputStreamReader( baseURL.openStream(), StandardCharsets.UTF_8 ), filename );
             parse();
@@ -547,6 +551,7 @@ class LessParser implements FormattableContainer {
                              }
                         }
                     }
+                    //$FALL-THROUGH$
                 case '+':
                     if( ch == '+' && builder.length() == 1 && builder.charAt( 0 ) == 'U' ) {
                         //unicode-range syntax
@@ -558,6 +563,7 @@ class LessParser implements FormattableContainer {
                         wasWhite = false;
                         break;
                     }
+                    //$FALL-THROUGH$
                 case '*':
                 case '/':
                 case ',':
@@ -844,6 +850,7 @@ class LessParser implements FormattableContainer {
                 if( str.startsWith( "-@" ) ) {
                     return new FunctionExpression( reader, "-", new Operation( reader, buildExpression( str.substring( 1 ) ), (char)0 ) );
                 }
+                //$FALL-THROUGH$
             default:
                 return new ValueExpression( reader, str );
         }
@@ -880,6 +887,7 @@ class LessParser implements FormattableContainer {
                                 }
                                 return true;
                             }
+                            //$FALL-THROUGH$
                         default:
                             wasAsterix = false;
                     }
