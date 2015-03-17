@@ -368,6 +368,9 @@ class LessParser implements FormattableContainer {
         Object[] old = { reader, baseURL, relativeURL }; //store on the heap to reduce the stack size
         try {
             String filename = name;
+            if( filename.startsWith( "url(" ) && filename.endsWith( ")" ) ) {
+                filename = filename.substring( 4, filename.length() - 1 );
+            }
             char chr0 = filename.charAt( 0 );
             if( (chr0 == '\'' || chr0 == '"') && filename.charAt( filename.length() - 1 ) == chr0 ) {
                 filename = filename.substring( 1, filename.length() - 1 );
@@ -389,11 +392,7 @@ class LessParser implements FormattableContainer {
                 lazyImports.add( lazy );
                 return;
             }
-            if( filename.startsWith( "url(" ) && filename.endsWith( ")" ) ) {
-                baseURL = new URL( filename.substring( 4, filename.length()-1 ) );
-            } else {
-                baseURL = baseURL == null ? new URL( filename ) : new URL( baseURL, filename );
-            }
+            baseURL = baseURL == null ? new URL( filename ) : new URL( baseURL, filename );
             relativeURL = new URL( relativeURL, filename );
             reader = new LessLookAheadReader( new InputStreamReader( baseURL.openStream(), StandardCharsets.UTF_8 ), filename );
             parse();
