@@ -380,6 +380,7 @@ class Operation extends AbstractExpression {
                                 return left <= right;
                         }
                     }
+                        //$FALL-THROUGH$
                     default: {
                         double left = operands.get( 0 ).doubleValue( formatter );
                         double right = operands.get( 1 ).doubleValue( formatter );
@@ -397,6 +398,7 @@ class Operation extends AbstractExpression {
                         }
                     }
                 }
+                //$FALL-THROUGH$
             default:
         }
         throw createException( "Not supported Oprator '" + operator + "' for Expression '" + toString() + '\'' );
