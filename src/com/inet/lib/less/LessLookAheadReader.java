@@ -103,6 +103,7 @@ class LessLookAheadReader extends LessObject implements Closeable {
                             } while( ch != '}' );
                             break;
                         }
+                        //$FALL-THROUGH$
                     case '}':
                     case ';':
                         if( parenthesis == 0 ) {
