@@ -136,112 +136,116 @@ class FunctionExpression extends AbstractExpression {
      */
     @Override
     public void appendTo( CssFormatter formatter ) throws IOException {
-        switch( super.toString() ) {
-            case "%":
-                format( formatter );
-                return;
-            case "argb":
-                double color = getDouble( 0, formatter );
-                int argb = argb( color );
-                formatter.append( '#' );
-                formatter.appendHex( argb, 8 );
-                return;
-            case "svg-gradient":
-                UrlUtils.svgGradient( formatter, parameters );
-                return;
-            case "replace":
-                String str = get( 0 ).stringValue( formatter );
-                formatter.setInineMode( true );
-                String pattern = get( 1 ).stringValue( formatter );
-                String replacement = get( 2 ).stringValue( formatter );
-                String flags = parameters.size() > 3 ? get( 3 ).stringValue( formatter ) : "";
-                formatter.setInineMode( false );
-                if( str.length() > 1 ) {
-                    char ch = str.charAt( 0 );
-                    boolean quote = false;
-                    if( ch == '\'' || ch == '\"' ) {
-                        if( str.charAt( str.length() - 1 ) == ch ) {
-                            str = str.substring( 1, str.length() - 1 );
-                            quote = true;
+        try {
+            switch( super.toString() ) {
+                case "%":
+                    format( formatter );
+                    return;
+                case "argb":
+                    double color = getDouble( 0, formatter );
+                    int argb = argb( color );
+                    formatter.append( '#' );
+                    formatter.appendHex( argb, 8 );
+                    return;
+                case "svg-gradient":
+                    UrlUtils.svgGradient( formatter, parameters );
+                    return;
+                case "replace":
+                    String str = get( 0 ).stringValue( formatter );
+                    formatter.setInineMode( true );
+                    String pattern = get( 1 ).stringValue( formatter );
+                    String replacement = get( 2 ).stringValue( formatter );
+                    String flags = parameters.size() > 3 ? get( 3 ).stringValue( formatter ) : "";
+                    formatter.setInineMode( false );
+                    if( str.length() > 1 ) {
+                        char ch = str.charAt( 0 );
+                        boolean quote = false;
+                        if( ch == '\'' || ch == '\"' ) {
+                            if( str.charAt( str.length() - 1 ) == ch ) {
+                                str = str.substring( 1, str.length() - 1 );
+                                quote = true;
+                            }
+                        }
+                        str = new RegExp( pattern, flags ).replace( str, replacement );
+                        if( quote ) {
+                            str = ch + str + ch;
                         }
                     }
-                    str = new RegExp( pattern, flags ).replace( str, replacement );
-                    if( quote ) {
-                        str = ch + str + ch;
+                    formatter.append( str );
+                    return;
+                case "get-unit":
+                    formatter.append( unit( formatter ) );
+                    return;
+                case "url":
+                    String url = get( 1 ).stringValue( formatter );
+    //                char quoteChar = 0;
+    //                boolean quote = false;
+    //                if( url.length() >= 2 ) {
+    //                    quoteChar = url.charAt( 0 );
+    //                    if( quoteChar == '\'' || quoteChar == '\"' ) {
+    //                        if( url.charAt( url.length() - 1 ) == quoteChar ) {
+    //                            url = url.substring( 1, url.length() - 1 );
+    //                            quote = true;
+    //                        }
+    //                    }
+    //                }
+    //                if( url.startsWith( "../" ) ) {
+    //                    String baseUrl = get( 0 ).stringValue( formatter );
+    //                    baseUrl = baseUrl.substring( 0, baseUrl.lastIndexOf( '/' ) + 1 );
+    //                    boolean append = false;
+    //                    do {
+    //                        if( baseUrl.length() > 0 ) {
+    //                            url = url.substring( 3 );
+    //                            baseUrl = baseUrl.substring( 0, baseUrl.lastIndexOf( '/', baseUrl.length() - 2 ) + 1 );
+    //                            append = true;
+    //                        } else {
+    //                            break;
+    //                        }
+    //                    } while( url.startsWith( "../" ) );
+    //                    if( append ) {
+    //                        url = baseUrl + url;
+    //                    }
+    //                }
+                    formatter.append( "url(" );
+    //                if( quote ) {
+    //                    formatter.append( quoteChar );
+    //                }
+                    formatter.append( url );
+    //                if( quote ) {
+    //                    formatter.append( quoteChar );
+    //                }
+                    formatter.append( ")" );
+                    return;
+                case "data-uri":
+                    String baseUrl = get( 0 ).stringValue( formatter );
+                    String type;
+                    if( parameters.size() >= 3 ) {
+                        type = get( 1 ).stringValue( formatter );
+                        url = get( 2 ).stringValue( formatter );
+                    } else {
+                        type = null;
+                        url = get( 1 ).stringValue( formatter );
                     }
-                }
-                formatter.append( str );
-                return;
-            case "get-unit":
-                formatter.append( unit( formatter ) );
-                return;
-            case "url":
-                String url = get( 1 ).stringValue( formatter );
-//                char quoteChar = 0;
-//                boolean quote = false;
-//                if( url.length() >= 2 ) {
-//                    quoteChar = url.charAt( 0 );
-//                    if( quoteChar == '\'' || quoteChar == '\"' ) {
-//                        if( url.charAt( url.length() - 1 ) == quoteChar ) {
-//                            url = url.substring( 1, url.length() - 1 );
-//                            quote = true;
-//                        }
-//                    }
-//                }
-//                if( url.startsWith( "../" ) ) {
-//                    String baseUrl = get( 0 ).stringValue( formatter );
-//                    baseUrl = baseUrl.substring( 0, baseUrl.lastIndexOf( '/' ) + 1 );
-//                    boolean append = false;
-//                    do {
-//                        if( baseUrl.length() > 0 ) {
-//                            url = url.substring( 3 );
-//                            baseUrl = baseUrl.substring( 0, baseUrl.lastIndexOf( '/', baseUrl.length() - 2 ) + 1 );
-//                            append = true;
-//                        } else {
-//                            break;
-//                        }
-//                    } while( url.startsWith( "../" ) );
-//                    if( append ) {
-//                        url = baseUrl + url;
-//                    }
-//                }
-                formatter.append( "url(" );
-//                if( quote ) {
-//                    formatter.append( quoteChar );
-//                }
-                formatter.append( url );
-//                if( quote ) {
-//                    formatter.append( quoteChar );
-//                }
-                formatter.append( ")" );
-                return;
-            case "data-uri":
-                String baseUrl = get( 0 ).stringValue( formatter );
-                String type;
-                if( parameters.size() >= 3 ) {
-                    type = get( 1 ).stringValue( formatter );
-                    url = get( 2 ).stringValue( formatter );
-                } else {
-                    type = null;
-                    url = get( 1 ).stringValue( formatter );
-                }
-                UrlUtils.dataUri( formatter, baseUrl, url, type );
-                return;
-        }
-        if( type == UNKNOWN ) {
-            eval( formatter );
-        }
-        if( type == STRING ) {
-            if( super.toString().equals( "" ) ) { //parenthesis
-                get( 0 ).appendTo( formatter );
-            } else {
-                appendToCssFunction( formatter );
+                    UrlUtils.dataUri( formatter, baseUrl, url, type );
+                    return;
             }
-            return;
+            if( type == UNKNOWN ) {
+                eval( formatter );
+            }
+            if( type == STRING ) {
+                if( super.toString().equals( "" ) ) { //parenthesis
+                    get( 0 ).appendTo( formatter );
+                } else {
+                    appendToCssFunction( formatter );
+                }
+                return;
+            }
+            super.appendTo( formatter );
+        } catch ( Throwable th ) {
+            throw createException( th );
         }
-        super.appendTo( formatter );
     }
-    
+
     /**
      * Write the function without change. We does not know it. It can/must be a CSS function.
      * @param formatter the formatter
