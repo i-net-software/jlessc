@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 Volker Berlin
+ * Copyright (c) 2014 - 2015 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -234,8 +234,9 @@ class LessLookAheadReader extends LessObject implements Closeable {
     void back( char ch ) {
         cachePos--;
         cache.setCharAt( cachePos, ch );
+        column--; // reverse of incLineColumn()
     }
-    
+
     /**
      * Skip all data until a newline occur or an EOF
      */
