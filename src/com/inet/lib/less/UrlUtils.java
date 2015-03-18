@@ -112,10 +112,10 @@ class UrlUtils {
             } while(true);
             if( param.getClass() == Operation.class && ((Operation)param).getOperator() == ' ' ) {
                 ArrayList<Expression> operands = ((Operation)param).getOperands();
-                color = operands.get( 0 ).doubleValue( formatter );
+                color = getColor( operands.get( 0 ), formatter );
                 position = ColorUtils.getPercent( operands.get( 1 ), formatter );
             } else {
-                color = param.doubleValue( formatter );
+                color = getColor( param, formatter );
                 position = (i - 1) / (parameters.size() - 2.0);
             }
             builder.append( "<stop offset=\"" );
@@ -143,6 +143,18 @@ class UrlUtils {
         formatter.append( "url('data:image/svg+xml;base64," );
         formatter.append( DatatypeConverter.printBase64Binary( bytes ) );
         formatter.append( "\')" );
+    }
+
+    /**
+     * Get the color value of the expression or fire an exception if not a color. 
+     */
+    private static double getColor( Expression param, CssFormatter formatter ) {
+        switch( param.getDataType( formatter ) ) {
+            case Expression.COLOR:
+            case Expression.RGBA:
+                return param.doubleValue( formatter );
+        }
+        throw new LessException( "Not a color: " + param );
     }
 
     static void dataUri( CssFormatter formatter, String relativeURL, final String urlString, String type ) throws IOException {
