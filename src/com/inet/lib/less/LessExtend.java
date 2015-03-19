@@ -28,7 +28,6 @@ package com.inet.lib.less;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
-import java.util.Iterator;
 
 /**
  * A single less extends
@@ -57,11 +56,6 @@ class LessExtend extends LessObject implements Formattable {
 
         this.selector = extendSelector.substring( 0, idx1 );
         baseSelector = new String[] { this.selector };
-        for( Iterator<Rule> iterator = ruleStack.descendingIterator(); iterator.hasNext(); ) {
-            Rule rule = iterator.next();
-            String[] selectors = rule.getSelectors();
-            baseSelector = SelectorUtils.merge( selectors, baseSelector );
-        }
     }
 
     boolean isAll() {
@@ -79,7 +73,7 @@ class LessExtend extends LessObject implements Formattable {
     String[] getExtendingSelectors() {
         return extendingSelectors;
     }
-    
+
     /**
      * For debugging
      */
