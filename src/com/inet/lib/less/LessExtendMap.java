@@ -35,21 +35,26 @@ import java.util.List;
  */
 class LessExtendMap {
 
-    private final HashMultimap<String, LessExtend> all          = new HashMultimap<>();
+    private final HashMultimap<String, LessExtendResult> all          = new HashMultimap<>();
 
-    private final HashMultimap<String, LessExtend> exact        = new HashMultimap<>();
+    private final HashMultimap<String, String[]> exact        = new HashMultimap<>();
 
     // use a LinkedHashSet as cache to remove duplicates and hold the original order
     private LinkedHashSet<String> selectorList                  = new LinkedHashSet<>();
 
-    void add( LessExtend lessExtend ) {
-        String[] selectors = lessExtend.getSelectors();
-        if( selectors[0].startsWith( "@media" ) ) {
+    void add( LessExtend lessExtend, String[] mainSelector ) {
+        if( mainSelector == null ) {
+            mainSelector = lessExtend.getSelectors();
+        } else {
+            mainSelector = SelectorUtils.merge( mainSelector, lessExtend.getSelectors() );
+        }
+        if( mainSelector[0].startsWith( "@media" ) ) {
             //TODO handling of scope
             return;
         }
         String[] extendingSelectors = lessExtend.getExtendingSelectors();
         if( lessExtend.isAll() ) {
+            LessExtendResult extend = new LessExtendResult( mainSelector, extendingSelectors );
             for( String selector : extendingSelectors ) {
                 SelectorTokenizer tokenizer = new SelectorTokenizer( selector );
                 do {
@@ -57,12 +62,12 @@ class LessExtendMap {
                     if( token == null ) {
                         break;
                     }
-                    all.add( token, lessExtend );
+                    all.add( token, extend );
                 } while( true );
             }
         } else {
             for( String selector : extendingSelectors ) {
-                exact.add( selector, lessExtend );
+                exact.add( selector, mainSelector );
             }
         }
     }
@@ -75,10 +80,10 @@ class LessExtendMap {
     public String[] concatenateExtends( String[] selectors ) {
         selectorList.clear();
         for( String selector : selectors ) {
-            List<LessExtend> list = exact.get( selector );
+            List<String[]> list = exact.get( selector );
             if( list != null ) {
-                for( LessExtend lessExtend : list ) {
-                    for( String sel : lessExtend.getSelectors() ) {
+                for( String[] lessExtend : list ) {
+                    for( String sel : lessExtend ) {
                         selectorList.add( sel );
                     }
                 }
@@ -89,9 +94,9 @@ class LessExtendMap {
                 if( token == null ) {
                     break;
                 }
-                list = all.get( token );
-                if( list != null ) {
-                    for( LessExtend lessExtend : list ) {
+                List<LessExtendResult> results = all.get( token );
+                if( results != null ) {
+                    for( LessExtendResult lessExtend : results ) {
                         for( String extendingSelector : lessExtend.getExtendingSelectors() ) {
                             if( selector.contains( extendingSelector ) ) {
                                 for( String replace : lessExtend.getSelectors() ) {

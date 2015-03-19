@@ -100,6 +100,8 @@ class CssFormatter {
         private boolean                                      charsetDirective;
 
         private CssFormatter                                 header;
+
+        private String[] selectors;
     }
 
     private final SharedState               state;
@@ -225,7 +227,7 @@ class CssFormatter {
     }
 
     void add( LessExtend lessExtend ) {
-        state.lessExtends.add( lessExtend );
+        state.lessExtends.add( lessExtend, state.selectors );
     }
 
     URL getBaseURL() {
@@ -431,6 +433,7 @@ class CssFormatter {
                     }
                 }
             }
+            state.selectors = selectors;
             CssFormatter block = new CssFormatter( this );
             results.add( new CssRuleOutput( selectors, block.output ) );
             block.blockDeep = 1;
@@ -446,6 +449,7 @@ class CssFormatter {
         blockDeep--;
         if( blockDeep == 0 ) {
             state.formatter.clean();
+            state.selectors = null;
         } else {
             state.formatter.endBlock( output );
         }
