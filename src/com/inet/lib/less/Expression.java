@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 Volker Berlin
+ * Copyright (c) 2014 - 2015 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -53,16 +53,6 @@ interface Expression extends Formattable {
     static final double WHITE = Double.longBitsToDouble( ALPHA_1 | 0xFF00_FF00_FF00L );
 
     static final double BLACK = Double.longBitsToDouble( ALPHA_1 );
-
-    /**
-     * Write the expression to the CSS output
-     * 
-     * @param formatter
-     *            the CCS target
-     * @throws IOException
-     *             if an exception occur on access the Appendable of the formatter
-     */
-    void appendTo( CssFormatter formatter ) throws IOException;
 
     /**
      * The data type of the expression
