@@ -243,16 +243,18 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
 
     void appendPropertiesTo( CssFormatter formatter ) throws IOException {
         for( Formattable prop : properties ) {
-            if( prop instanceof Rule ) {
-                Rule rule = (Rule)prop;
-                // inline rules
-                if( rule.isValidCSS( formatter ) && rule.isInlineRule( formatter) ) {
-                    formatter.addVariables( rule.variables );
-                    rule.appendPropertiesTo( formatter );
-                    formatter.removeVariables( rule.variables );
-                }
-            } else {
-                prop.appendTo( formatter );
+            switch( prop.getType() ) {
+                case Formattable.RULE:
+                    Rule rule = (Rule)prop;
+                    // inline rules
+                    if( rule.isValidCSS( formatter ) && rule.isInlineRule( formatter) ) {
+                        formatter.addVariables( rule.variables );
+                        rule.appendPropertiesTo( formatter );
+                        formatter.removeVariables( rule.variables );
+                    }
+                    break;
+                default:
+                    prop.appendTo( formatter );
             }
         }
     }
