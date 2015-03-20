@@ -364,7 +364,6 @@ class LessParser implements FormattableContainer {
     }
 
     private void importFile( FormattableContainer currentRule, String name ) {
-        System.err.println("import: " + name );
         Object[] old = { reader, baseURL, relativeURL }; //store on the heap to reduce the stack size
         try {
             String filename = name;
