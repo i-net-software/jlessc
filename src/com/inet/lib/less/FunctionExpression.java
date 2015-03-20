@@ -266,6 +266,9 @@ class FunctionExpression extends AbstractExpression {
         try {
             switch( super.toString().toLowerCase() ) {
                 case "": //parenthesis
+                    if( parameters.size() > 1 ) {
+                        throw ((LessObject)get( 0 )).createException( "Unrecognised input" );
+                    }
                     type = get( 0 ).getDataType( formatter );
                     if( type != STRING ) {
                         doubleValue = getDouble( 0, formatter );
