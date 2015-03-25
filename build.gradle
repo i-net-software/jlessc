@@ -41,7 +41,7 @@ test {
 	       		case "FAIL": color = 31; break;
 	       }
 	       
-	       print "\033[0;37mExecuted \033[1;37;44m[${desc.className}]\t\033[${color+10};30m${desc.name}\033[0;37m\twith result: "
+	       print "\033[0;37mExecuted \033[1m[${desc.className}]\t\033[1;${color}m${desc.name}\033[0;37m\twith result: "
 	       println "\033[0;${color}m${result.resultType}\033[0m"
 	}
 }
