@@ -47,6 +47,7 @@ import static com.inet.lib.less.ColorUtils.toHSV;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -140,6 +141,9 @@ class FunctionExpression extends AbstractExpression {
             switch( super.toString() ) {
                 case "%":
                     format( formatter );
+                    return;
+                case "escape":
+                    escape( formatter );
                     return;
                 case "argb":
                     double color = getDouble( 0, formatter );
@@ -568,6 +572,7 @@ class FunctionExpression extends AbstractExpression {
                     doubleValue = -getDouble( 0, formatter );
                     return;
                 case "%":
+                case "escape":
                     type = STRING;
                     return;
             }
@@ -630,6 +635,49 @@ class FunctionExpression extends AbstractExpression {
                 }
             } else {
                 formatter.append( ch );
+            }
+        }
+    }
+
+    /**
+     * Implementation of the escape function: http://lesscss.org/functions/#string-functions-escape
+     */
+    private void escape( CssFormatter formatter ) throws IOException {
+        String url = get( 0 ).stringValue( formatter );
+        url = UrlUtils.removeQuote( url );
+        for( int i = 0; i < url.length(); i++ ) {
+            char ch = url.charAt( i );
+            if( ch < 0x80 ) {
+                if( ch > ' ' ) {
+                    switch( ch ){
+                        case '#':
+                        case '^':
+                        case '(':
+                        case ')':
+                        case '{':
+                        case '}':
+                        case '|':
+                        case ':':
+                        case '>':
+                        case '<':
+                        case ';':
+                        case '[':
+                        case ']':
+                        case '=':
+                            break;
+                        default:
+                            formatter.append( ch );
+                            continue;
+                    }
+                }
+                formatter.append( '%' );
+                formatter.appendHex( ch, 2 );
+            } else {
+                byte[] bytes = String.valueOf( ch ).getBytes(StandardCharsets.UTF_8);
+                for( int j = 0; j < bytes.length; j++ ) {
+                    formatter.append( '%' );
+                    formatter.appendHex( bytes[j], 2 );
+                }
             }
         }
     }
