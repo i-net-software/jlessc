@@ -1,13 +1,12 @@
 apply plugin: 'java'
 
 repositories {
-    flatDir {
-        dirs '../lib'
-    }
+	jcenter()
 }
 
 dependencies {
-    compile ':inet-annotations'
+    compile		'com.google.code.findbugs:jsr305:3.0.0'
+	testCompile	'junit:junit:4.11'
 }
 
 sourceSets {
