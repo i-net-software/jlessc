@@ -28,4 +28,22 @@ sourceSets {
     }
 }
 
+test {
+	testLogging {
+        events "failed"
+        exceptionFormat "short"
+    }
+    
+	afterTest { desc, result ->
+	       def color = 31;
+	       switch(result){
+	       		case "SUCCESS": color = 32; break;
+	       		case "FAIL": color = 31; break;
+	       }
+	       
+	       print "\033[0;37mExecuted \033[1;37;44m[${desc.className}]\t\033[${color+10};30m${desc.name}\033[0;37m\twith result: "
+	       println "\033[0;${color}m${result.resultType}\033[0m"
+	}
+}
+
 compileJava.options.encoding = 'UTF-8'
