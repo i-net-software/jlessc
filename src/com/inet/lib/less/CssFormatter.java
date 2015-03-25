@@ -39,7 +39,7 @@ import java.util.Map.Entry;
 /**
  * A formatter for the CSS output. Hold some formating states.
  */
-class CssFormatter {
+class CssFormatter implements Cloneable {
 
     /**
      * The scope of a single stack element.
@@ -112,28 +112,25 @@ class CssFormatter {
 
     private int                             blockDeep;
 
-    CssFormatter( PlainCssFormatter formatter, boolean toString ) {
+    CssFormatter( PlainCssFormatter formatter ) {
         state = new SharedState();
         state.formatter = formatter;
-        state.header = new CssFormatter( this );
+        state.header = copy( null );
         state.results.add( new CssPlainOutput( state.header.output ) ); // header
     }
 
     /**
-     * Create a formatter for a single rule 
+     * Create a new formatter for a single rule with optional output. 
      * @param parent the parent CssFormatter
      */
-    CssFormatter( CssFormatter parent ) {
-        this( parent, parent.state.pool.get() );
-    }
-
-    /**
-     * Create a formatter for a single rule with existing output. 
-     * @param parent the parent CssFormatter
-     */
-    CssFormatter( CssFormatter parent, StringBuilder output ) {
-        this.state = parent.state;
-        this.output = output;
+    private CssFormatter copy( StringBuilder output ) {
+        try {
+            CssFormatter formatter = (CssFormatter)clone();
+            formatter.output = output == null ? state.pool.get() : output;
+            return formatter;
+        } catch( CloneNotSupportedException ex ) {
+            throw new LessException( ex );
+        }
     }
 
     void format( LessParser parser, URL baseURL, Appendable appendable ) throws IOException {
@@ -367,7 +364,7 @@ class CssFormatter {
 
     StringBuilder getOutput() {
         if( output == null ) {
-            CssFormatter block = new CssFormatter( this );
+            CssFormatter block = copy( null );
             state.results.add( new CssPlainOutput( block.output ) );
             output = block.output;
         }
@@ -427,14 +424,14 @@ class CssFormatter {
                 if( cssOutput.getClass() == CssRuleOutput.class ) {
                     CssRuleOutput ruleOutput = (CssRuleOutput)cssOutput;
                     if( Arrays.equals( selectors, ruleOutput.getSelectors() ) ) {
-                        CssFormatter block = new CssFormatter( this, ruleOutput.getOutput() );
+                        CssFormatter block = copy( ruleOutput.getOutput() );
                         block.blockDeep++;
                         return block;
                     }
                 }
             }
             state.selectors = selectors;
-            CssFormatter block = new CssFormatter( this );
+            CssFormatter block = copy( null );
             results.add( new CssRuleOutput( selectors, block.output ) );
             block.blockDeep = 1;
             return block;
