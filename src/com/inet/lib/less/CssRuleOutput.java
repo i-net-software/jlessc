@@ -26,7 +26,6 @@
  */
 package com.inet.lib.less;
 
-import java.io.IOException;
 
 /**
  * A CSS output of a single rule.
@@ -50,7 +49,7 @@ class CssRuleOutput extends CssOutput {
      * {@inheritDoc}
      */
     @Override
-    void appendTo( StringBuilder target, LessExtendMap lessExtends, CssFormatter formatter ) throws IOException {
+    void appendTo( StringBuilder target, LessExtendMap lessExtends, CssFormatter formatter ) {
         if( output.length() > 0 ) {
             selectors = lessExtends.concatenateExtends( selectors );
             formatter.startBlockImpl( selectors );

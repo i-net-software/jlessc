@@ -26,8 +26,6 @@
  */
 package com.inet.lib.less;
 
-import java.io.IOException;
-
 /**
  * An object that can be print as CSS.
  */
@@ -52,8 +50,6 @@ interface Formattable {
      * 
      * @param formatter
      *            the CCS target
-     * @throws IOException
-     *             if an exception occur on access of the Appendable of the formatter
      */
-    void appendTo( CssFormatter formatter ) throws IOException;
+    void appendTo( CssFormatter formatter );
 }

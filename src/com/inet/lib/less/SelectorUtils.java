@@ -26,8 +26,6 @@
  */
 package com.inet.lib.less;
 
-import java.io.IOException;
-
 /**
  * Some utilities methods.
  */
@@ -75,7 +73,7 @@ class SelectorUtils {
         return sel;
     }
 
-    static void appendToWithPlaceHolder( CssFormatter formatter, String str, int i, LessObject caller ) throws IOException {
+    static void appendToWithPlaceHolder( CssFormatter formatter, String str, int i, LessObject caller ) {
         int appendIdx = 0;
         char quote = 0;
         for( ; i < str.length(); i++ ) {

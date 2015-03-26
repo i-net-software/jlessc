@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 Volker Berlin
+ * Copyright (c) 2014 - 2015 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,8 +26,6 @@
  */
 package com.inet.lib.less;
 
-import java.io.IOException;
-
 /**
  * A reference to a variable
  */
@@ -41,7 +39,7 @@ class VariableExpression extends AbstractExpression {
      * {@inheritDoc}
      */
     @Override
-    public void appendTo( CssFormatter formatter ) throws IOException {
+    public void appendTo( CssFormatter formatter ) {
         getValue( formatter ).appendTo( formatter );
     }
 

@@ -26,8 +26,6 @@
  */
 package com.inet.lib.less;
 
-import java.io.IOException;
-
 /**
  * A CSS output that has not the layout of a rule like comments and directives.
  */
@@ -43,7 +41,7 @@ class CssPlainOutput extends CssOutput {
      * {@inheritDoc}
      */
     @Override
-    void appendTo( StringBuilder target, LessExtendMap lessExtends, CssFormatter formatter ) throws IOException {
+    void appendTo( StringBuilder target, LessExtendMap lessExtends, CssFormatter formatter ) {
         target.append( output );
     }
 }

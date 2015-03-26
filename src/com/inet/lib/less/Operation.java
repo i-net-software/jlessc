@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 Volker Berlin
+ * Copyright (c) 2014 - 2015 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,6 @@ package com.inet.lib.less;
 
 import static com.inet.lib.less.ColorUtils.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -155,7 +154,7 @@ class Operation extends AbstractExpression {
      * {@inheritDoc}
      */
     @Override
-    public void appendTo( CssFormatter formatter ) throws IOException {
+    public void appendTo( CssFormatter formatter ) {
         switch( getDataType( formatter ) ) {
             case BOOLEAN:
                 switch( operator ) {

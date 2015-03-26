@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 Volker Berlin
+ * Copyright (c) 2014 - 2015 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,7 +44,6 @@ import static com.inet.lib.less.ColorUtils.rgba;
 import static com.inet.lib.less.ColorUtils.toHSL;
 import static com.inet.lib.less.ColorUtils.toHSV;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -136,7 +135,7 @@ class FunctionExpression extends AbstractExpression {
      * {@inheritDoc}
      */
     @Override
-    public void appendTo( CssFormatter formatter ) throws IOException {
+    public void appendTo( CssFormatter formatter ) {
         try {
             switch( super.toString() ) {
                 case "%":
@@ -253,9 +252,8 @@ class FunctionExpression extends AbstractExpression {
     /**
      * Write the function without change. We does not know it. It can/must be a CSS function.
      * @param formatter the formatter
-     * @throws IOException if any I/= error occur on writting
      */
-    private void appendToCssFunction( CssFormatter formatter ) throws IOException {
+    private void appendToCssFunction( CssFormatter formatter ) {
         formatter.append( super.toString() ).append( '(' );
         for( int i=0; i<parameters.size(); i++ ) {
             if( i>0){
@@ -589,7 +587,7 @@ class FunctionExpression extends AbstractExpression {
         return;
     }
 
-    private void format( CssFormatter formatter ) throws IOException {
+    private void format( CssFormatter formatter ) {
         String fmt = get( 0 ).stringValue( formatter );
         int idx = 1;
         for( int i = 0; i < fmt.length(); i++ ) {
@@ -642,7 +640,7 @@ class FunctionExpression extends AbstractExpression {
     /**
      * Implementation of the escape function: http://lesscss.org/functions/#string-functions-escape
      */
-    private void escape( CssFormatter formatter ) throws IOException {
+    private void escape( CssFormatter formatter ) {
         String url = get( 0 ).stringValue( formatter );
         url = UrlUtils.removeQuote( url );
         for( int i = 0; i < url.length(); i++ ) {

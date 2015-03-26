@@ -26,7 +26,6 @@
  */
 package com.inet.lib.less;
 
-import java.io.IOException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -142,7 +141,7 @@ class CssFormatter implements Cloneable {
         }
     }
 
-    void format( LessParser parser, URL baseURL, StringBuilder target ) throws IOException {
+    void format( LessParser parser, URL baseURL, StringBuilder target ) {
         state.baseURL = baseURL;
         addVariables( parser.getVariables() );
         for( Formattable rule : parser.getRules() ) {
@@ -166,15 +165,6 @@ class CssFormatter implements Cloneable {
      */
     CssFormatter getHeader() {
         return state.header;//results.get( 0 );
-    }
-
-    /**
-     * Write this to the appendable.
-     * @param appendable the target
-     * @throws IOException if any I/O error occurs
-     */
-    void appendTo( Appendable appendable ) throws IOException {
-        appendable.append( output );
     }
 
     boolean isCharsetDirective(){
@@ -389,7 +379,7 @@ class CssFormatter implements Cloneable {
         return inlineMode;
     }
 
-    CssFormatter append( String str ) throws IOException {
+    CssFormatter append( String str ) {
         if( inlineMode ) {
             str = UrlUtils.removeQuote( str );
         }
@@ -397,7 +387,7 @@ class CssFormatter implements Cloneable {
         return this;
     }
 
-    CssFormatter appendColor( double color, String hint ) throws IOException {
+    CssFormatter appendColor( double color, String hint ) {
         if( !inlineMode && hint != null ) {
             output.append( hint );
         } else {
@@ -408,7 +398,7 @@ class CssFormatter implements Cloneable {
         return this;
     }
 
-    void appendHex( int value, int digits ) throws IOException {
+    void appendHex( int value, int digits ) {
         if( digits > 1 ) {
             appendHex( value >>> 4, digits-1 );
         }
@@ -429,7 +419,7 @@ class CssFormatter implements Cloneable {
         return this;
     }
 
-    CssFormatter appendValue( double value, String unit ) throws IOException {
+    CssFormatter appendValue( double value, String unit ) {
         append( value );
         append( unit );
         return this;
@@ -447,9 +437,8 @@ class CssFormatter implements Cloneable {
      * Start a new block with a list of selectors.
      * @param selectors the selectors
      * @return this
-     * @throws IOException 
      */
-    CssFormatter startBlock( String[] selectors ) throws IOException {
+    CssFormatter startBlock( String[] selectors ) {
         if( blockDeep == 0 ) {
             output = null;
             incInsets();
@@ -477,7 +466,7 @@ class CssFormatter implements Cloneable {
         }
     }
 
-    void startBlockImpl( String[] selectors ) throws IOException {
+    void startBlockImpl( String[] selectors ) {
         for( int i=0; i<selectors.length; i++ ) {
             if( i > 0 ) {
                 output.append( ',' );
@@ -492,7 +481,7 @@ class CssFormatter implements Cloneable {
         incInsets();
     }
 
-    CssFormatter endBlock() throws IOException {
+    CssFormatter endBlock() {
         blockDeep--;
         if( blockDeep == 0 ) {
             insets.setLength( 0 );
@@ -504,14 +493,14 @@ class CssFormatter implements Cloneable {
         return this;
     }
 
-    void endBlockImpl() throws IOException {
+    void endBlockImpl() {
         decInsets();
         insets();
         output.append( '}' );
         newline();
     }
 
-    void appendProperty( String name, Expression value ) throws IOException {
+    void appendProperty( String name, Expression value ) {
         insets();
         SelectorUtils.appendToWithPlaceHolder( this, name, 0, (LessObject)value );
         output.append( ':' );
@@ -528,25 +517,25 @@ class CssFormatter implements Cloneable {
         this.important = important;
     }
 
-    CssFormatter space() throws IOException {
+    CssFormatter space() {
         output.append( ' ' );
         return this;
     }
 
-    CssFormatter newline() throws IOException {
+    CssFormatter newline() {
         output.append( '\n' );
         return this;
     }
 
-    void semicolon() throws IOException {
+    void semicolon() {
         output.append( ';' );
     }
 
-    void insets() throws IOException {
+    void insets() {
         output.append( insets );
     }
 
-    CssFormatter comment( String msg ) throws IOException {
+    CssFormatter comment( String msg ) {
         getOutput().append( insets ).append( msg ).append( '\n' );
         return this;
     }

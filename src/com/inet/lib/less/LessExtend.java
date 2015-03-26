@@ -26,7 +26,6 @@
  */
 package com.inet.lib.less;
 
-import java.io.IOException;
 import java.util.ArrayDeque;
 
 /**
@@ -112,7 +111,7 @@ class LessExtend extends LessObject implements Formattable {
      * {@inheritDoc}
      */
     @Override
-    public void appendTo( CssFormatter formatter ) throws IOException {
+    public void appendTo( CssFormatter formatter ) {
         formatter.add( this );
     }
 }

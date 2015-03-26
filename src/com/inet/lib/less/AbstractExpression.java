@@ -28,8 +28,6 @@ package com.inet.lib.less;
 
 import static com.inet.lib.less.ColorUtils.*;
 
-import java.io.IOException;
-
 /**
  * Base expression with value formating.
  */
@@ -62,7 +60,7 @@ abstract class AbstractExpression extends LessObject implements Expression {
      * {@inheritDoc}
      */
     @Override
-    public void appendTo( CssFormatter formatter ) throws IOException {
+    public void appendTo( CssFormatter formatter ) {
         switch( getDataType( formatter ) ) {
             case BOOLEAN:
                 formatter.append( Boolean.toString( booleanValue( formatter ) ) );

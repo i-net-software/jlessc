@@ -26,7 +26,6 @@
  */
 package com.inet.lib.less;
 
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
@@ -900,8 +899,6 @@ class LessParser implements FormattableContainer {
      * Read a single character from reader or from back buffer
      * 
      * @return a character or -1 if EOF
-     * @throws IOException
-     *             If an I/O error occurs
      */
     private char read() {
         return reader.read();
