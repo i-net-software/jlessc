@@ -26,7 +26,6 @@
  */
 package com.inet.lib.less;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -94,7 +93,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
     }
 
     @Override
-    public void appendTo( CssFormatter formatter ) throws IOException {
+    public void appendTo( CssFormatter formatter ) {
         if( isValidCSS( formatter ) ) {
             try {
                 appendTo( null, formatter );
@@ -105,7 +104,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         }
     }
 
-    void appendTo( String[] mainSelector, CssFormatter formatter ) throws IOException {
+    void appendTo( String[] mainSelector, CssFormatter formatter ) {
         try {
             String[] sel = selectors;
 
@@ -169,7 +168,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         }
     }
 
-    private void media( String[] mediaSelector, String[] blockSelector, CssFormatter formatter ) throws IOException {
+    private void media( String[] mediaSelector, String[] blockSelector, CssFormatter formatter ) {
         if( properties.size() > 0 ) {
             int size0 = formatter.getOutputSize();
             CssFormatter block = formatter.startBlock( mediaSelector );
@@ -209,9 +208,8 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
      * 
      * @param sel
      * @param formatter
-     * @throws IOException
      */
-    private void ruleset( String[] sel, CssFormatter formatter ) throws IOException {
+    private void ruleset( String[] sel, CssFormatter formatter ) {
         formatter = formatter.startBlock( sel );
         appendPropertiesTo( formatter );
 
@@ -227,7 +225,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         formatter.endBlock();
     }
 
-    void appendMixinsTo( String[] parentSelector, CssFormatter formatter ) throws IOException {
+    void appendMixinsTo( String[] parentSelector, CssFormatter formatter ) {
         for( Formattable prop : properties ) {
             switch( prop.getType()) {
                 case MIXIN:
@@ -241,7 +239,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         }
     }
 
-    void appendPropertiesTo( CssFormatter formatter ) throws IOException {
+    void appendPropertiesTo( CssFormatter formatter ) {
         for( Formattable prop : properties ) {
             switch( prop.getType() ) {
                 case Formattable.RULE:
@@ -378,12 +376,8 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         try {
             appendTo( null, formatter );
         } catch( Exception ex ) {
-            try {
-                formatter.getOutput();
-                formatter.append( ex.toString() );
-            } catch( IOException e ) {
-                e.printStackTrace();
-            }
+            formatter.getOutput();
+            formatter.append( ex.toString() );
         }
         return formatter.releaseOutput();
     }

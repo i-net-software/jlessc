@@ -26,7 +26,6 @@
  */
 package com.inet.lib.less;
 
-import java.io.IOException;
 
 /**
  * Container for formatted CSS result.
@@ -37,7 +36,6 @@ abstract class CssOutput {
      * Write the this output to the target
      * @param target the target
      * @param formatter a formatter
-     * @throws IOException if any I/O error occur
      */
-    abstract void appendTo( StringBuilder target, LessExtendMap lessExtends, CssFormatter formatter ) throws IOException;
+    abstract void appendTo( StringBuilder target, LessExtendMap lessExtends, CssFormatter formatter );
 }

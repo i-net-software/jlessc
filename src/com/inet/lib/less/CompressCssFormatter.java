@@ -26,7 +26,6 @@
  */
 package com.inet.lib.less;
 
-import java.io.IOException;
 
 /**
  * A version of the CssFormatter that produce a compressed output.
@@ -73,10 +72,9 @@ class CompressCssFormatter extends CssFormatter {
     /**
      * {@inheritDoc}
      * @return 
-     * @throws IOException 
      */
     @Override
-    CssFormatter comment( String msg ) throws IOException {
+    CssFormatter comment( String msg ) {
         if( msg.startsWith( "/*!" ) ) {
             checkSemicolon();
             super.append( msg );
@@ -90,7 +88,7 @@ class CompressCssFormatter extends CssFormatter {
      * @return 
      */
     @Override
-    CssFormatter appendColor( double color, String hint ) throws IOException {
+    CssFormatter appendColor( double color, String hint ) {
         if( !inlineMode() ) {
             int red = ColorUtils.red( color );
             if( red % 17 == 0 ) {
@@ -114,10 +112,9 @@ class CompressCssFormatter extends CssFormatter {
      * Remove units if value is zero.
      * {@inheritDoc}
      * @return 
-     * @throws IOException 
      */
     @Override
-    CssFormatter appendValue( double value, String unit ) throws IOException {
+    CssFormatter appendValue( double value, String unit ) {
         if( value == 0 ) {
             switch( unit ) {
                 case "deg":
@@ -139,7 +136,7 @@ class CompressCssFormatter extends CssFormatter {
         wasSemicolon = true;
     }
 
-    private void checkSemicolon() throws IOException {
+    private void checkSemicolon() {
         if( wasSemicolon ) {
             wasSemicolon = false;
             super.semicolon();
@@ -149,10 +146,9 @@ class CompressCssFormatter extends CssFormatter {
     /**
      * {@inheritDoc}
      * @return 
-     * @throws IOException 
      */
     @Override
-    CssFormatter startBlock( String[] selectors ) throws IOException {
+    CssFormatter startBlock( String[] selectors ) {
         checkSemicolon();
         return super.startBlock( selectors );
     }
@@ -161,7 +157,7 @@ class CompressCssFormatter extends CssFormatter {
      * {@inheritDoc}
      */
     @Override
-    void appendProperty( String name, Expression value ) throws IOException {
+    void appendProperty( String name, Expression value ) {
         checkSemicolon();
         super.appendProperty( name, value );
     }
@@ -169,10 +165,9 @@ class CompressCssFormatter extends CssFormatter {
     /**
      * {@inheritDoc}
      * @return 
-     * @throws IOException 
      */
     @Override
-    CssFormatter endBlock() throws IOException {
+    CssFormatter endBlock() {
         wasSemicolon = false;
         return super.endBlock();
     }

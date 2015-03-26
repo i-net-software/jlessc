@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 Volker Berlin
+ * Copyright (c) 2014 - 2015 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -62,7 +62,7 @@ class UrlUtils {
     /**
      * Implementation of the function svg-Gradient
      */
-    static void svgGradient( CssFormatter formatter, List<Expression> parameters ) throws IOException {
+    static void svgGradient( CssFormatter formatter, List<Expression> parameters ) {
         if( parameters.size() < 3 ) {
             throw new LessException( "error evaluating function `svg-gradient expects direction, start_color [start_position], [color position,]..., end_color " );
         }

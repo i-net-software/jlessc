@@ -26,7 +26,6 @@
  */
 package com.inet.lib.less;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,7 +63,7 @@ class Mixin extends LessObject implements Formattable {
     }
 
     @Override
-    public void appendTo( CssFormatter formatter ) throws IOException {
+    public void appendTo( CssFormatter formatter ) {
         formatter.setImportant( important );
         try {
             for( MixinMatch match : getRules( formatter ) ) {
@@ -82,7 +81,7 @@ class Mixin extends LessObject implements Formattable {
         formatter.setImportant( false );
     }
 
-    void appendSubRules( String[] parentSelector, CssFormatter formatter ) throws IOException {
+    void appendSubRules( String[] parentSelector, CssFormatter formatter ) {
         try {
             for( MixinMatch match : getRules( formatter ) ) {
                 Rule rule = match.getRule();

@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 Volker Berlin
+ * Copyright (c) 2014 - 2015 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,6 @@
  */
 package com.inet.lib.less;
 
-import java.io.IOException;
 import java.text.ParsePosition;
 
 /**
@@ -65,7 +64,7 @@ class ValueExpression extends AbstractExpression {
      * {@inheritDoc}
      */
     @Override
-    public void appendTo( CssFormatter formatter ) throws IOException {
+    public void appendTo( CssFormatter formatter ) {
         if( type == UNKNOWN ) {
             eval( formatter );
         }

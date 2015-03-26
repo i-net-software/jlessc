@@ -26,8 +26,6 @@
  */
 package com.inet.lib.less;
 
-import java.io.IOException;
-
 /**
  * A CSS rule that start with an @ character
  */
@@ -61,7 +59,7 @@ class CssAtRule extends LessObject implements Formattable {
      * {@inheritDoc}
      */
     @Override
-    public void appendTo( CssFormatter formatter ) throws IOException {
+    public void appendTo( CssFormatter formatter ) {
         if( css.startsWith( "@charset" ) ) {
             if( formatter.isCharsetDirective() ) {
                 return; // write charset only once
