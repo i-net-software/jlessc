@@ -31,17 +31,9 @@ import java.io.IOException;
 /**
  * A version of the CssFormatter that produce a compressed output.
  */
-class CompressCssFormatter extends PlainCssFormatter {
+class CompressCssFormatter extends CssFormatter {
 
     boolean wasSemicolon;
-
-    /**
-     * {@inheritDoc}
-     */
-    void clean() {
-        super.clean();
-        wasSemicolon = false;
-    }
 
     /**
      * Create an instance.
@@ -53,9 +45,21 @@ class CompressCssFormatter extends PlainCssFormatter {
     /**
      * Do nothing.
      * {@inheritDoc}
+     * @return 
      */
     @Override
-    void space( Appendable output ) {
+    CssFormatter space() {
+        return this;
+    }
+
+    /**
+     * Do nothing.
+     * {@inheritDoc}
+     * @return 
+     */
+    @Override
+    CssFormatter newline() {
+        return this;
     }
 
     /**
@@ -63,35 +67,30 @@ class CompressCssFormatter extends PlainCssFormatter {
      * {@inheritDoc}
      */
     @Override
-    void newline( Appendable output ) {
-    }
-
-    /**
-     * Do nothing.
-     * {@inheritDoc}
-     */
-    @Override
-    void insets( Appendable output ) {
+    void insets() {
     }
 
     /**
      * {@inheritDoc}
+     * @return 
      * @throws IOException 
      */
     @Override
-    void comment( StringBuilder output, String msg ) throws IOException {
+    CssFormatter comment( String msg ) throws IOException {
         if( msg.startsWith( "/*!" ) ) {
-            checkSemicolon( output );
-            super.append( output, msg );
+            checkSemicolon();
+            super.append( msg );
         }
+        return this;
     }
 
     /**
      * Write a 3 digit color definition if possible.
      * {@inheritDoc}
+     * @return 
      */
     @Override
-    void appendColor( StringBuilder output, double color, String hint ) throws IOException {
+    CssFormatter appendColor( double color, String hint ) throws IOException {
         if( !inlineMode() ) {
             int red = ColorUtils.red( color );
             if( red % 17 == 0 ) {
@@ -99,79 +98,82 @@ class CompressCssFormatter extends PlainCssFormatter {
                 if( green % 17 == 0 ) {
                     int blue = ColorUtils.blue( color );
                     if( blue % 17 == 0 ) {
-                        output.append( '#' )
+                        super.append( '#' )
                         .append( Character.forDigit( red / 17, 16 ) )
                         .append( Character.forDigit( green / 17, 16 ) )
                         .append( Character.forDigit( blue / 17, 16 ) );
-                        return;
+                        return this;
                     }
                 }
             }
         }
-        super.appendColor( output, color, null );
+        return super.appendColor( color, null );
     }
 
     /**
      * Remove units if value is zero.
      * {@inheritDoc}
+     * @return 
      * @throws IOException 
      */
     @Override
-    void appendValue( StringBuilder output, double value, String unit ) throws IOException {
+    CssFormatter appendValue( double value, String unit ) throws IOException {
         if( value == 0 ) {
             switch( unit ) {
                 case "deg":
                 case "s":
                     break;
                 default:
-                    output.append( '0' );
-                    return;
+                    super.append( '0' );
+                    return this;
             }
         }
-        super.appendValue( output, value, unit );
+        return super.appendValue( value, unit );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    void semicolon( Appendable output ) {
+    void semicolon() {
         wasSemicolon = true;
     }
 
-    private void checkSemicolon( Appendable output ) throws IOException {
+    private void checkSemicolon() throws IOException {
         if( wasSemicolon ) {
             wasSemicolon = false;
-            super.semicolon( output );
+            super.semicolon();
         }
     }
 
     /**
      * {@inheritDoc}
+     * @return 
      * @throws IOException 
      */
     @Override
-    void startBlock( Appendable output, String[] selectors ) throws IOException {
-        checkSemicolon( output );
-        super.startBlock( output, selectors );
+    CssFormatter startBlock( String[] selectors ) throws IOException {
+        checkSemicolon();
+        return super.startBlock( selectors );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    void appendProperty( StringBuilder output, CssFormatter formatter, String name, Expression value ) throws IOException {
-        checkSemicolon( output );
-        super.appendProperty( output, formatter, name, value );
+    void appendProperty( String name, Expression value ) throws IOException {
+        checkSemicolon();
+        super.appendProperty( name, value );
     }
 
     /**
      * {@inheritDoc}
+     * @return 
      * @throws IOException 
      */
     @Override
-    void endBlock( Appendable output ) throws IOException {
+    CssFormatter endBlock() throws IOException {
         wasSemicolon = false;
-        super.endBlock( output );
+        return super.endBlock();
     }
 }

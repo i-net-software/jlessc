@@ -34,10 +34,10 @@ import java.io.IOException;
 abstract class CssOutput {
 
     /**
-     * Write the this output to the Appendable
-     * @param appendable the target
+     * Write the this output to the target
+     * @param target the target
      * @param formatter a formatter
      * @throws IOException if any I/O error occur
      */
-    abstract void appendTo( Appendable appendable, LessExtendMap lessExtends, PlainCssFormatter formatter ) throws IOException;
+    abstract void appendTo( StringBuilder target, LessExtendMap lessExtends, CssFormatter formatter ) throws IOException;
 }

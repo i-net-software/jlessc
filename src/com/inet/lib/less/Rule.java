@@ -374,7 +374,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
      */
     @Override
     public String toString() {
-        CssFormatter formatter = new CssFormatter( new PlainCssFormatter() );
+        CssFormatter formatter = new CssFormatter();
         try {
             appendTo( null, formatter );
         } catch( Exception ex ) {
