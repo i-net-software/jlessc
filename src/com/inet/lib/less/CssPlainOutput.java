@@ -43,7 +43,7 @@ class CssPlainOutput extends CssOutput {
      * {@inheritDoc}
      */
     @Override
-    void appendTo( Appendable appendable, LessExtendMap lessExtends, PlainCssFormatter formatter ) throws IOException {
-        appendable.append( output );
+    void appendTo( StringBuilder target, LessExtendMap lessExtends, CssFormatter formatter ) throws IOException {
+        target.append( output );
     }
 }

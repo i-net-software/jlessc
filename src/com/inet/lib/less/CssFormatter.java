@@ -29,11 +29,13 @@ package com.inet.lib.less;
 import java.io.IOException;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map.Entry;
 
 /**
@@ -93,8 +95,6 @@ class CssFormatter implements Cloneable {
 
         private int                                          rulesStackModCount;
 
-        private PlainCssFormatter                            formatter;
-
         private final List<CssOutput>                        results          = new ArrayList<>();
 
         private boolean                                      charsetDirective;
@@ -104,17 +104,26 @@ class CssFormatter implements Cloneable {
         private String[] selectors;
     }
 
+    private final static char[]             DIGITS    = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+
     private final SharedState               state;
 
-    private final ArrayDeque<StringBuilder> outputs = new ArrayDeque<>();
+    private final ArrayDeque<StringBuilder> outputs   = new ArrayDeque<>();
 
     private StringBuilder                   output;
 
+    private StringBuilder                   insets    = new StringBuilder();
+
+    private boolean                         important;
+
+    private boolean                         inlineMode;
+
+    private final DecimalFormat             decFormat = new DecimalFormat( "#.########", DecimalFormatSymbols.getInstance( Locale.ENGLISH ) );
+
     private int                             blockDeep;
 
-    CssFormatter( PlainCssFormatter formatter ) {
+    CssFormatter() {
         state = new SharedState();
-        state.formatter = formatter;
         state.header = copy( null );
         state.results.add( new CssPlainOutput( state.header.output ) ); // header
     }
@@ -133,7 +142,7 @@ class CssFormatter implements Cloneable {
         }
     }
 
-    void format( LessParser parser, URL baseURL, Appendable appendable ) throws IOException {
+    void format( LessParser parser, URL baseURL, StringBuilder target ) throws IOException {
         state.baseURL = baseURL;
         addVariables( parser.getVariables() );
         for( Formattable rule : parser.getRules() ) {
@@ -145,8 +154,9 @@ class CssFormatter implements Cloneable {
         }
         removeVariables( parser.getVariables() );
 
+        output = target;
         for( CssOutput result : state.results ) {
-            result.appendTo( appendable, state.lessExtends, state.formatter );
+            result.appendTo( target, state.lessExtends, this );
         }
     }
 
@@ -372,21 +382,37 @@ class CssFormatter implements Cloneable {
     }
 
     void setInineMode( boolean mode ) {
-        state.formatter.setInineMode( mode );
+        inlineMode = mode;
+    }
+
+    boolean inlineMode() {
+        return inlineMode;
     }
 
     CssFormatter append( String str ) throws IOException {
-        state.formatter.append( output, str );
+        if( inlineMode ) {
+            str = UrlUtils.removeQuote( str );
+        }
+        output.append( str );
         return this;
     }
 
     CssFormatter appendColor( double color, String hint ) throws IOException {
-        state.formatter.appendColor( output, color, hint );
+        if( !inlineMode && hint != null ) {
+            output.append( hint );
+        } else {
+            int argb = ColorUtils.argb( color );
+            output.append( '#' );
+            appendHex( argb, 6 );
+        }
         return this;
     }
 
     void appendHex( int value, int digits ) throws IOException {
-        state.formatter.appendHex( output, value, digits );
+        if( digits > 1 ) {
+            appendHex( value >>> 4, digits-1 );
+        }
+        output.append( DIGITS[ value & 0xF ] );
     }
 
     CssFormatter append( char ch ) {
@@ -395,17 +421,26 @@ class CssFormatter implements Cloneable {
     }
 
     CssFormatter append( double value ) {
-        state.formatter.append( output, value );
+        if( value == (int)value ) {
+            output.append( Integer.toString( (int)value ) );
+        } else {
+            output.append( decFormat.format( value ) );
+        }
         return this;
     }
 
     CssFormatter appendValue( double value, String unit ) throws IOException {
-        state.formatter.appendValue( output, value, unit );
+        append( value );
+        append( unit );
         return this;
     }
 
     void incInsets() {
-        state.formatter.incInsets();
+        insets.append( "  " );
+    }
+
+    void decInsets() {
+        insets.setLength( insets.length() - 2 );
     }
 
     /**
@@ -417,7 +452,7 @@ class CssFormatter implements Cloneable {
     CssFormatter startBlock( String[] selectors ) throws IOException {
         if( blockDeep == 0 ) {
             output = null;
-            state.formatter.incInsets();
+            incInsets();
             final List<CssOutput> results = state.results;
             if( results.size() > 0 ) {
                 CssOutput cssOutput = results.get( results.size() - 1 );
@@ -437,42 +472,82 @@ class CssFormatter implements Cloneable {
             return block;
         } else {
             blockDeep++;
-            state.formatter.startBlock( output, selectors );
+            startBlockImpl( selectors );
             return this;
         }
+    }
+
+    void startBlockImpl( String[] selectors ) throws IOException {
+        for( int i=0; i<selectors.length; i++ ) {
+            if( i > 0 ) {
+                output.append( ',' );
+                newline();
+            }
+            insets();
+            append( selectors[i] );
+        }
+        space();
+        output.append( '{' );
+        newline();
+        incInsets();
     }
 
     CssFormatter endBlock() throws IOException {
         blockDeep--;
         if( blockDeep == 0 ) {
-            state.formatter.clean();
+            insets.setLength( 0 );
+            inlineMode = false;
             state.selectors = null;
         } else {
-            state.formatter.endBlock( output );
+            endBlockImpl();
         }
         return this;
     }
 
+    void endBlockImpl() throws IOException {
+        decInsets();
+        insets();
+        output.append( '}' );
+        newline();
+    }
+
     void appendProperty( String name, Expression value ) throws IOException {
-        state.formatter.appendProperty( output, this, name, value );
+        insets();
+        SelectorUtils.appendToWithPlaceHolder( this, name, 0, (LessObject)value );
+        output.append( ':' );
+        space();
+        value.appendTo( this );
+        if( important ) {
+            output.append( " !important" );
+        }
+        semicolon();
+        newline();
     }
 
     void setImportant( boolean important ) {
-        state.formatter.setImportant( important );
+        this.important = important;
     }
 
     CssFormatter space() throws IOException {
-        state.formatter.space( output );
+        output.append( ' ' );
         return this;
     }
 
     CssFormatter newline() throws IOException {
-        state.formatter.newline( output );
+        output.append( '\n' );
         return this;
     }
 
+    void semicolon() throws IOException {
+        output.append( ';' );
+    }
+
+    void insets() throws IOException {
+        output.append( insets );
+    }
+
     CssFormatter comment( String msg ) throws IOException {
-        state.formatter.comment( getOutput(), msg );
+        getOutput().append( insets ).append( msg ).append( '\n' );
         return this;
     }
 
@@ -482,6 +557,6 @@ class CssFormatter implements Cloneable {
      * @return the format
      */
     DecimalFormat getFormat() {
-        return state.formatter.getFormat();
+        return decFormat;
     }
 }
