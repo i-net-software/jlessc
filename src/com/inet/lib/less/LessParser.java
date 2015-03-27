@@ -257,6 +257,7 @@ class LessParser implements FormattableContainer {
                     if( !comment( isWhitespace( builder ) ? currentRule : null ) ) {
                         builder.append( ch );
                     }
+                    wasWhite = false;
                     break;
                 case '(':
                     String cmd;
