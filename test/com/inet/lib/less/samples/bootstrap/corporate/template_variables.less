@@ -1,0 +1,38 @@
+/**********************************************************************
+ Local ScreenSize and Color Defintions
+ *********************************************************************/
+
+@display-mobile: ~"(max-width: " @screen-xs-max ~")";
+@display-not-mobile: ~"(min-width: " @screen-xs-max ~")";
+@display-tablet: ~"(min-width: " @screen-xs-max ~") and (max-width: " @screen-sm-max ~")";
+@display-desktop: ~"(min-width: " @screen-sm-max ~") and (max-width: " @screen-md-max ~")";
+@display-desktop-full-page: ~"(min-width: " @screen-lg-min ~")";
+
+@panel-default-heading-bg: @base-lightest;
+@panel-default-border: @base-color;
+
+@popover-title-bg: @base-lightest;
+@popover-bg: @base-lightest;
+@popover-arrow-color: @base-lightest;
+
+@footer-color: lighten(@body-bg, 5%);
+
+/**
+*  Color Scheme
+**/
+@base-color: #D2D5D8;
+@primary-color: #516492;
+@success-color: #00B700;
+@warning-color: #f0ad4e;
+@danger-color: #d9534f;
+@selection-color: #D9E6FB;
+
+// Font
+@font-color: #111111;
+@font-size: 13px;
+@headings-color: desaturate( lighten( @text-color, 30% ), 20% );
+
+// 
+@selection-color-hover: #eff6ff;
+@table-bg-hover: @selection-color-hover;
+@base-border: hsl(hue(@base-color),saturation(@base-color)*0.8,(100-lightness(@base-color))*0.3+lightness(@base-color));
