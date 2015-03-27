@@ -1,0 +1,1456 @@
+html {
+    -webkit-font-smoothing: antialiased;
+}
+
+html, body {
+    height: 100%;
+}
+
+.progress-cursor {
+    cursor: progress;
+}
+
+.form-group-top-spacing {
+    margin-top: 15px;
+}
+
+th {
+    color: @primary-color;
+}
+
+.wrapping-text {
+    white-space: normal;
+}
+
+.searchpanel::-ms-clear {
+    display: none;
+}
+
+/**********************************************************************
+ Plain Mode is the one where only centered elements will be displayed
+ This applies for the Modul selection, Login, Logout and error module
+ *********************************************************************/
+html.plain {
+    background: url('inet/img/background-bottom.png'), url('inet/img/cc-background-top-style.png');
+    background-color: @body-bg;
+    background-position: right bottom, left top;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+
+    body {
+        background-color: transparent;
+    }
+
+    .navigation {
+        background-color: transparent;
+        -webkit-box-shadow: none !important;
+        box-shadow: none !important;
+    }
+
+    .container-fluid {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+
+    .content-table-wrapper {
+        display: table;
+
+        min-height: 100%;
+        height: 100% !important;
+        height: auto;
+
+        width: 100%;
+
+        & > .content-row-wrapper {
+            display: table-row;
+
+            & > .content-wrapper {
+                display: table-cell;
+                vertical-align: middle;
+                margin: 0 auto 0;
+            }
+        }
+    }
+
+    @media @display-mobile {
+        background-attachment: scroll, fixed;
+
+        &.full-sized, &.full-sized body {
+            height: auto;
+
+            .footer {
+                position: relative !important;
+                bottom: 0 !important;
+                opacity: 1 !important;
+                background-color: @body-bg;
+                box-shadow: none;
+                border-top: 1px solid darken(@body-bg, 10%);
+
+                .handle small {
+                    font-size: @font-size;
+                }
+                .handle {
+                    padding: 10px;
+                }
+            }
+
+        }
+
+        .navigation {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        /*
+                &:not(.full-sized) div.sticky-pusher {
+                    position: absolute;
+                    bottom: 0;
+                    height: 0;
+                }
+        */
+    }
+
+    @media @display-not-mobile {
+        div.sticky-pusher {
+            height: 0px !important;
+        }
+    }
+
+    .top-navigation {
+        color: @font-color;
+    }
+}
+
+/**********************************************************************
+ Mixin for the Navigation Bar. Everything that affects the height of
+ the bar - or needs to be affected can be set to it in here.
+ *********************************************************************/
+.navigation-spacing(@spacing) {
+
+    .navigation {
+        height: @spacing;
+    }
+
+    .top-navigation .username, .top-navigation .app-name a {
+        color: @navbar-inverse-link-color;
+    }
+
+    .container-fluid {
+        padding-left: 0px !important;
+        padding-right: 0px !important;
+    }
+
+    .content-wrapper {
+        /* to center properly it needs the same on top and bottom */
+        padding-top: @spacing + 20px;
+        padding-bottom: 20px;
+    }
+
+    @media @display-not-mobile {
+        html.plain .content-wrapper {
+            padding-bottom: 2*@spacing + 20px;
+        }
+    }
+
+    @media @display-mobile {
+
+        .side-navigation {
+            height: auto !important;
+        }
+    }
+
+    .top-navigation .top-navigation-item, .side-navigation .dropdown-menu ul * {
+        line-height: @spacing;
+    }
+
+    div.app-name ul.dropdown-menu li div {
+        height: @spacing;
+    }
+
+    .app-name {
+        height: @spacing;
+    }
+
+    .side-navigation-wrapper {
+        padding-top: @spacing;
+
+        @media @display-mobile {
+            height: @spacing;
+        }
+    }
+
+    .header-table-wrapper-inner {
+        height: @spacing;
+    }
+
+}
+
+/**********************************************************************
+ Top-Navigation is the right side of the upper navigation bar
+ *********************************************************************/
+.top-navigation {
+    height: 100%;
+
+    &.pull-right {
+        margin: 0px 10px;
+    }
+
+    & > div {
+        height: 100%;
+    }
+
+    ul {
+        margin-bottom: 0px;
+        padding-left: 0px;
+        width: 100%;
+    }
+
+    li {
+        display: inline;
+        vertical-align: middle;
+    }
+
+    li a span {
+        padding-left: 5px;
+    }
+}
+
+/**********************************************************************
+ Definition of the Side-Navigation and all its trees.
+ *********************************************************************/
+.navigation .side-navigation {
+    z-index: 2;
+
+    @media @display-not-mobile {
+        position: fixed;
+    }
+
+    font-weight: normal;
+    line-height: @line-height-base;
+
+    .side-navigation-wrapper {
+
+        ul li a {
+            color: @font-color;
+        }
+
+        ul li a:hover, ul li a:focus {
+            text-decoration: none;
+            background-color: @dropdown-link-hover-bg;
+        }
+
+        @media @display-mobile {
+            padding: 0;
+        }
+
+        @media @display-not-mobile {
+            height: 100%;
+        }
+    }
+
+    @media @display-not-mobile {
+        .side-navigation-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    .side-navigation-content ul {
+        overflow-y: auto;
+        width: 100%;
+        max-height: 100%;
+    }
+
+    .side-navigation-content .side-navigation-tree, .side-navigation-content .side-navigation-tree-xs {
+        height: 100%;
+    }
+
+    // This is for app-name and the other button
+    .dropdown-toggle, ul.dropdown-menu li {
+        display: table;
+        height: 100%;
+        width: 100%;
+
+        a.clickable, &.visible-xs {
+            padding: 0 10px;
+        }
+
+        @media @display-not-mobile {
+            a.clickable > *:not(:last-child) {
+                padding-right: 10px;
+            }
+        }
+    }
+
+    .app-name {
+        z-index: 3;
+        // background-color: @brand-primary;
+        display: block;
+
+        div.dropdown-toggle *, ul.dropdown-menu li * {
+            display: table-cell;
+            vertical-align: middle;
+            margin: 0;
+        }
+
+        ul.dropdown-menu {
+            @media @display-not-mobile {
+                display: block;
+                visibility: hidden;
+                position: relative;
+                top: 0px;
+                padding: 0px;
+                margin: 0px;
+            }
+
+            min-width: 100%;
+            background-color: @body-bg;
+            border: none;
+
+            li a.clickable {
+                padding: 10px;
+            }
+        }
+
+        &.open ul.dropdown-menu {
+            visibility: visible;
+        }
+
+        ul a:hover, ul a:focus {
+            text-decoration: underline;
+            /*background-color: @dropdown-link-hover-bg !important;*/
+        }
+    }
+
+    .app-name, .app-name a {
+        color: @font-color-inverse;
+    }
+
+    .side-navigation-wrapper ul li a {
+
+        @media @display-not-mobile {
+            white-space: nowrap;
+        }
+
+        padding-top: 3px;
+        padding-bottom: 3px;
+    }
+
+    /**********************************************************************
+     The following list styles are for the left handside navigation tree
+     *********************************************************************/
+    ul {
+        list-style-type: none;
+        padding-left: 0px;
+    }
+
+    li {
+        display: none;
+        @media @display-mobile {
+            display: block;
+        }
+    }
+
+    li a {
+        padding-right: 20px;
+    }
+
+    li.visible {
+        display: block;
+    }
+
+    li.level0 a {
+        padding-left: 15px;
+    }
+
+    li.level1 a {
+        padding-left: 30px;
+    }
+
+    li.level2 a {
+        padding-left: 45px;
+    }
+
+    li.level3 a {
+        padding-left: 60px;
+    }
+
+    li.level4 a {
+        padding-left: 75px;
+    }
+    /**********************************************************************
+     End of list
+     *********************************************************************/
+}
+
+/**********************************************************************
+ Sticky Footer
+ *********************************************************************/
+.footer {
+    z-index: 15;
+
+    // Hide Footer until it has its ID to prevent it floating arround
+    display: none;
+    &[id] {
+        display: block;
+    }
+
+    text-align: right;
+
+    background-color: @footer-color;
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.2);
+
+    // Pushes to the very end for normal pages that are not as high as the window.
+    html:not(.full-sized) &:not(.sticky) {
+        bottom: 0px;
+        position: absolute;
+        width: 100%;
+    }
+
+    .logoposition {
+        position: absolute;
+        left: 10px;
+        top: 5px;
+        bottom: 5px;
+    }
+
+    .disclaimer {
+        display: table;
+        height: 100%;
+    }
+
+    @media @display-not-mobile {
+        &.sticky .disclaimer {
+            opacity: 0;
+            transition: opacity 500ms ease-in-out;
+        }
+    }
+
+    .logo, .supportlink {
+        display: table-cell;
+        vertical-align: middle;
+        padding: 10px 10px;
+    }
+
+    .handle {
+        text-align: right;
+        padding: 3px;
+
+    }
+
+    transition: bottom 500ms ease-in-out;
+
+    &:hover {
+        bottom: 0px !important;
+
+        .disclaimer {
+            opacity: 1;
+        }
+    }
+
+}
+
+@rul: 20px;
+@rur: 5px;
+@rbl: @rur;
+@rbr: @rul;
+
+.user-options {
+    position: absolute;
+}
+
+.body {
+    -ms-overflow-style: scrollbar;
+    background-color: @body-bg;
+}
+
+.text-ellipsis {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.navigation {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    background-color: @navbar-inverse-bg;
+    -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    z-index: 14;
+}
+
+.side-width {
+    width: 100%;
+}
+
+.panel {
+    border-radius: @rul+1 @rur+1 @rbr+1 @rbl+1;
+}
+
+.panel-body {
+    border-radius: @rul @rur @rbr @rbl;
+}
+
+.panel-heading {
+    border-radius: @rul @rur 0px 0px;
+}
+
+.module {
+    box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.25s ease-in-out;
+}
+
+.module:hover {
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+}
+
+.module-text {
+    font-size: @font-size;
+    font-weight: normal;
+    overflow: visible;
+
+    .lheight(@font-size) when ( @font-size < 8 ) {
+        line-height: 34px;
+    }
+    .lheight(@font-size) when ( @font-size = 8) {
+        line-height: 33px;
+    }
+    .lheight(@font-size) when ( @font-size = 9) {
+        line-height: 30px;
+    }
+    .lheight(@font-size) when ( @font-size = 10) {
+        line-height: 26px;
+    }
+    .lheight(@font-size) when ( @font-size = 11) {
+        line-height: 24px;
+    }
+    .lheight(@font-size) when ( @font-size = 12) {
+        line-height: 20px;
+    }
+    .lheight(@font-size) when ( @font-size = 13) {
+        line-height: 18px;
+    }
+    .lheight(@font-size) when ( @font-size = 14) {
+        line-height: 1px;
+    }
+    .lheight(@font-size) when ( @font-size = 15) {
+        line-height: 12px;
+    }
+    .lheight(@font-size) when ( @font-size = 16) {
+        line-height: 10px;
+    }
+    .lheight(@font-size) when ( @font-size = 17) {
+        line-height: 6px;
+    }
+    .lheight(@font-size) when ( @font-size = 18) {
+        line-height: 4px;
+    }
+    .lheight(@font-size) when ( @font-size > 18) {
+        line-height: 1px;
+    }
+
+    .lheight(@font-size)
+
+}
+
+.error-header {
+    padding-top: 0px;
+    margin-top: 0px;
+    word-break: break-word;
+}
+
+.login-hint {
+    margin-bottom: @padding-large-vertical*3;
+}
+
+*[disabled], *[readonly], *[disabled] .form-control, .disabled, .disabled > * {
+    cursor: initial !important;
+    color: @text-muted !important;
+}
+
+.dialog-optional-actions {
+    margin-left: 10px;
+    display: inline-block;
+}
+
+@media @display-not-mobile {
+    .show-on-row-hover {
+        visibility: hidden;
+    }
+
+    tr:hover .show-on-row-hover {
+        visibility: visible;
+    }
+}
+
+/*
+ Popover von Bootstrap
+ */
+.popover {
+    border-radius: @rul+1 @rur+1 @rbr+1 @rbl+1;
+    max-width: none;
+    background-color: @base-content;
+}
+
+.modules .popover {
+    @media @display-mobile {
+        left: -40px !important;
+        right: -40px !important;
+    }
+}
+
+.popover-title {
+    word-wrap: break-word;
+    text-align: center;
+    border-radius: @rul @rur 0px 0px;
+    cursor: move;
+}
+
+.popover-title-text {
+    cursor: text;
+}
+
+.popover-content {
+    text-align: center;
+    background-color: @base-content;
+    border-radius: 0px 0px @rbr @rbl;
+    max-height: 400px;
+    overflow: auto;
+    padding: 9px 17px 9px 14px; /* default war 9 14 9 14 +3 damit wenn vertical scrollbar kommt keine horizontale immer dazukommt, bei FF hätte +1 genügt*/
+    td {
+        padding: @padding-small-vertical @padding-small-horizontal;
+    }
+}
+
+.popover .popoverclose {
+    margin-left: 3px;
+}
+
+.popover .arrowHidden {
+    opacity: 0;
+}
+
+.popover .arrowFadeIn {
+    -webkit-transition: opacity 3s;
+    -moz-transition: opacity 3s;
+    -o-transition: opacity 3s;
+    -ms-transition: opacity 3s;
+    transition: opacity 3s;
+}
+
+.popover.top > .arrow:after {
+    border-top-color: @base-content;
+}
+
+.popover.bottom > .arrow:after {
+    border-bottom-color: @base-content;
+}
+
+.popover.left > .arrow:after {
+    border-left-color: @base-content;
+}
+
+.popover.right > .arrow:after {
+    border-right-color: @base-content;
+}
+
+.modal-content {
+    background-color: @body-bg;
+}
+
+.modal-header {
+    background-color: inherit;
+}
+
+.modules .btn {
+    border-radius: @rul @rur @rbr @rbl;
+}
+
+/**********************************************************************
+ Side-Bar Tree and others below a nav class element
+ *********************************************************************/
+.nav {
+    .visible, .visible:hover .tree-child {
+        transition: opacity 0.3s ease, -webkit-transform 0.3s 0.5s ease;
+        transition: opacity 0.3s ease, transform 0.3s 0.5s ease;
+    }
+
+    .tree-child {
+        .icon-tree-collapsed;
+
+        position: relative;
+        top: 3px;
+        left: -3px;
+        opacity: 0.2;
+
+        @media @display-mobile {
+            display: none;
+        }
+    }
+
+    .visible:hover .tree-child {
+        opacity: 0.5;
+    }
+
+    .expanded .tree-child {
+        /*background-image: url(../lib/inet/img/tree_expanded.png) !important;*/
+        .icon-tree-expanded;
+    }
+
+    .tree-empty {
+        background-repeat: no-repeat;
+        width: 12px;
+        height: 16px;
+        position: relative;
+        display: inline-block;
+        z-index: 100000;
+
+        @media @display-mobile {
+            display: none;
+        }
+    }
+}
+
+/*XS*/
+@media @display-mobile {
+
+    .navigation-spacing(40px);
+
+    // Needs to be set here so that it does not consume space at the bottom
+    .sticky-pusher.sticky {
+        position: fixed;
+    }
+
+    .content-table-wrapper {
+        padding: 0 !important;
+    }
+
+    .side-navigation-wrapper img {
+        width: 28px;
+    }
+
+    div.side-navigation-content {
+        line-height: 5px;
+    }
+
+    div.app-name img {
+        width: 28px;
+        height: 28px;
+    }
+
+    div.app-name div {
+        font-size: 16px;
+    }
+
+    .dropdown-menu {
+        padding: 0 !important;
+        margin: 0 !important;
+        border: none;
+        border-radius: 0;
+    }
+
+    .panel-image {
+        width: 48px;
+        height: 48px;
+        margin: 10px 0px;
+    }
+
+    .module img {
+        width: 64px;
+        height: 64px;
+        margin: 10px;
+    }
+
+    .module {
+        margin: 15px 0 2px 0;
+    }
+
+    .open > .top-menu {
+        position: fixed;
+
+        // Fill whole page, no matter how much content there really is.
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: 40px;
+        max-height: 100%;
+        margin-bottom: -40px;
+    }
+
+    .navigation {
+        z-index: 100;
+    }
+}
+
+/*SM*/
+@media @display-tablet {
+
+    .navigation-spacing(40px);
+
+    .side-width {
+        min-width: 170px;
+    }
+
+    div.app-name img {
+        width: 28px;
+        height: 28px;
+    }
+
+    div.app-name div {
+        font-size: 16px;
+    }
+
+    .panel-image {
+        width: 64px;
+        height: 64px;
+    }
+
+    .module img {
+        width: 96px;
+        height: 96px;
+        margin: 10px;
+    }
+
+    .module {
+        margin: 15px 0 2px 0;
+    }
+}
+
+/*MD*/
+@media @display-desktop {
+
+    .navigation-spacing(50px);
+
+    .side-width {
+        min-width: 200px;
+    }
+
+    div.app-name img {
+        width: 36px;
+        height: 36px;
+    }
+
+    div.app-name div {
+        font-size: 18px;
+    }
+
+    .panel-image {
+        width: 64px;
+        height: 64px;
+    }
+
+    .module img {
+        width: 96px;
+        height: 96px;
+        margin: 10px;
+    }
+
+    .module {
+        margin: 25px 0 2px 0;
+    }
+}
+
+/*LG*/
+@media @display-desktop-full-page {
+
+    .navigation-spacing(55px);
+
+    .side-width {
+        min-width: 250px;
+    }
+
+    div.app-name img {
+        width: 40px;
+        height: 40px;
+    }
+
+    div.app-name div {
+        font-size: 20px;
+    }
+
+    .panel-image {
+        width: 64px;
+        height: 64px;
+    }
+
+    .module img {
+        width: 128px;
+        height: 128px;
+        margin: 10px;
+    }
+
+    .module {
+        margin: 25px 0 2px 0;
+    }
+}
+
+/**********************************************************************
+ HAMBURGER MENU
+ *********************************************************************/
+.navigation .dropdown {
+
+    .menubutton {
+
+        &, &:before, &:after {
+            display: inline-block;
+            width: 3.4rem;
+            height: 0.4rem;
+            background-color: @navbar-inverse-link-color;
+            position: relative;
+            border-radius: 2px;
+            top: 8px;
+            transition: top 0.3s ease, -webkit-transform 0.3s 0.5s ease;
+            transition: top 0.3s ease, transform 0.3s 0.5s ease;
+        }
+
+        &:before, &:after {
+            content: '';
+            position: absolute;
+            top: 9px;
+        }
+
+        &:before {
+            top: -9px;
+        }
+    }
+
+    &.open .menubutton:after,
+    &.open .menubutton:before {
+        top: 0px;
+    }
+}
+
+/**********************************************************************
+ Search Panel (in Help Page)
+ *********************************************************************/
+.search-pane {
+    width: 100%;
+    padding: 10px;
+    position: relative;
+    z-index: 1;
+
+    input {
+        padding-right: 30px;
+    }
+
+    .search-delete {
+        position: absolute;
+        right: 16px;
+        top: 17px;
+    }
+}
+
+.scrollable-search-menu {
+    height: auto;
+    max-height: 300px;
+    overflow-x: hidden;
+}
+
+.searchhighlight {
+    background-color: rgb(242, 222, 222);
+    border: 1px solid rgb(235, 204, 209);
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.flotr-mouse-value {
+    background-color: @tooltip-bg !important;
+    color: @tooltip-color !important;
+    .opacity(@tooltip-opacity) !important;
+}
+
+.hide-if-empty:empty {
+    display: none;
+}
+
+/*
+Pagination Object
+*/
+ul.pagination {
+    cursor: pointer;
+}
+
+.pagination {
+    margin-top: 0px;
+
+}
+
+/*
+Tooltip from Bootstrap UI
+*/
+.widget-view .tooltip-inner {
+    max-width: none;
+}
+
+.body .tooltip-inner td {
+    padding: @padding-xs-vertical @padding-xs-horizontal;
+    text-align: left;
+}
+
+/*
+    SortHeader and ComboLink
+*/
+.widget-view .open > .dropdown-menu {
+    max-height: 250px;
+    overflow: auto;
+}
+
+.open.combolink > .dropdown-menu > li {
+    cursor: pointer;
+}
+
+.combolink > .dropdown-toggle, .sortHeader {
+    cursor: pointer;
+}
+
+.combolink > a.dropdown-toggle > .ng-binding {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 18px;
+    margin-right: -20px;
+    display: inline-block;
+    max-width: 100%;
+    vertical-align: middle;
+}
+
+.combolink a:hover {
+    text-decoration: none;
+}
+
+.overflowpopup {
+    overflow: auto;
+
+    max-height: 200px;
+    white-space: nowrap;
+
+    @media @display-mobile {
+        word-break: break-all;
+    }
+}
+
+/**********************************************************************
+ Vertical Center for e.g. statistics module.
+ *********************************************************************/
+.vertical-center {
+    display: table;
+    height: 100%;
+
+    > * {
+        display: table-cell;
+        vertical-align: middle;
+    }
+}
+
+.vertical-bottom {
+    vertical-align: bottom !important;
+}
+
+.vertical-sub {
+    vertical-align: sub !important;
+}
+
+/**********************************************************************
+ Styled Content
+ *********************************************************************/
+
+.contentblock {
+    margin-bottom: 20px;
+}
+
+/**********************************************************************
+ Image Animation
+ *********************************************************************/
+@-moz-keyframes spin {
+    100% {
+        -moz-transform: rotate(360deg);
+    }
+}
+
+@-webkit-keyframes spin {
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+.spin-animation {
+    -webkit-animation: spin 2s linear infinite;
+    -moz-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    margin: 4px;
+}
+
+.mouse-pointer {
+    cursor: pointer !important;
+}
+
+.mouse-default {
+    cursor: default !important;
+}
+
+/* ************************************************
+   Loading indicator
+************************************************ */
+
+@keyframes rotateicon {
+    from {
+        transform: scale(1) rotate(0deg);
+    }
+    to {
+        transform: scale(1) rotate(360deg);
+    }
+}
+
+@-webkit-keyframes rotateicon {
+    from {
+        -webkit-transform: scale(1) rotate(0deg);
+    }
+    to {
+        -webkit-transform: scale(1) rotate(360deg);
+    }
+}
+
+.loadingindicator {
+    visibility: hidden;
+}
+
+.top-navigation:last-child {
+    padding-right: 16px;
+    vertical-align: middle;
+}
+
+.loadingindicatorstatic {
+    width: 16px;
+    height: 16px;
+    margin-right: 10px;
+    display: inline-block !important;
+    animation-name: rotateicon;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    -webkit-animation-name: rotateicon;
+    -webkit-animation-duration: 1s;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+}
+
+.loadingindicator.loading {
+    visibility: visible;
+    animation-name: rotateicon;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    -webkit-animation-name: rotateicon;
+    -webkit-animation-duration: 1s;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+}
+
+/* ************************************************
+   Loading overlay
+************************************************ */
+.loadingoverlay {
+    z-index: 999999;
+    position: fixed;
+    display: none;
+}
+
+.loadingoverlayblending {
+    height: 100%;
+    width: 100%;
+    display: block;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    background: @body-bg;
+    opacity: 0.75;
+}
+
+.loadingoverlaywrapper {
+    height: 100%;
+    width: 100%;
+    display: table;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+}
+
+.loadingoverlaywrapperinner {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.loadingoverlaycontent {
+    display: inline;
+    padding: 30px;
+    background: @panel-bg;
+    opacity: 1;
+}
+
+.loadingoverlaycontent h4 {
+    display: inline;
+}
+
+.loadingoverlaycontent img {
+    margin-right: 20px;
+}
+
+.notificationoverlay {
+    z-index: 1000000;
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    top: 0px;
+    left: 0px;
+}
+
+/* ************************************************
+   Notification overlay
+************************************************ */
+
+.notificationoverlayblending {
+    height: 100%;
+    width: 100%;
+    display: block;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    background: @body-bg;
+    opacity: 0.75;
+}
+
+.notificationoverlaywrapper {
+    height: 100%;
+    width: 100%;
+    display: table;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+}
+
+.notificationoverlaywrapperinner {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+/* ************************************************
+   Overlay Fade
+************************************************ */
+
+.overlayfade {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background: @body-bg;
+}
+
+.overlayfade.ng-hide-add,
+.overlayfade.ng-hide-remove {
+    /* this needs to be here to make it visible during the animation
+       since the .ng-hide class is already on the element rendering
+       it as hidden. */
+    display: block !important;
+    -webkit-transition: 0.3s linear all;
+    transition: 0.3s linear all;
+}
+
+.overlayfade.ng-hide-add,
+.overlayfade.ng-hide-remove.ng-hide-remove-active {
+    opacity: 1;
+}
+
+.overlayfade.ng-hide,
+.overlayfade.ng-hide-add.ng-hide-add-active,
+.overlayfade.ng-hide-remove {
+    opacity: 0;
+}
+
+/* ************************************************
+   Notify
+************************************************ */
+
+.notify.ng-enter {
+    -webkit-transition: 0.3s linear all;
+    transition: 0.3s linear all;
+    opacity: 0;
+    max-height: 0px;
+}
+
+.notify.ng-enter-active {
+    opacity: 1;
+    max-height: 100px;
+}
+
+.notify.ng-leave {
+    -webkit-transition: 0.3s linear all;
+    transition: 0.3s linear all;
+    opacity: 1;
+    max-height: 100px;
+}
+
+.notify.ng-leave-active {
+    opacity: 0;
+    max-height: 0px;
+}
+
+/* ************************************************
+   Dialog overlay
+************************************************ */
+
+.dialogoverlay {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
+.dialogoverlayblending {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background: @modal-content-bg;
+    opacity: 0.85;
+}
+
+.dialogoverlaywrapper {
+    height: 100%;
+    width: 100%;
+    display: table;
+}
+
+.dialogoverlaywrapperinner {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.dialogserviceposition {
+    position: absolute;
+    left: 0px;
+    top: 100px;
+}
+
+@media @display-mobile {
+    .dialogserviceposition.filechooser {
+        overflow-y: auto;
+        top: 0px;
+        max-height: 100%;
+        padding-top: 15px;
+        padding-bottom: 15px;
+    }
+}
+
+/* ************************************************
+   Basic Helper
+************************************************ */
+.linewrap {
+    word-break: break-word;
+}
+
+td.linewrap {
+    white-space: normal !important;
+}
+
+/**********************************************************************
+ Tooltip
+ *********************************************************************/
+.tooltip-inner {
+    max-width: none !important;
+}
+
+/**********************************************************************
+ NoScript Secion
+ *********************************************************************/
+noscript div.noscript {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    background: @body-bg;
+    text-align: center;
+    color: @alert-warning-text;
+    font-weight: bold;
+    padding-top: 33%;
+    z-index: 1000;
+}
+
+noscript div.noscript span {
+    border-bottom: 1px solid @alert-warning-border;
+    padding-bottom: 10px;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+/*******************************************************************
+FIX BOOTSTRAP HAS-* CLASSES: PROVIDE THE BORDER AS SECOND PARAMETER
+ *******************************************************************/
+.has-success {
+    .form-control-validation (@state-success-text; @state-success-border; @state-success-bg);
+}
+
+.has-warning {
+    .form-control-validation (@state-warning-text; @state-warning-border; @state-warning-bg);
+}
+
+.has-error {
+    .form-control-validation (@state-danger-text; @state-danger-border; @state-danger-bg);
+}
+
+.table-content-editable {
+    padding-left: 11px !important;
+    padding-top: 15px !important;
+    padding-bottom: 4px !important;
+}
+
+.formfield-dropdown {
+    left: @grid-gutter-width/2;
+    right: @grid-gutter-width/2;
+	max-height: 300px;
+	overflow-y: auto;
+}
+
+inlinerenderer .formfield-dropdown {
+    left: 0px;
+    right: 0px;
+}
+
+inlinerenderer input,
+inlinerenderer > div,
+inlinerenderer button {
+    height: 100% !important;
+}
+
+label[disabled] {
+    color: @gray-light;
+}
+
+.dimmed {
+    opacity: 0.5;
+}
+
+.dimmed-more {
+    opacity: 0.3;
+}
+
+.uppercase {
+    text-transform: uppercase;
+}
+
+.font-small {
+    font-size: 85%;
+}
