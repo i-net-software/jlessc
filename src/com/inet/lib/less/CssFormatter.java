@@ -99,9 +99,9 @@ class CssFormatter implements Cloneable {
         private boolean                                      charsetDirective;
 
         private CssFormatter                                 header;
-
-        private String[] selectors;
     }
+
+    private String[] selectors;
 
     private final static char[]             DIGITS    = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
@@ -135,6 +135,7 @@ class CssFormatter implements Cloneable {
         try {
             CssFormatter formatter = (CssFormatter)clone();
             formatter.output = output == null ? state.pool.get() : output;
+            formatter.insets = state.pool.get();
             return formatter;
         } catch( CloneNotSupportedException ex ) {
             throw new LessException( ex );
@@ -224,7 +225,7 @@ class CssFormatter implements Cloneable {
     }
 
     void add( LessExtend lessExtend ) {
-        state.lessExtends.add( lessExtend, state.selectors );
+        state.lessExtends.add( lessExtend, this.selectors );
     }
 
     URL getBaseURL() {
@@ -441,7 +442,6 @@ class CssFormatter implements Cloneable {
     CssFormatter startBlock( String[] selectors ) {
         if( blockDeep == 0 ) {
             output = null;
-            incInsets();
             final List<CssOutput> results = state.results;
             if( results.size() > 0 ) {
                 CssOutput cssOutput = results.get( results.size() - 1 );
@@ -449,20 +449,32 @@ class CssFormatter implements Cloneable {
                     CssRuleOutput ruleOutput = (CssRuleOutput)cssOutput;
                     if( Arrays.equals( selectors, ruleOutput.getSelectors() ) ) {
                         CssFormatter block = copy( ruleOutput.getOutput() );
+                        block.incInsets();
                         block.blockDeep++;
                         return block;
                     }
                 }
             }
-            state.selectors = selectors;
             CssFormatter block = copy( null );
+            block.incInsets();
+            block.selectors = selectors;
             results.add( new CssRuleOutput( selectors, block.output ) );
             block.blockDeep = 1;
             return block;
         } else {
-            blockDeep++;
-            startBlockImpl( selectors );
-            return this;
+            if( selectors[0].startsWith( "@media" ) ) {
+                CssFormatter block = copy( null );
+                block.incInsets();
+                System.err.println(this.selectors);
+                String[] sel = new String[]{ this.selectors[0] + " and " + selectors[0].substring( 6 ).trim() };
+                state.results.add( new CssRuleOutput( sel, block.output ) );
+                block.blockDeep = 1;
+                return block;
+            } else {
+                blockDeep++;
+                startBlockImpl( selectors );
+                return this;
+            }
         }
     }
 
@@ -484,9 +496,9 @@ class CssFormatter implements Cloneable {
     CssFormatter endBlock() {
         blockDeep--;
         if( blockDeep == 0 ) {
-            insets.setLength( 0 );
+            state.pool.free( insets );
+            insets = null;
             inlineMode = false;
-            state.selectors = null;
         } else {
             endBlockImpl();
         }
