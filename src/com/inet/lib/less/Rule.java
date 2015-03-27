@@ -110,14 +110,12 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
 
             for( int s = 0; s < sel.length; s++ ) {
                 final String selector = sel[s];
-                int pos = selector.startsWith( "@{" ) ? 0 : selector.indexOf( "@", 1 );
-                if( pos >= 0 ) {
+                String str = SelectorUtils.replacePlaceHolder( formatter, selector, this );
+                if( selector != str ) {
                     if( sel == selectors ) {
                         sel = sel.clone(); // we does not want change the declaration of this selectors
                     }
-                    formatter.addOutput();
-                    SelectorUtils.appendToWithPlaceHolder( formatter, selector, pos, this );
-                    sel[s] = formatter.releaseOutput();
+                    sel[s] = str;
                 }
             }
 
@@ -196,6 +194,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         for( Rule rule : subrules ) {
             final String[] ruleSelector = rule.getSelectors();
             String name = ruleSelector[0];
+            name = SelectorUtils.replacePlaceHolder( formatter, name, this );
             if( name.startsWith( "@media" ) ) {
                 rule.media( new String[]{mediaSelector[0] + " and " + name.substring( 6 ).trim()}, blockSelector, formatter );
             } else {
