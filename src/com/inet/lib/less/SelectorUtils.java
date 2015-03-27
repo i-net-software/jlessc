@@ -129,4 +129,13 @@ class SelectorUtils {
         formatter.append( str.substring( appendIdx ) );
     }
 
+    static String replacePlaceHolder( CssFormatter formatter, String str, LessObject caller ) {
+        int pos = str.startsWith( "@{" ) ? 0 : str.indexOf( "@", 1 );
+        if( pos >= 0 ) {
+            formatter.addOutput();
+            SelectorUtils.appendToWithPlaceHolder( formatter, str, pos, caller );
+            return formatter.releaseOutput();
+        }
+        return str;
+    }
 }
