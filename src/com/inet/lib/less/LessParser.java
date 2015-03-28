@@ -91,11 +91,12 @@ class LessParser implements FormattableContainer {
         if( lazyImports != null ) {
             HashMap<String, Expression> vars = variables;
             formatter.addVariables( vars );
-            for( LazyImport lazyImport : lazyImports ) {
+            for( int i = 0; i < lazyImports.size(); i++ ) {
+                LazyImport lazyImport = lazyImports.get( i );
                 String filename = lazyImport.stringValue( formatter );
                 baseURL = lazyImport.getBaseUrl();
                 variables = lazyImport.getVariables();
-                rulesIdx = rules.indexOf( lazyImport.lastRuleBefore() ) + 1 ;
+                rulesIdx = lazyImport.lastRuleBefore() == null ? 0 : rules.indexOf( lazyImport.lastRuleBefore() ) + 1 ;
                 importFile( this, filename );
             }
             formatter.removeVariables( vars );
@@ -382,7 +383,8 @@ class LessParser implements FormattableContainer {
             if( filename.contains( "@{" ) ) { // filename with variable name, we need to parse later
                 HashMap<String, Expression> importVariables = new DefaultedHashMap<>( variables );
                 variables = new DefaultedHashMap<>( importVariables );
-                LazyImport lazy = new LazyImport( reader, baseURL, filename, importVariables, rules.get( rules.size() - 1 ) );
+                Formattable lastRuleBefore = rules.size() == 0 ? null : rules.get( rules.size() - 1 );
+                LazyImport lazy = new LazyImport( reader, baseURL, filename, importVariables, lastRuleBefore );
                 if( lazyImports == null ) {
                     lazyImports = new ArrayList<>();
                 }
