@@ -363,7 +363,12 @@ class LessParser implements FormattableContainer {
         variables.put( name, value );
     }
 
-    private void importFile( FormattableContainer currentRule, String name ) {
+    private void importFile( FormattableContainer currentRule, final String name ) {
+        if( currentRule != this ) {
+            //import is inside of a mixin and will be process if the mixin will be process
+            currentRule.add( new CssAtRule( reader, "@import " + name + ';') );
+            return;
+        }
         Object[] old = { reader, baseURL, relativeURL }; //store on the heap to reduce the stack size
         try {
             String filename = name;
@@ -373,13 +378,6 @@ class LessParser implements FormattableContainer {
             char chr0 = filename.charAt( 0 );
             if( (chr0 == '\'' || chr0 == '"') && filename.charAt( filename.length() - 1 ) == chr0 ) {
                 filename = filename.substring( 1, filename.length() - 1 );
-            }
-            if( filename.lastIndexOf( '.' ) < filename.lastIndexOf( '/' ) ) {
-                filename += ".less";
-            }
-            if( filename.endsWith( ".css" ) || currentRule != this ) {
-                currentRule.add( new CssAtRule( reader, "@import " + name + ';') );
-                return;
             }
             if( filename.contains( "@{" ) ) { // filename with variable name, we need to parse later
                 HashMap<String, Expression> importVariables = new DefaultedHashMap<>( variables );
@@ -391,7 +389,22 @@ class LessParser implements FormattableContainer {
                 lazyImports.add( lazy );
                 return;
             }
+            if( filename.endsWith( "css" ) ) {
+                // filenames ends with "css" will not be inline else a CSS @import directive is written
+                currentRule.add( new CssAtRule( reader, "@import " + name + ';') );
+                return;
+            }
             baseURL = baseURL == null ? new URL( filename ) : new URL( baseURL, filename );
+            if( baseURL.getPath().endsWith( "css" ) ) {
+                // URL path ends with "css" will not be inline else a CSS @import directive is written
+                currentRule.add( new CssAtRule( reader, "@import " + name + ';') );
+                return;
+            }
+            if( "file".equals( baseURL.getProtocol() ) && filename.lastIndexOf( '.' ) < filename.lastIndexOf( '/' ) ) {
+                filename += ".less";
+                baseURL = (URL)old[1];
+                baseURL = baseURL == null ? new URL( filename ) : new URL( baseURL, filename );
+            }
             relativeURL = new URL( relativeURL, filename );
             reader = new LessLookAheadReader( new InputStreamReader( baseURL.openStream(), StandardCharsets.UTF_8 ), filename );
             parse();
