@@ -5,7 +5,7 @@ JLessC is a Less CSS compiler (http://lesscss.org) written completely in Java (p
 
 Required Java Version
 ----
-JlessC requires Java SE 7 or higher. It is tested with Java SE 7 and 8 on https://travis-ci.org/i-net-software/jlessc. 
+JlessC requires Java SE 7 or higher. It is tested with Java SE 7 and 8 on <a href="https://travis-ci.org/i-net-software/jlessc">travis-ci.org</a>. 
 
 [![Build Status](https://travis-ci.org/i-net-software/jlessc.svg)](https://travis-ci.org/i-net-software/jlessc)
 
