@@ -34,6 +34,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * The parser of the less stream.
@@ -370,16 +371,71 @@ class LessParser implements FormattableContainer {
             currentRule.add( new CssAtRule( reader, "@import " + name + ';') );
             return;
         }
+        String filename = name.trim();
+        if( filename.startsWith( "(" ) ) {
+            int endIdx = filename.indexOf( ')', 1);
+            if( endIdx > 0 ) {
+                StringTokenizer tokenizer = new StringTokenizer( filename.substring( 1, endIdx ), "," );
+                filename = name.substring( endIdx + 1 ).trim();
+                while( tokenizer.hasMoreTokens() ) {
+                    String keywordStr = tokenizer.nextToken().trim();
+                    switch( keywordStr ) {
+                        case "reference":
+                        case "inline":
+                        case "less":
+                        case "css":
+                        case "once":
+                        case "multiple":
+                        case "optional":
+                            System.err.println( "not implemented @import keyword" ); //TODO
+                            break;
+                        default:
+                            throw new LessException( "Unknown @import keyword: " + keywordStr );
+                    }
+                }
+            }
+        }
+
         Object[] old = { reader, baseURL, relativeURL }; //store on the heap to reduce the stack size
         try {
-            String filename = name;
-            if( filename.startsWith( "url(" ) && filename.endsWith( ")" ) ) {
-                filename = filename.substring( 4, filename.length() - 1 );
+            int i;
+            boolean isURL;
+            if( filename.startsWith( "url(" ) ) {
+                i = 4;
+                isURL = true;
+            } else {
+                i = 0;
+                isURL = false;
             }
-            char chr0 = filename.charAt( 0 );
-            if( (chr0 == '\'' || chr0 == '"') && filename.charAt( filename.length() - 1 ) == chr0 ) {
-                filename = filename.substring( 1, filename.length() - 1 );
+            StringBuilder builder = cachesBuilder;
+            String media = null;
+            char quote = 0;
+            LOOP:
+            for( ; i < filename.length(); i++ ) {
+                char ch = filename.charAt( i );
+                switch(ch){
+                    case '\"':
+                        if( quote == 0 ) {
+                            quote = ch;
+                        } else {
+                            quote = 0;
+                            if( !isURL ) {
+                                break LOOP;
+                            }
+                        }
+                        break;
+                    case ')':
+                        break LOOP;
+                    default:
+                        builder.append( ch );
+                }
             }
+            if( i < filename.length() - 1 ) {
+                //additional content after url(...)
+                media = filename.substring( i + 1 ).trim();
+            }
+            filename = trim( builder );
+
             if( filename.contains( "@{" ) ) { // filename with variable name, we need to parse later
                 HashMap<String, Expression> importVariables = new DefaultedHashMap<>( variables );
                 variables = new DefaultedHashMap<>( importVariables );
@@ -402,7 +458,7 @@ class LessParser implements FormattableContainer {
                 currentRule.add( new CssAtRule( reader, "@import " + name + ';') );
                 return;
             }
-            if( "file".equals( baseURL.getProtocol() ) && filename.lastIndexOf( '.' ) < filename.lastIndexOf( '/' ) ) {
+            if( "file".equals( baseURL.getProtocol() ) && filename.lastIndexOf( '.' ) <= filename.lastIndexOf( '/' ) ) {
                 filename += ".less";
                 baseURL = (URL)old[1];
                 baseURL = baseURL == null ? new URL( filename ) : new URL( baseURL, filename );
