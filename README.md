@@ -11,7 +11,7 @@ JlessC requires Java SE 7 or higher. It is tested with Java SE 7 and 8 on <a hre
 
 Usage
 ----
-Checkout the sources or download the binary and add it to your Java project. The follow code sequence shows a sample usage:
+Checkout the sources or download the binary and add it to your Java project. The following code sequence shows a sample usage:
 
     import com.inet.lib.less;
     ...
