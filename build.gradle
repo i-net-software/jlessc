@@ -47,3 +47,107 @@ test {
 }
 
 compileJava.options.encoding = 'UTF-8'
+
+
+
+/****************************************
+ * Benchmark of different less compilers.
+ ****************************************/
+configurations {
+    benchmarkLesscss
+    benchmarkLessEngine
+}
+
+dependencies {
+    benchmarkLesscss    'org.lesscss:lesscss:+'
+    benchmarkLessEngine 'com.asual.lesscss:lesscss-engine:+'
+}
+
+// less test file
+def lessFile = file("${sourceSets.test.output.resourcesDir}/com/inet/lib/less/samples/bootstrap/bootstrap-3.3.1.less")
+
+/**
+ * Bundle to call all single benchmark tests.
+ */
+task benchmark {
+    dependsOn 'benchmarkJLessC'
+    dependsOn 'benchmarkLesscss'
+    dependsOn 'benchmarkLessEngine'
+}
+
+/**
+ * Benchmark test for JLessC.
+ */
+task benchmarkJLessC( dependsOn: processTestResources ) {
+    dependsOn 'jar'
+    outputs.upToDateWhen { false }
+    doFirst {
+        URL[] urls = [jar.archivePath.toURI().toURL()]
+        def classLoader = new URLClassLoader( urls );
+        def compiler = Class.forName( "com.inet.lib.less.Less", true, classLoader ).newInstance();
+        benchmarkTest( 'JLessC', {
+            compiler."compile"( lessFile, true )
+        } )
+        classLoader.close()
+    }
+}
+
+/**
+ * Benchmark test for Lesscss.
+ */
+task benchmarkLesscss( dependsOn: processTestResources ) {
+    outputs.upToDateWhen { false }
+    doFirst {
+        def classLoader = getClassLoader( configurations.benchmarkLesscss );
+        def compiler = Class.forName( "org.lesscss.LessCompiler", true, classLoader ).newInstance();
+
+        benchmarkTest( 'Lessccs', {
+            compiler.compile( lessFile )
+        } )
+        classLoader.close()
+    }
+}
+
+
+/**
+ * Benchmark test for Lesscss.
+ */
+task benchmarkLessEngine( dependsOn: processTestResources ) {
+    outputs.upToDateWhen { false }
+    doFirst {
+        def classLoader = getClassLoader( configurations.benchmarkLessEngine );
+        def compiler = Class.forName( "com.asual.lesscss.LessEngine", true, classLoader ).newInstance();
+
+        benchmarkTest( 'LessEngine', {
+            compiler.compile( lessFile, true )
+        } )
+        classLoader.close()
+    }
+}
+
+/**
+ * Test routine
+ * @param testName label for printing
+ * @param callable call of the compiler
+ */
+void benchmarkTest( String testName, Closure callable ) {
+    callable.call() // run once for the JIT
+    def time = -System.currentTimeMillis()
+    callable.call()
+    time += System.currentTimeMillis()
+    println( "\tResult for ${testName}:\t${time} ms" )
+}
+
+/**
+ * Create a Java ClassLoader from a single configuration.
+ * @param config the configuration
+ * @return the ClassLoader
+ */
+ClassLoader getClassLoader( Configuration config ) {
+    ArrayList urls = new ArrayList()
+    config.files.each { File file ->
+        // println '\t' + file.name
+        urls += file.toURI().toURL()
+    }
+    return new URLClassLoader( urls.toArray(new URL[0]) );
+}
