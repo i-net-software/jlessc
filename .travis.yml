@@ -1,4 +1,5 @@
-language: groovy
+language: java
 jdk:
   - oraclejdk8
   - oraclejdk7
+script: gradle check benchmark
