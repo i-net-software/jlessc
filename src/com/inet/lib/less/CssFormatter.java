@@ -465,7 +465,6 @@ class CssFormatter implements Cloneable {
             if( selectors[0].startsWith( "@media" ) ) {
                 CssFormatter block = copy( null );
                 block.incInsets();
-                System.err.println(this.selectors);
                 String[] sel = new String[]{ this.selectors[0] + " and " + selectors[0].substring( 6 ).trim() };
                 state.results.add( new CssRuleOutput( sel, block.output ) );
                 block.blockDeep = 1;
