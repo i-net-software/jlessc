@@ -442,24 +442,24 @@ class CssFormatter implements Cloneable {
     CssFormatter startBlock( String[] selectors ) {
         if( blockDeep == 0 ) {
             output = null;
+            StringBuilder nextOutput = null;
             final List<CssOutput> results = state.results;
             if( results.size() > 0 ) {
                 CssOutput cssOutput = results.get( results.size() - 1 );
                 if( cssOutput.getClass() == CssRuleOutput.class ) {
                     CssRuleOutput ruleOutput = (CssRuleOutput)cssOutput;
                     if( Arrays.equals( selectors, ruleOutput.getSelectors() ) ) {
-                        CssFormatter block = copy( ruleOutput.getOutput() );
-                        block.incInsets();
-                        block.blockDeep++;
-                        return block;
+                        nextOutput = ruleOutput.getOutput();
                     }
                 }
             }
-            CssFormatter block = copy( null );
+            CssFormatter block = copy( nextOutput );
             block.incInsets();
             block.selectors = selectors;
-            results.add( new CssRuleOutput( selectors, block.output ) );
-            block.blockDeep = 1;
+            if( nextOutput == null ) {
+                results.add( new CssRuleOutput( selectors, block.output ) );
+            }
+            block.blockDeep++;
             return block;
         } else {
             if( selectors[0].startsWith( "@media" ) ) {
