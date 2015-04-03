@@ -86,11 +86,9 @@ public class LessTest {
 
     @Test
     public void compile() throws Exception {
-        URI uri = lessFile.toURI();
-        String lessData = new String( Files.readAllBytes( Paths.get( uri ) ), StandardCharsets.UTF_8 );
-        String cssData = new String( Files.readAllBytes( Paths.get( cssFile.toURI() ) ), StandardCharsets.UTF_8 );
+        String cssData = new String( Files.readAllBytes( cssFile.toPath() ), StandardCharsets.UTF_8 );
 
         boolean compress = cssFile.getName().endsWith( ".css_x" ) || lessFile.getParentFile().getName().equals( "compression" );
-        assertEquals( cssData, Less.compile( uri.toURL(), lessData, compress ) );
+        assertEquals( cssData, Less.compile( lessFile, compress ) );
     }
 }

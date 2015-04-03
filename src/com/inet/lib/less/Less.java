@@ -26,8 +26,14 @@
  */
 package com.inet.lib.less;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.StringReader;
+import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * The main class of JLessC library. Its contain all start points for converting LESS to CSS files.
@@ -60,5 +66,21 @@ public class Less {
             throw new LessException( ex );
         }
         return builder.toString();
+    }
+
+    /**
+     * Compile the less data from a file.
+     * 
+     * @param lessFile
+     *            the less file
+     * @param compress
+     *            true, if the CSS data should be compressed without any extra formating characters.
+     * @return the resulting less data
+     * @throws IOException
+     *             if an I/O error occurs reading from the less file
+     */
+    public static String compile( File lessFile, boolean compress ) throws IOException {
+        String lessData = new String( Files.readAllBytes( lessFile.toPath() ), StandardCharsets.UTF_8 );
+        return Less.compile( lessFile.toURI().toURL(), lessData, compress );
     }
 }
