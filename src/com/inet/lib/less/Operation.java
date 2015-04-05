@@ -338,6 +338,8 @@ class Operation extends AbstractExpression {
                     }
                 }
                 return value;
+            case '!':
+                return !operands.get( 0 ).booleanValue( formatter );
             case '>':
             case '<':
             case '=':

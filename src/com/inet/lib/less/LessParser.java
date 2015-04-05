@@ -280,31 +280,40 @@ class LessParser implements FormattableContainer {
                     } else {
                         cmd = trim( builder );
                     }
+                    char operator;
+                    boolean isNot = false;
                     switch( cmd ) {
+                        case "when not":
+                            isNot = true;
+                            //$FALL-THROUGH$
                         case "when":
-                            guard = parseExpression( (char)0 );
-                            ch = read();
-                            if( ch != ')' ) {
-                                throw createException( "Unrecognized input: '" + ch + "'" );
-                            }
+                            operator = 0;
                             break;
+                        case "and not":
+                            isNot = true;
+                            //$FALL-THROUGH$
                         case "and":
-                            guard = concat( guard, '&', parseExpression( (char)0 ) );
-                            ch = read();
-                            if( ch != ')' ) {
-                                throw createException( "Unrecognized input: '" + ch + "'" );
-                            }
+                            operator = '&';
                             break;
+                        case ",not":
+                        case ", not":
+                            isNot = true;
+                            //$FALL-THROUGH$
                         case ",":
-                            guard = concat( guard, '|', parseExpression( (char)0 ) );
-                            ch = read();
-                            if( ch != ')' ) {
-                                throw createException( "Unrecognized input: '" + ch + "'" );
-                            }
+                            operator = '|';
                             break;
                         default:
                             throw createException( "Unrecognized input: '" + cmd + "'" );
                     }
+                    Expression right = parseExpression( (char)0 );
+                    ch = read();
+                    if( ch != ')' ) {
+                        throw createException( "Unrecognized input: '" + ch + "'" );
+                    }
+                    if( isNot ) {
+                        right = new Operation( reader, right, '!' );
+                    }
+                    guard = ( operator == 0 ) ? right : concat( guard, operator, right );
                     break;
                 default:
                     boolean isWhite = Character.isWhitespace( ch );
