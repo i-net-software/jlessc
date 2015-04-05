@@ -241,7 +241,14 @@ class Operation extends AbstractExpression {
         super.appendTo( formatter );
     }
 
-    static double unitFactor( String leftUnit, String rightUnit ) {
+    /**
+     * Calculate the factor between 2 units.
+     * @param leftUnit left unit
+     * @param rightUnit right unit
+     * @param fail true, should be fail if units incompatible; false, return 1 is incompatible
+     * @return the factor between the 2 units.
+     */
+    static double unitFactor( String leftUnit, String rightUnit, boolean fail ) {
         if( leftUnit.length() == 0 || rightUnit.length() == 0 || leftUnit.equals( rightUnit ) ) {
             return 1;
         }
@@ -251,6 +258,9 @@ class Operation extends AbstractExpression {
             if( leftGroup == rightGroup ) {
                 return leftGroup.get( leftUnit ) / leftGroup.get( rightUnit );
             }
+        }
+        if( fail ) {
+            throw new LessException( "Incompatible types" );
         }
         return 1;
     }
@@ -268,7 +278,7 @@ class Operation extends AbstractExpression {
             switch( operator ) {
                 case '+':
                 case '-':
-                    right /= unitFactor( unit, rightOp.unit( formatter ) );
+                    right /= unitFactor( unit, rightOp.unit( formatter ), false );
             }
             if( type == COLOR ) {
                 if( rightType == COLOR ) {
@@ -322,10 +332,11 @@ class Operation extends AbstractExpression {
 
     @Override
     public boolean booleanValue(CssFormatter formatter) {
+        Expression leftOp = operands.get( 0 );
         switch( operator ) {
             case '&':
             case '|':
-                boolean value = operands.get( 0 ).booleanValue( formatter );
+                boolean value = leftOp.booleanValue( formatter );
                 for( int i = 1; i < operands.size(); i++ ) {
                     boolean right = operands.get( i ).booleanValue( formatter );
                     switch( operator ) {
@@ -339,7 +350,7 @@ class Operation extends AbstractExpression {
                 }
                 return value;
             case '!':
-                return !operands.get( 0 ).booleanValue( formatter );
+                return !leftOp.booleanValue( formatter );
             case '>':
             case '<':
             case '=':
@@ -348,7 +359,7 @@ class Operation extends AbstractExpression {
                 int type = maxOperadType( formatter );
                 switch( type ) {
                     case STRING: {
-                        String left = operands.get( 0 ).stringValue( formatter );
+                        String left = leftOp.stringValue( formatter );
                         String right = operands.get( 1 ).stringValue( formatter );
                         switch( operator ) {
                             case '>':
@@ -366,7 +377,7 @@ class Operation extends AbstractExpression {
                     }
                     case COLOR:
                     case RGBA:{
-                        long left = Double.doubleToRawLongBits( operands.get( 0 ).doubleValue( formatter ) );
+                        long left = Double.doubleToRawLongBits( leftOp.doubleValue( formatter ) );
                         long right = Double.doubleToRawLongBits( operands.get( 1 ).doubleValue( formatter ) );
                         switch( operator ) {
                             case '>':
@@ -383,19 +394,25 @@ class Operation extends AbstractExpression {
                     }
                         //$FALL-THROUGH$
                     default: {
-                        double left = operands.get( 0 ).doubleValue( formatter );
-                        double right = operands.get( 1 ).doubleValue( formatter );
-                        switch( operator ) {
-                            case '>':
-                                return left > right;
-                            case '<':
-                                return left < right;
-                            case '=':
-                                return left == right;
-                            case '≥':
-                                return left >= right;
-                            case '≤':
-                                return left <= right;
+                        double left = leftOp.doubleValue( formatter );
+                        Expression rightOp = operands.get( 1 );
+                        double right = rightOp.doubleValue( formatter );
+                        try {
+                            right /= unitFactor( leftOp.unit( formatter ), rightOp.unit( formatter ), true );
+                            switch( operator ) {
+                                case '>':
+                                    return left > right;
+                                case '<':
+                                    return left < right;
+                                case '=':
+                                    return left == right;
+                                case '≥':
+                                    return left >= right;
+                                case '≤':
+                                    return left <= right;
+                            }
+                        } catch (LessException ex ) {
+                            return false;
                         }
                     }
                 }
