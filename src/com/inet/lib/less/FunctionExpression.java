@@ -316,7 +316,7 @@ class FunctionExpression extends AbstractExpression {
                     type = NUMBER;
                     String unit = get( 1 ).stringValue( formatter );
                     Expression param = get( 0 );
-                    doubleValue = param.doubleValue( formatter ) * Operation.unitFactor( param.unit( formatter ), unit );
+                    doubleValue = param.doubleValue( formatter ) * Operation.unitFactor( param.unit( formatter ), unit, false );
                     return;
                 case "abs":
                     type = getNumberDataType( formatter );
@@ -356,7 +356,7 @@ class FunctionExpression extends AbstractExpression {
                     unit = unit( formatter );
                     for( int i = 1; i < parameters.size(); i++ ) {
                         param = parameters.get( i );
-                        doubleValue = Math.min( doubleValue, param.doubleValue( formatter ) / Operation.unitFactor( unit, param.unit( formatter ) ) );
+                        doubleValue = Math.min( doubleValue, param.doubleValue( formatter ) / Operation.unitFactor( unit, param.unit( formatter ), true ) );
                     }
                     return;
                 case "max":
@@ -365,7 +365,7 @@ class FunctionExpression extends AbstractExpression {
                     unit = unit( formatter );
                     for( int i = 1; i < parameters.size(); i++ ) {
                         param = parameters.get( i );
-                        doubleValue = Math.max( doubleValue, param.doubleValue( formatter ) / Operation.unitFactor( unit, param.unit( formatter ) ) );
+                        doubleValue = Math.max( doubleValue, param.doubleValue( formatter ) / Operation.unitFactor( unit, param.unit( formatter ), true ) );
                     }
                     return;
                 case "sqrt":
@@ -830,7 +830,7 @@ class FunctionExpression extends AbstractExpression {
     double getRadians( CssFormatter formatter ) {
         final Expression exp = get( 0 );
         String unit = exp.unit( formatter );
-        return exp.doubleValue( formatter ) * Operation.unitFactor( unit, "rad" );
+        return exp.doubleValue( formatter ) * Operation.unitFactor( unit, "rad", false );
     }
 
     /**
