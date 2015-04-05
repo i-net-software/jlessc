@@ -121,6 +121,38 @@ class FunctionExpression extends AbstractExpression {
                 return "rad";
             case "pow":
                 return get( 0 ).unit( formatter );
+            case "alpha":
+            case "red":
+            case "green":
+            case "blue":
+            case "rgba":
+            case "rgb":
+            case "argb":
+            case "saturate":
+            case "desaturate":
+            case "greyscale":
+            case "hsl":
+            case "hsla":
+            case "hue":
+            case "spin":
+            case "lighten":
+            case "darken":
+            case "fadein":
+            case "fadeout":
+            case "fade":
+            case "hsv":
+            case "hsva":
+            case "hsvhue":
+            case "contrast":
+                // color values has no unit
+                return "";
+            case "saturation":
+            case "lightness":
+            case "hsvsaturation":
+            case "hsvvalue":
+            case "luma":
+            case "luminance":
+                return "%";
         }
         for( int i = 0; i < parameters.size(); i++ ) {
             String unit = parameters.get( i ).unit( formatter );
