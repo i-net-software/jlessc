@@ -27,6 +27,7 @@
 package com.inet.lib.less;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -268,6 +269,9 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         }
         if( params == null && paramValues != null ) {
             return NO_MATCH;
+        }
+        if( paramValues == null ) {
+            paramValues = Collections.emptyList();
         }
         if( params.size() < paramValues.size() && varArg == null ) {
             return NO_MATCH;
