@@ -129,13 +129,14 @@ class ValueExpression extends AbstractExpression {
      */
     private void eval( CssFormatter formatter ) {
         try {
-            unit = "";
             String str = toString();
             if( str.endsWith( "%" ) ) {
                 value = Double.parseDouble( str.substring( 0, str.length() - 1 ) );
+                unit = "%";
                 type = PERCENT;
                 return;
             }
+            unit = "";
             long rgb;
             if( str.startsWith( "#" ) ) {
                 str = str.substring( 1 );
