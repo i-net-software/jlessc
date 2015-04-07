@@ -65,10 +65,10 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
             int count = this.params.size();
             if( count > 0 ) {
                 Expression lastEx = this.params.get( count-1 );
-                if( lastEx.getClass() == VariableExpression.class ) {
+                if( lastEx.getClass() == VariableExpression.class || lastEx.getClass() == ValueExpression.class ) {
                     String name = lastEx.toString();
                     if( name.endsWith( "..." ) ) {
-                        varArg = new VariableExpression( (VariableExpression)lastEx, name.substring( 0, name.length() - 3 ) );
+                        varArg = new VariableExpression( (LessObject)lastEx, name.substring( 0, name.length() - 3 ) );
                         this.params.remove( count-1 );
                     }
                 }

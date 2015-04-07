@@ -165,6 +165,7 @@ class LessLookAheadReader extends LessObject implements Closeable {
      * <li>(.65)
      * <li>(@color)
      * <li>()
+     * <li>(...)
      * </ul>
      * @param isBlock selector of a block or a semicolon line
      * @return true, if it is a mixin parameter
@@ -189,6 +190,9 @@ class LessLookAheadReader extends LessObject implements Closeable {
                         if( Character.isDigit( cache.charAt( i + 1 ) ) ) { //Number with a starting point
                             return true;
                         }
+                    }
+                    if( i + 2 < cache.length() && cache.charAt( i + 1 ) == '.' && cache.charAt( i + 2 ) == '.' ) { // ...
+                        return true;
                     }
                     return false;
                 case ':':
