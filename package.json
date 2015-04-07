@@ -1,0 +1,10 @@
+{
+  "name": "JLessCTest",
+  "version": "1.0.0",
+  "description": "Test Suite for nodeJS based less compilation",
+  "author": "i-net software",
+  "private": true,
+  "devDependencies": {
+    "less": "^2.5.0"
+  }
+}
