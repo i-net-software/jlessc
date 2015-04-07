@@ -1,4 +1,9 @@
+plugins {
+  id "com.moowork.node" version "0.9"
+}
+
 apply plugin: 'java'
+apply plugin: 'com.moowork.node'
 
 repositories {
 	jcenter()
@@ -54,12 +59,12 @@ compileJava.options.encoding = 'UTF-8'
  * Benchmark of different less compilers.
  ****************************************/
 configurations {
-    benchmarkLesscss
+    benchmarkLessCSS
     benchmarkLessEngine
 }
 
 dependencies {
-    benchmarkLesscss    'org.lesscss:lesscss:+'
+    benchmarkLessCSS    'org.lesscss:lesscss:+'
     benchmarkLessEngine 'com.asual.lesscss:lesscss-engine:+'
 }
 
@@ -71,8 +76,9 @@ def lessFile = file("${sourceSets.test.output.resourcesDir}/com/inet/lib/less/sa
  */
 task benchmark {
     dependsOn 'benchmarkJLessC'
-    dependsOn 'benchmarkLesscss'
+    dependsOn 'benchmarkLessCSS'
     dependsOn 'benchmarkLessEngine'
+    dependsOn 'benchmarkNodeLessCompile'
 }
 
 /**
@@ -95,10 +101,10 @@ task benchmarkJLessC( dependsOn: processTestResources ) {
 /**
  * Benchmark test for Lesscss.
  */
-task benchmarkLesscss( dependsOn: processTestResources ) {
+task benchmarkLessCSS( dependsOn: processTestResources ) {
     outputs.upToDateWhen { false }
     doFirst {
-        def classLoader = getClassLoader( configurations.benchmarkLesscss );
+        def classLoader = getClassLoader( configurations.benchmarkLessCSS );
         def compiler = Class.forName( "org.lesscss.LessCompiler", true, classLoader ).newInstance();
 
         benchmarkTest( 'Lessccs', {
@@ -126,6 +132,23 @@ task benchmarkLessEngine( dependsOn: processTestResources ) {
 }
 
 /**
+ * NodeJS for compilation test with original less implementation
+ */
+task benchmarkNodeLessCompile( dependsOn: processTestResources ) {
+    dependsOn 'npmInstall'
+    outputs.upToDateWhen { false }
+    doFirst {
+        benchmarkTest( 'less.js', {
+            exec {
+                workingDir = lessFile.parentFile.absolutePath
+                commandLine "${buildDir}/../node_modules/less/bin/lessc", lessFile.name, "${lessFile.parentFile}/output.css"
+                ignoreExitValue = true
+            }
+        } );
+    }
+}
+
+/**
  * Test routine
  * @param testName label for printing
  * @param callable call of the compiler
@@ -135,7 +158,7 @@ void benchmarkTest( String testName, Closure callable ) {
     def time = -System.currentTimeMillis()
     callable.call()
     time += System.currentTimeMillis()
-    println( "\tResult for ${testName}:\t${time} ms" )
+    println( "\tResult for ${testName}:\033[1;33m\t${time} ms\033[0m" )
 }
 
 /**
