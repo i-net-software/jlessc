@@ -5,9 +5,6 @@
   "author": "i-net software",
   "private": true,
   "devDependencies": {
-    "clean-css": "^3.1.9",
-    "colog": "^1.0.4",
     "less": "^2.5.0",
-    "watchr": "^2.4.13"
   }
 }
