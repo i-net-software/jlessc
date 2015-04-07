@@ -21,10 +21,10 @@ Checkout the sources or download the binary and add it to your Java project. The
 
 Benchmark
 ----
-On the test system there run also a benchmark for different less compilers. We use the latest version of every compiler. We measure the compile time of the bootstrap sample in the test suite. The follow table show <a href="https://travis-ci.org/i-net-software/jlessc/jobs/57053125">one result for Java SE 8</a>. Of course the values can change over the time.
+JLessC runs a benchmark test on the travis build system using different less compilers. We always use the latest version of every compiler. We measure the compile time of the bootstrap sample in our test suite. The table shows <a href="https://travis-ci.org/i-net-software/jlessc/jobs/57053125">a result for Java SE 8</a>. Of course the values can change over the time.
 
 | Tool                                |     Time |
-| ----------------------------------- | --------:|
+| :---------------------------------- | --------:|
 | JLessC                              |   120 ms |
 | LESS Engine                         | 16189 ms |
 | Official LESS CSS Compiler for Java |  4344 ms |
