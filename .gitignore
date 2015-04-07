@@ -1,3 +1,4 @@
 /bin/
 /build/
 /.gradle/
+/node_modules/
