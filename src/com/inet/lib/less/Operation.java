@@ -359,8 +359,9 @@ class Operation extends AbstractExpression {
                 int type = maxOperadType( formatter );
                 switch( type ) {
                     case STRING: {
-                        String left = leftOp.stringValue( formatter );
-                        String right = operands.get( 1 ).stringValue( formatter );
+                        // need to differ between keyword without quotes and strings with quotes. The type of quote is ignored
+                        String left = normlizeQuotes( leftOp.stringValue( formatter ) );
+                        String right = normlizeQuotes( operands.get( 1 ).stringValue( formatter ) );
                         switch( operator ) {
                             case '>':
                                 return left.compareTo( right ) > 0;
@@ -420,6 +421,18 @@ class Operation extends AbstractExpression {
             default:
         }
         throw createException( "Not supported Oprator '" + operator + "' for Expression '" + toString() + '\'' );
+    }
+
+    /**
+     * Convert single quotes to double quotes.
+     * @param str input
+     * @return normalize string
+     */
+    private String normlizeQuotes( String str ) {
+        if( str.length() > 1 && str.charAt( 0 ) == '\'' && str.charAt( str.length() - 1 ) == '\'' ) {
+            return '\"' + str.substring( 1, str.length() - 1 ) + '\"';
+        }
+        return str;
     }
 
     /**
