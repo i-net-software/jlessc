@@ -121,6 +121,12 @@ class CssFormatter implements Cloneable {
 
     private int                             blockDeep;
 
+    private boolean                         isGuard;
+
+    private boolean                         guardDefault;
+
+    private boolean                         wasDefaultFunction;
+
     CssFormatter() {
         state = new SharedState();
         state.header = copy( null );
@@ -320,6 +326,48 @@ class CssFormatter implements Cloneable {
         removeMixin();
     }
 
+    /**
+     * Add the parameters of a guard
+     * @param parameters the parameters
+     */
+    void addGuardParameters( HashMap<String, Expression> parameters, boolean isDefault ) {
+        isGuard = true;
+        wasDefaultFunction = false;
+        guardDefault = isDefault;
+        if( parameters != null ) {
+            addMixin( null, parameters, null );
+        }
+    }
+
+    /**
+     * remove the parameters of a guard
+     * @param parameters the parameters
+     */
+    void removeGuardParameters( HashMap<String, Expression> parameters ) {
+        if( parameters != null ) {
+            removeMixin();
+        }
+        isGuard = false;
+    }
+
+    /**
+     * if we are inside of a guard
+     * @return is guard
+     */
+    boolean isGuard() {
+        return isGuard;
+    }
+
+    boolean getGuardDefault() {
+        wasDefaultFunction = true;
+        return guardDefault;
+    }
+
+    boolean wasDefaultFunction() {
+        return wasDefaultFunction;
+    }
+
+ 
     /**
      * A mixin inline never it self.
      * 

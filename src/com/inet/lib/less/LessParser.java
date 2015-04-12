@@ -264,7 +264,7 @@ class LessParser implements FormattableContainer {
                 case '(':
                     String cmd;
                     if( name == null ) {
-                        if( !reader.nextIsMixinParam( true ) ) {
+                        if( isSelector(builder) || !reader.nextIsMixinParam( true ) ) {
                             builder.append( ch );
                             break;
                         }
@@ -1038,6 +1038,34 @@ class LessParser implements FormattableContainer {
             case '.': // Mixin
             case '#': // Mixin
                 return true;
+        }
+        return false;
+    }
+
+    /**
+     * If the builder contains a selector and not a mixin.
+     * @param builder the builder
+     * @return true, if it 100% a selector and not a mixin with parameters
+     */
+    private boolean isSelector( StringBuilder builder ) {
+        int length = builder.length();
+        if( length == 0 ) {
+            return false;
+        }
+        switch( builder.charAt( 0 ) ) { 
+            case '.': // Mixin
+            case '#': // Mixin
+                break;
+            default:
+                return true;
+        }
+        for( int i = 1; i < length; i++ ) {
+            char ch = builder.charAt( i );
+            switch( ch ) {
+                case '>':
+                case ':':
+                    return true;
+            }
         }
         return false;
     }

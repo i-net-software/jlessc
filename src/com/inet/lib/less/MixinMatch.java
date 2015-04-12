@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 Volker Berlin
+ * Copyright (c) 2014 - 2015 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,10 +39,20 @@ class MixinMatch {
 
     private boolean                     guard;
 
-    MixinMatch( Rule rule, HashMap<String, Expression> mixinParameters, boolean guard ) {
+    private boolean                     wasDefault;
+
+    /**
+     * Result of an MixinMatch
+     * @param rule the mixin
+     * @param mixinParameters the calling parameters
+     * @param guard if the guard match
+     * @param wasDefault if there is a default() guard function
+     */
+    MixinMatch( Rule rule, HashMap<String, Expression> mixinParameters, boolean guard, boolean wasDefault ) {
         this.rule = rule;
         this.mixinParameters = mixinParameters;
         this.guard = guard;
+        this.wasDefault = wasDefault;
     }
 
     Rule getRule() {
@@ -55,5 +65,13 @@ class MixinMatch {
 
     boolean getGuard() {
         return guard;
+    }
+
+    /**
+     * If the guard of this mixin use the default function
+     * @return true, if default function
+     */
+    boolean wasDefault() {
+        return wasDefault;
     }
 }
