@@ -296,18 +296,26 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
             for( int i = 0; i < paramsCount; i++ ) {
                 Expression value = paramValues.get( i );
                 Class<?> valueType = value.getClass();
-                Expression param = params.get( i );
-                Class<?> paramType = param.getClass();
                 // First check if it is a named parameter
                 if( valueType == Operation.class && ((Operation)value).getOperator() == ':' && ((Operation)value).getOperands().size() == 2 ) {
                     ArrayList<Expression> keyValue = ((Operation)value).getOperands();
                     vars.put( keyValue.get( 0 ).toString(), ValueExpression.eval( formatter, keyValue.get( 1 ) ) );
                 } else {
+                    Expression param = params.get( i );
+                    Class<?> paramType = param.getClass();
                     if( paramType == VariableExpression.class ) {
                         vars.put( param.toString(), ValueExpression.eval( formatter, value ) );
                     } else if( paramType ==  Operation.class && ((Operation)param).getOperator() == ':' && ((Operation)param).getOperands().size() == 2 ) {
                         ArrayList<Expression> keyValue = ((Operation)param).getOperands();
                         vars.put( keyValue.get( 0 ).toString(), ValueExpression.eval( formatter, value ) );
+                    } else if( paramType ==  ValueExpression.class ) {
+                        //pseudo guard, mixin with static parameter
+                        final Operation op = new Operation( (LessObject)param, param, '=' );
+                        op.addOperand( value );
+                        if( !op.booleanValue( formatter ) ) {
+                            return NO_MATCH;
+                        }
+                        vars.put( " " + i, value );
                     } else {
                         throw createException( "Wrong formatted parameters: " + params );
                     }
@@ -385,7 +393,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         return formatter.releaseOutput();
     }
 
-    MixinMatch match( CssFormatter formatter, List<Expression> paramValues ) {
+    MixinMatch match( CssFormatter formatter, List<Expression> paramValues, boolean isDefault ) {
         if( guard == null && formatter.containsRule( this ) ) {
             return null;
         }
@@ -396,18 +404,14 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         boolean matching = true;
 
         if( guard != null ) {
-            if( mixinParameters != null ) {
-                formatter.addVariables( mixinParameters );
-            }
+            formatter.addGuardParameters( mixinParameters, isDefault );
 
             matching = guard.booleanValue( formatter );
 
-            if( mixinParameters != null ) {
-                formatter.removeVariables( mixinParameters );
-            }
+            formatter.removeGuardParameters( mixinParameters );
         }
 
-        return new MixinMatch( this, mixinParameters, matching);
+        return new MixinMatch( this, mixinParameters, matching, formatter.wasDefaultFunction() );
     }
 
     boolean isMixin() {

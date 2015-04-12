@@ -597,6 +597,13 @@ class FunctionExpression extends AbstractExpression {
                     type = BOOLEAN;
                     booleanValue = get( 0 ).getDataType( formatter ) == NUMBER;
                     return;
+                case "default":
+                    if( formatter.isGuard() ) {
+                        type = BOOLEAN;
+                        booleanValue = formatter.getGuardDefault();
+                        return;
+                    }
+                    break;
                 case "-":
                     type = get( 0 ).getDataType( formatter ) ;
                     doubleValue = -getDouble( 0, formatter );

@@ -133,17 +133,26 @@ class Mixin extends LessObject implements Formattable {
         stackID = formatter.stackID();
         mixinRules = new ArrayList<>();
         boolean paramMatch = false;
+        Rule defaultMixin = null;
         for( Rule rule : rules ) {
-            MixinMatch matching = rule.match( formatter, paramValues );
+            MixinMatch matching = rule.match( formatter, paramValues, false );
             if( matching != null ) {
                 paramMatch = true;
                 if( matching.getGuard() ) {
                     mixinRules.add( matching );
+                } else if( matching.wasDefault() ) {
+                    defaultMixin = rule;
                 }
             }
         }
         if( !paramMatch ) {
             throw createException( "No matching definition was found for: " + name );
+        }
+        if( mixinRules.size() == 0 && defaultMixin != null ) {
+            MixinMatch matching = defaultMixin.match( formatter, paramValues, true );
+            if( matching != null && matching.getGuard() ) {
+                mixinRules.add( matching );
+            }
         }
         return mixinRules;
     }
