@@ -27,6 +27,7 @@
 package com.inet.lib.less;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A single match of a mixin to a rule.
@@ -35,7 +36,7 @@ class MixinMatch {
 
     private Rule                        rule;
 
-    private HashMap<String, Expression> mixinParameters;
+    private Map<String, Expression>     mixinParameters;
 
     private boolean                     guard;
 
@@ -48,7 +49,7 @@ class MixinMatch {
      * @param guard if the guard match
      * @param wasDefault if there is a default() guard function
      */
-    MixinMatch( Rule rule, HashMap<String, Expression> mixinParameters, boolean guard, boolean wasDefault ) {
+    MixinMatch( Rule rule, Map<String, Expression> mixinParameters, boolean guard, boolean wasDefault ) {
         this.rule = rule;
         this.mixinParameters = mixinParameters;
         this.guard = guard;
@@ -59,7 +60,7 @@ class MixinMatch {
         return rule;
     }
 
-    HashMap<String, Expression> getMixinParameters() {
+    Map<String, Expression> getMixinParameters() {
         return mixinParameters;
     }
 

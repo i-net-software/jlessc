@@ -29,7 +29,9 @@ package com.inet.lib.less;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A CSS rule.
@@ -263,7 +265,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
      * @param paramValues the values of the caller
      * @return null, if empty list match; NO_MATCH, if the values not match to the params of this list, Or the map with the parameters
      */
-    private HashMap<String, Expression> getMixinParams( CssFormatter formatter, List<Expression> paramValues ) {
+    private Map<String, Expression> getMixinParams( CssFormatter formatter, List<Expression> paramValues ) {
         if( (params == null && paramValues == null) || (paramValues == null && params.size() == 0) || (params == null && paramValues.size() == 0) ) {
             return null;
         }
@@ -278,7 +280,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         }
 
         try {
-            HashMap<String, Expression> vars = new HashMap<>();
+            Map<String, Expression> vars = new LinkedHashMap<>();
             // Set the parameters with default values first
             int paramsCount = params.size();
             for( int i = 0; i < paramsCount; i++ ) {
@@ -397,7 +399,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         if( guard == null && formatter.containsRule( this ) ) {
             return null;
         }
-        HashMap<String, Expression> mixinParameters = getMixinParams( formatter, paramValues );
+        Map<String, Expression> mixinParameters = getMixinParams( formatter, paramValues );
         if( mixinParameters == NO_MATCH ) {
             return null;
         }

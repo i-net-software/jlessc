@@ -70,10 +70,17 @@ class Operation extends AbstractExpression {
     }
 
     Operation( LessObject reader, Expression left, char operator ) {
-        super( reader, String.valueOf( operator ) );
+        this( reader, operator );
         if( left != null ) {
             this.operands.add( left );
         }
+    }
+
+    /**
+     * Empty parameter list
+     */
+    Operation( LessObject reader, char operator ) {
+        super( reader, String.valueOf( operator ) );
         this.operator = operator;
     }
 
