@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -47,9 +48,9 @@ class CssFormatter implements Cloneable {
      */
     private static class Scope {
         private Rule mixin;
-        private HashMap<String, Expression> parameters;
-        private HashMap<String, Expression> variables;
-        private final HashMap<String, Expression> returns = new HashMap<>();
+        private Map<String, Expression> parameters;
+        private Map<String, Expression> variables;
+        private final Map<String, Expression> returns = new HashMap<>();
 
         /**
          * Get a variable expression from this scope
@@ -252,6 +253,14 @@ class CssFormatter implements Cloneable {
                 return variable;
             }
         }
+        if( name.equals( "@arguments" ) ) {
+            Scope scope = state.stack.get( state.stackIdx - 1 );
+            Operation params = new Operation( scope.mixin, ' ' );
+            for( Expression expr : scope.parameters.values() ) {
+                params.addOperand( expr );
+            }
+            return params;
+        }
         return null;
     }
 
@@ -261,7 +270,7 @@ class CssFormatter implements Cloneable {
      * @param parameters the calling parameters
      * @param variables the variables of the mixin
      */
-    void addMixin( Rule mixin, HashMap<String, Expression> parameters, HashMap<String, Expression> variables ) {
+    void addMixin( Rule mixin, Map<String, Expression> parameters, Map<String, Expression> variables ) {
         int idx = state.stackIdx++;
         Scope scope;
         if( state.stack.size() <= idx ) {
@@ -284,8 +293,8 @@ class CssFormatter implements Cloneable {
         Scope current = state.stack.get( idx );
         if( idx > 0 ) {
             Scope previous = state.stack.get( idx - 1 );
-            HashMap<String, Expression> currentReturn = previous.returns;
-            HashMap<String, Expression> vars = current.variables;
+            Map<String, Expression> currentReturn = previous.returns;
+            Map<String, Expression> vars = current.variables;
             if( vars != null ) {
                 for( Entry<String, Expression> entry : vars.entrySet() ) {
                     if( previous.getVariable( entry.getKey() ) == null ) {
@@ -322,7 +331,7 @@ class CssFormatter implements Cloneable {
      * @param variables
      *            the variables, can be null if the current rule has no parameters.
      */
-    void removeVariables( HashMap<String, Expression> variables ) {
+    void removeVariables( Map<String, Expression> variables ) {
         removeMixin();
     }
 
@@ -330,7 +339,7 @@ class CssFormatter implements Cloneable {
      * Add the parameters of a guard
      * @param parameters the parameters
      */
-    void addGuardParameters( HashMap<String, Expression> parameters, boolean isDefault ) {
+    void addGuardParameters( Map<String, Expression> parameters, boolean isDefault ) {
         isGuard = true;
         wasDefaultFunction = false;
         guardDefault = isDefault;
@@ -343,7 +352,7 @@ class CssFormatter implements Cloneable {
      * remove the parameters of a guard
      * @param parameters the parameters
      */
-    void removeGuardParameters( HashMap<String, Expression> parameters ) {
+    void removeGuardParameters( Map<String, Expression> parameters ) {
         if( parameters != null ) {
             removeMixin();
         }
