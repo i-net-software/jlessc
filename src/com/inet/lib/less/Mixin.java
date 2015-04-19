@@ -133,7 +133,7 @@ class Mixin extends LessObject implements Formattable {
         stackID = formatter.stackID();
         mixinRules = new ArrayList<>();
         boolean paramMatch = false;
-        Rule defaultMixin = null;
+        List<Rule> defaultMixins = null;
         for( Rule rule : rules ) {
             MixinMatch matching = rule.match( formatter, paramValues, false );
             if( matching != null ) {
@@ -141,17 +141,22 @@ class Mixin extends LessObject implements Formattable {
                 if( matching.getGuard() ) {
                     mixinRules.add( matching );
                 } else if( matching.wasDefault() ) {
-                    defaultMixin = rule;
+                    if( defaultMixins == null ) {
+                        defaultMixins = new ArrayList<>();
+                    }
+                    defaultMixins.add( rule );
                 }
             }
         }
         if( !paramMatch ) {
             throw createException( "No matching definition was found for: " + name );
         }
-        if( mixinRules.size() == 0 && defaultMixin != null ) {
-            MixinMatch matching = defaultMixin.match( formatter, paramValues, true );
-            if( matching != null && matching.getGuard() ) {
-                mixinRules.add( matching );
+        if( mixinRules.size() == 0 && defaultMixins != null ) {
+            for( Rule rule : defaultMixins ) {
+                MixinMatch matching = rule.match( formatter, paramValues, true );
+                if( matching != null && matching.getGuard() ) {
+                    mixinRules.add( matching );
+                }
             }
         }
         return mixinRules;
