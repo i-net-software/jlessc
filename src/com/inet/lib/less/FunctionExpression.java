@@ -593,9 +593,18 @@ class FunctionExpression extends AbstractExpression {
                     type = NUMBER;
                     doubleValue = getDouble( 0, formatter );
                     return;
+                case "iscolor":
+                    type = BOOLEAN;
+                    int type0 = get( 0 ).getDataType( formatter );
+                    booleanValue = type0 == COLOR || type0 == RGBA;
+                    return;
                 case "isnumber":
                     type = BOOLEAN;
                     booleanValue = get( 0 ).getDataType( formatter ) == NUMBER;
+                    return;
+                case "isstring":
+                    type = BOOLEAN;
+                    booleanValue = get( 0 ).getDataType( formatter ) == STRING;
                     return;
                 case "default":
                     if( formatter.isGuard() ) {
