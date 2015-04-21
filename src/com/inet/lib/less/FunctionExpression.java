@@ -38,6 +38,7 @@ import static com.inet.lib.less.ColorUtils.luma;
 import static com.inet.lib.less.ColorUtils.luminance;
 import static com.inet.lib.less.ColorUtils.mix;
 import static com.inet.lib.less.ColorUtils.multiply;
+import static com.inet.lib.less.ColorUtils.negation;
 import static com.inet.lib.less.ColorUtils.red;
 import static com.inet.lib.less.ColorUtils.rgb;
 import static com.inet.lib.less.ColorUtils.rgba;
@@ -588,6 +589,9 @@ class FunctionExpression extends AbstractExpression {
                     return;
                 case "multiply":
                     doubleValue = multiply( getColor( 0, formatter ), getColor( 1, formatter ) );
+                    return;
+                case "negation":
+                    doubleValue = negation( getColor( 0, formatter ), getColor( 1, formatter ) );
                     return;
                 case "unit":
                     type = NUMBER;
