@@ -738,6 +738,7 @@ class LessParser implements FormattableContainer {
                             right = new FunctionExpression( reader, str, parseUrlParam() );
                             break;
                         case "data-uri":
+                        case "colorize-image":
                             Operation op = parseParameterList();
                             op.addLeftOperand( new ValueExpression( reader, relativeURL.getPath() ) );
                             right = new FunctionExpression( reader, str, op );
