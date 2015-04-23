@@ -148,7 +148,7 @@ class UrlUtils {
     /**
      * Get the color value of the expression or fire an exception if not a color. 
      */
-    private static double getColor( Expression param, CssFormatter formatter ) {
+    static double getColor( Expression param, CssFormatter formatter ) {
         switch( param.getDataType( formatter ) ) {
             case Expression.COLOR:
             case Expression.RGBA:
@@ -176,8 +176,18 @@ class UrlUtils {
         while( (count = input.read( data, 0, data.length )) > 0 ) {
             buffer.write( data, 0, count );
         }
+        input.close();
 
         byte[] bytes = buffer.toByteArray();
+
+        if( bytes.length >= 32 * 1024 ) {
+            formatter.append( "url(" ).append( urlString ).append( ')' );
+        } else {
+            dataUri( formatter, bytes, urlStr, type );
+        }
+    }
+
+    static void dataUri( CssFormatter formatter, byte[] bytes, String urlStr, String type ) {
         if( type == null ) {
             switch( urlStr.substring( urlStr.lastIndexOf( '.' ) + 1 ) ) {
                 case "gif": 
@@ -197,18 +207,14 @@ class UrlUtils {
             type = removeQuote( type );
         }
 
-        if( bytes.length >= 32 * 1024 ) {
-            formatter.append( "url(" ).append( urlString ).append( ')' );
+        if( type.endsWith( "base64" ) ) {
+            formatter.append( "url(\"data:" ).append( type ).append( ',' );
+            formatter.append( DatatypeConverter.printBase64Binary( bytes ) );
+            formatter.append( "\")" );
         } else {
-            if( type.endsWith( "base64" ) ) {
-                formatter.append( "url(\"data:" ).append( type ).append( ',' );
-                formatter.append( DatatypeConverter.printBase64Binary( bytes ) );
-                formatter.append( "\")" );
-            } else {
-                formatter.append( "url(\"data:" ).append( type ).append( ',' );
-                appendEncode( formatter, bytes );
-                formatter.append( "\")" );
-            }
+            formatter.append( "url(\"data:" ).append( type ).append( ',' );
+            appendEncode( formatter, bytes );
+            formatter.append( "\")" );
         }
     }
 

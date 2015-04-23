@@ -186,6 +186,9 @@ class FunctionExpression extends AbstractExpression {
                 case "svg-gradient":
                     UrlUtils.svgGradient( formatter, parameters );
                     return;
+                case "colorize-image":
+                    CustomFunctions.colorizeImage( formatter, parameters );
+                    return;
                 case "replace":
                     String str = get( 0 ).stringValue( formatter );
                     formatter.setInineMode( true );
