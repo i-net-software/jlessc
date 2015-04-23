@@ -740,7 +740,7 @@ class LessParser implements FormattableContainer {
                         case "data-uri":
                         case "colorize-image":
                             Operation op = parseParameterList();
-                            op.addLeftOperand( new ValueExpression( reader, relativeURL.getPath() ) );
+                            op.addLeftOperand( new ValueExpression( reader, relativeURL.toString() ) );
                             right = new FunctionExpression( reader, str, op );
                             break;
                         case "e":
