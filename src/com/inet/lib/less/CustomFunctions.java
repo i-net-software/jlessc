@@ -28,13 +28,8 @@ package com.inet.lib.less;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.awt.image.FilteredImageSource;
-import java.awt.image.ImageFilter;
-import java.awt.image.RGBImageFilter;
 import java.awt.image.WritableRaster;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -55,8 +50,8 @@ class CustomFunctions {
         URL url = new URL( formatter.getBaseURL(), relativeURL );
         String urlStr = UrlUtils.removeQuote( urlString );
         url = new URL( url, urlStr );
-        Color mainColor = new Color( ColorUtils.argb( UrlUtils.getColor( parameters.get( 2 ), formatter ) ) );
-        Color contrastColor = new Color( ColorUtils.argb( UrlUtils.getColor( parameters.get( 3 ), formatter ) ) );
+        int mainColor = ColorUtils.argb( UrlUtils.getColor( parameters.get( 2 ), formatter ) );
+        int contrastColor = ColorUtils.argb( UrlUtils.getColor( parameters.get( 3 ), formatter ) );
 
         BufferedImage loadedImage = ImageIO.read( url.openStream() );
 
@@ -68,8 +63,8 @@ class CustomFunctions {
         bGr.drawImage( loadedImage, 0, 0, null );
         bGr.dispose();
 
-        final float[] mainColorHsb = Color.RGBtoHSB( mainColor.getRed(), mainColor.getGreen(), mainColor.getBlue(), null );
-        final float[] contrastColorHsb = Color.RGBtoHSB( contrastColor.getRed(), contrastColor.getGreen(), contrastColor.getBlue(), null );
+        final float[] mainColorHsb = Color.RGBtoHSB( (mainColor >> 16) & 0xFF, (mainColor >> 8) & 0xFF, mainColor & 0xFF, null );
+        final float[] contrastColorHsb = Color.RGBtoHSB( (contrastColor >> 16) & 0xFF, (contrastColor >> 8) & 0xFF, contrastColor & 0xFF, null );
 
         // get the pixel data
         WritableRaster raster = image.getRaster();
@@ -77,8 +72,14 @@ class CustomFunctions {
         int[] data = buffer.getData();
 
         float[] hsb = new float[3];
+        int hsbColor = 0;
+        int lastRgb = data[0] + 1;
         for( int i = 0; i < data.length; i++ ) {
             int rgb = data[i];
+            if( rgb == lastRgb ) {
+                data[i] = hsbColor;
+                continue;
+            }
             int r = (rgb >> 16) & 0xFF;
             int g = (rgb >> 8) & 0xFF;
             int b = rgb & 0xFF;
@@ -97,7 +98,8 @@ class CustomFunctions {
                     hsbColorize = mainColorHsb;
                 }
             }
-            int hsbColor = Color.HSBtoRGB( hsbColorize[0], hsbColorize[1], hsbColorize[2] );
+            lastRgb = rgb;
+            hsbColor = Color.HSBtoRGB( hsbColorize[0], hsbColorize[1], hsbColorize[2] );
             hsbColor = (rgb & 0xFF000000) | (hsbColor & 0xFFFFFF);
             data[i] = hsbColor;
         }
