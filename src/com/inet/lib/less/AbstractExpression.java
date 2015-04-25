@@ -119,4 +119,24 @@ abstract class AbstractExpression extends LessObject implements Expression {
     public String toString() {
         return str;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Expression unpack( CssFormatter formatter ) {
+        Expression unpack = this;
+        do { // unpack packed expressions like parenthesis or variables
+            if( unpack.getClass() == FunctionExpression.class && ((FunctionExpression)unpack).toString().isEmpty() ) { //Parenthesis
+                unpack = ((FunctionExpression)unpack).get( 0 );
+                continue;
+            }
+            if( unpack.getClass() == VariableExpression.class ) {
+                unpack = ((VariableExpression)unpack).getValue( formatter );
+                continue;
+            }
+            break;
+        } while(true);
+        return unpack;
+    }
 }
