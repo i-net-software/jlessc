@@ -254,12 +254,19 @@ class CssFormatter implements Cloneable {
             }
         }
         if( name.equals( "@arguments" ) ) {
-            Scope scope = state.stack.get( state.stackIdx - 1 );
-            Operation params = new Operation( scope.mixin, ' ' );
-            for( Expression expr : scope.parameters.values() ) {
-                params.addOperand( expr );
+            for( int i = state.stackIdx - 1; i >= 0; i-- ) {
+                Scope scope = state.stack.get( i );
+                if( scope.parameters != null ) {
+                    Operation params = new Operation( scope.mixin, ' ' );
+                    for( Expression expr : scope.parameters.values() ) {
+                        if( expr.getClass() == Operation.class && scope.parameters.size() == 1 ) {
+                            return expr;
+                        }
+                        params.addOperand( expr );
+                    }
+                    return params;
+                }
             }
-            return params;
         }
         return null;
     }
