@@ -97,4 +97,11 @@ interface Expression extends Formattable {
      * @return the unit or empty string if nothing
      */
     String unit( CssFormatter formatter );
+
+    /**
+     * Unpack this expression to return the core expression
+     * @param formatter the CCS target
+     * @return the core expression
+     */
+    Expression unpack( CssFormatter formatter );
 }

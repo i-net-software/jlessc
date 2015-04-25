@@ -96,20 +96,9 @@ class UrlUtils {
         builder.append( '<' ).append( gradientType ).append( "Gradient id=\"gradient\" gradientUnits=\"userSpaceOnUse\" " ).append( gradientDirection ).append( '>' );
 
         for( int i = 1; i < parameters.size(); i++ ) {
-            Expression param = parameters.get( i );
+            Expression param = parameters.get( i ).unpack( formatter );
             double color;
             double position;
-            UNPACK: do { // unpack packet expressions like parenthesis or variables
-                if( param.getClass() == FunctionExpression.class && ((FunctionExpression)param).toString().isEmpty() ) { //Parenthesis
-                    param = ((FunctionExpression)param).get( 0 );
-                    continue UNPACK;
-                }
-                if( param.getClass() == VariableExpression.class ) {
-                    param = ((VariableExpression)param).getValue( formatter );
-                    continue UNPACK;
-                }
-                break UNPACK;
-            } while(true);
             if( param.getClass() == Operation.class && ((Operation)param).getOperator() == ' ' ) {
                 ArrayList<Expression> operands = ((Operation)param).getOperands();
                 color = getColor( operands.get( 0 ), formatter );
