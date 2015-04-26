@@ -45,6 +45,8 @@ interface Expression extends Formattable {
 
     static final int STRING  = 6;
 
+    static final int LIST  = 7;
+
     // A color alpha value of 1 as long mask.
     static final long ALPHA_1 = 0xFFFF_0000_0000_0000L;
 
@@ -88,6 +90,15 @@ interface Expression extends Formattable {
      * @return the value
      */
     String stringValue( CssFormatter formatter );
+
+    /**
+     * Get the value as a list
+     * 
+     * @param formatter
+     *            the CCS target
+     * @return the value
+     */
+    Operation listValue( CssFormatter formatter );
 
     /**
      * Get the unit of a NUMBER value.

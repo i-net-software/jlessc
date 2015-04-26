@@ -27,6 +27,7 @@
 package com.inet.lib.less;
 
 import java.text.ParsePosition;
+import java.util.ArrayList;
 
 /**
  * A constant value.
@@ -38,6 +39,8 @@ class ValueExpression extends AbstractExpression {
     private double value;
 
     private String unit;
+
+    private Operation op;
 
     ValueExpression( LessObject reader, String str ) {
         super( reader, str );
@@ -54,6 +57,13 @@ class ValueExpression extends AbstractExpression {
             case STRING:
             case BOOLEAN:
                 break; //string is already set
+            case LIST:
+                Operation op = valueEx.op = new Operation( (LessObject)expr, ' ' );
+                ArrayList<Expression> operants = expr.listValue( formatter ).getOperands();
+                for( int j = 0; j < operants.size(); j++ ) {
+                    op.addOperand( ValueExpression.eval( formatter, operants.get( j ) ) );
+                }
+                break;
             default:
                 valueEx.value = expr.doubleValue( formatter );
         }
@@ -122,6 +132,14 @@ class ValueExpression extends AbstractExpression {
     @Override
     public boolean booleanValue( CssFormatter formatter ) {
         return Boolean.parseBoolean( toString() );
+    }
+
+    @Override
+    public Operation listValue( CssFormatter formatter ) {
+        if( type == LIST ) {
+            return op;
+        }
+        return super.listValue( formatter );
     }
 
     /**
