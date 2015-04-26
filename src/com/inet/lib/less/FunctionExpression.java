@@ -115,6 +115,7 @@ class FunctionExpression extends AbstractExpression {
             case "sin":
             case "cos":
             case "tan":
+            case "length":
                 return "";
             case "acos":
             case "asin":
@@ -267,6 +268,13 @@ class FunctionExpression extends AbstractExpression {
                     }
                     UrlUtils.dataUri( formatter, baseUrl, url, type );
                     return;
+                case "extract":
+                    Expression expr = extract( formatter );
+                    if( expr != null ) {
+                        expr.appendTo( formatter );
+                        return;
+                    }
+                    break;
             }
             if( type == UNKNOWN ) {
                 eval( formatter );
@@ -417,17 +425,7 @@ class FunctionExpression extends AbstractExpression {
                     doubleValue = getParamList( formatter ).size();
                     return;
                 case "extract":
-                    List<Expression> exList = getParamList( formatter );
-                    int idx = getInt( 1, formatter );
-                    if( idx <= 0 || exList.size() < idx ) {
-                        type = STRING;
-                        return;
-                    }
-                    Expression ex = exList.get( idx - 1 );
-                    type = ex.getDataType( formatter );
-                    if( type != STRING ) {
-                        doubleValue = ex.doubleValue( formatter );
-                    }
+                    extract( formatter );
                     return;
                 case "alpha":
                     type = NUMBER;
@@ -896,5 +894,26 @@ class FunctionExpression extends AbstractExpression {
         List<Expression> result = new ArrayList<Expression>();
         result.add( ex0 );
         return result;
+    }
+
+    /**
+     * Function extract. Change the type and doubleValue
+     * @param formatter current CSS output
+     * @return the extracted expression if it is a string
+     */
+    private Expression extract( CssFormatter formatter ) {
+        List<Expression> exList = getParamList( formatter );
+        int idx = getInt( 1, formatter );
+        if( idx <= 0 || exList.size() < idx ) {
+            type = STRING;
+            return null;
+        }
+        Expression ex = exList.get( idx - 1 );
+        type = ex.getDataType( formatter );
+        if( type != STRING ) {
+            doubleValue = ex.doubleValue( formatter );
+        }
+        return ex;
+
     }
 }
