@@ -131,7 +131,7 @@ class Operation extends AbstractExpression {
             switch( operator ) {
                 case ' ':
                 case ',':
-                    type = STRING;
+                    type = LIST;
                     break;
                 case '&':
                 case '|':
@@ -176,6 +176,7 @@ class Operation extends AbstractExpression {
                 }
                 break;
             case STRING:
+            case LIST:
                 switch( operator ) {
                     case ' ':
                         for( int i = 0; i < operands.size(); i++ ) {
@@ -519,6 +520,22 @@ class Operation extends AbstractExpression {
         return "";
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Operation listValue( CssFormatter formatter ) {
+        switch( operator ) {
+            case ' ':
+            case ',':
+                return this;
+        }
+        return super.listValue( formatter );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();

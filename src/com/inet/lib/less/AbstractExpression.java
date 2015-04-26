@@ -116,6 +116,18 @@ abstract class AbstractExpression extends LessObject implements Expression {
      * {@inheritDoc}
      */
     @Override
+    public Operation listValue( CssFormatter formatter ) {
+        Expression expr = unpack( formatter );
+        if( expr == this ) {
+            throw createException( "Exprestion is not a list: " + this );
+        }
+        return expr.listValue( formatter );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String toString() {
         return str;
     }

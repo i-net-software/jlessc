@@ -879,6 +879,18 @@ class FunctionExpression extends AbstractExpression {
         return parameters.get( idx ).doubleValue( formatter );
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Operation listValue( CssFormatter formatter ) {
+        switch( super.toString().toLowerCase() ) {
+            case "extract":
+                return extract( formatter ).listValue( formatter );
+        }
+        return super.listValue( formatter );
+    }
+
     private List<Expression> getParamList( CssFormatter formatter ) {
         Expression ex0 = get( 0 ).unpack( formatter );
         if( ex0.getClass() == Operation.class ) {
@@ -890,6 +902,10 @@ class FunctionExpression extends AbstractExpression {
                 }
             }
             return operants;
+        }
+        if( ex0.getDataType( formatter ) == LIST ) {
+            Operation op = ex0.listValue( formatter );
+            return op.getOperands();
         }
         List<Expression> result = new ArrayList<Expression>();
         result.add( ex0 );
@@ -910,8 +926,12 @@ class FunctionExpression extends AbstractExpression {
         }
         Expression ex = exList.get( idx - 1 );
         type = ex.getDataType( formatter );
-        if( type != STRING ) {
-            doubleValue = ex.doubleValue( formatter );
+        switch( type ) {
+            case STRING:
+            case LIST:
+                break;
+            default:
+                doubleValue = ex.doubleValue( formatter );
         }
         return ex;
 
