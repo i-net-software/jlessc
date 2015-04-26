@@ -893,19 +893,16 @@ class FunctionExpression extends AbstractExpression {
 
     private List<Expression> getParamList( CssFormatter formatter ) {
         Expression ex0 = get( 0 ).unpack( formatter );
-        if( ex0.getClass() == Operation.class ) {
-            List<Expression> operants = ((Operation)ex0).getOperands();
+        if( ex0.getDataType( formatter ) == LIST ) {
+            Operation op = ex0.listValue( formatter );
+            List<Expression> operants = op.getOperands();
             if( operants.size() == 1 ) {
                 Expression ex0_0 = operants.get( 0 );
-                if( ex0_0.getClass() == Operation.class && ((Operation)ex0_0).getOperator() == ' ' ) {
-                    return ((Operation)ex0_0).getOperands();
+                if( ex0_0.getDataType( formatter ) == LIST ) {
+                    return ex0_0.listValue( formatter ).getOperands();
                 }
             }
             return operants;
-        }
-        if( ex0.getDataType( formatter ) == LIST ) {
-            Operation op = ex0.listValue( formatter );
-            return op.getOperands();
         }
         List<Expression> result = new ArrayList<Expression>();
         result.add( ex0 );
