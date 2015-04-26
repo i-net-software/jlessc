@@ -47,7 +47,8 @@ class ValueExpression extends AbstractExpression {
     }
 
     public static ValueExpression eval( CssFormatter formatter, Expression expr ) {
-        if( expr instanceof ValueExpression ) {
+        expr = expr.unpack( formatter ); // unpack to increase the chance to find a ValueExpression
+        if( expr.getClass() == ValueExpression.class ) {
             return (ValueExpression)expr;
         }
         ValueExpression valueEx = new ValueExpression( (LessObject)expr, expr.stringValue( formatter ) );
