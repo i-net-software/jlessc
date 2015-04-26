@@ -260,27 +260,6 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
     }
 
     /**
-     * The parameter of a mixin must be eval in the context of the caller before pass to a mixin.
-     * A space delimited list can must be a list for length() and extract() functions.
-     * @param formatter current formatter
-     * @param expr the expression
-     * @return a contextless expression like a ValueExpression
-     */
-    private static Expression evalMixinParam( CssFormatter formatter, Expression expr ) {
-        if( expr.getClass() == Operation.class && ((Operation)expr).getOperator() == ' ' ) {
-            Operation op = new Operation( (LessObject)expr, ' ' );
-            ArrayList<Expression> operants = ((Operation)expr).getOperands();
-            for( int j = 0; j < operants.size(); j++ ) {
-                op.addOperand( ValueExpression.eval( formatter, operants.get( j ) ) );
-            }
-            return op;
-        } else {
-            return ValueExpression.eval( formatter, expr );
-        }
-
-    }
-
-    /**
      * Get the mixin parameters as map if the given param values match to this rule.
      * @param formatter current formatter
      * @param paramValues the values of the caller
@@ -322,15 +301,15 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
                 // First check if it is a named parameter
                 if( valueType == Operation.class && ((Operation)value).getOperator() == ':' && ((Operation)value).getOperands().size() == 2 ) {
                     ArrayList<Expression> keyValue = ((Operation)value).getOperands();
-                    vars.put( keyValue.get( 0 ).toString(), evalMixinParam( formatter, keyValue.get( 1 ) ) );
+                    vars.put( keyValue.get( 0 ).toString(), (Expression)ValueExpression.eval( formatter, keyValue.get( 1 ) ) );
                 } else {
                     Expression param = params.get( i );
                     Class<?> paramType = param.getClass();
                     if( paramType == VariableExpression.class ) {
-                        vars.put( param.toString(), evalMixinParam( formatter, value ) );
+                        vars.put( param.toString(), (Expression)ValueExpression.eval( formatter, value ) );
                     } else if( paramType ==  Operation.class && ((Operation)param).getOperator() == ':' && ((Operation)param).getOperands().size() == 2 ) {
                         ArrayList<Expression> keyValue = ((Operation)param).getOperands();
-                        vars.put( keyValue.get( 0 ).toString(), evalMixinParam( formatter, value ) );
+                        vars.put( keyValue.get( 0 ).toString(), (Expression)ValueExpression.eval( formatter, value ) );
                     } else if( paramType ==  ValueExpression.class ) {
                         //pseudo guard, mixin with static parameter
                         final Operation op = new Operation( (LessObject)param, param, '=' );
@@ -348,7 +327,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
             if( varArg != null ) {
                 Operation value = new Operation( varArg );
                 for( int i = params.size(); i < paramValues.size(); i++ ) {
-                    value.addOperand( evalMixinParam( formatter, paramValues.get( i ) ) );
+                    value.addOperand( ValueExpression.eval( formatter, paramValues.get( i ) ) );
                 }
                 if( vars.size() == params.size() ) {
                     vars.put( varArg.toString(), value );
