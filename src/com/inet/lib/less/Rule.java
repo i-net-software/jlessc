@@ -301,15 +301,15 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
                 // First check if it is a named parameter
                 if( valueType == Operation.class && ((Operation)value).getOperator() == ':' && ((Operation)value).getOperands().size() == 2 ) {
                     ArrayList<Expression> keyValue = ((Operation)value).getOperands();
-                    vars.put( keyValue.get( 0 ).toString(), (Expression)ValueExpression.eval( formatter, keyValue.get( 1 ) ) );
+                    vars.put( keyValue.get( 0 ).toString(), ValueExpression.eval( formatter, keyValue.get( 1 ) ) );
                 } else {
                     Expression param = params.get( i );
                     Class<?> paramType = param.getClass();
                     if( paramType == VariableExpression.class ) {
-                        vars.put( param.toString(), (Expression)ValueExpression.eval( formatter, value ) );
+                        vars.put( param.toString(), ValueExpression.eval( formatter, value ) );
                     } else if( paramType ==  Operation.class && ((Operation)param).getOperator() == ':' && ((Operation)param).getOperands().size() == 2 ) {
                         ArrayList<Expression> keyValue = ((Operation)param).getOperands();
-                        vars.put( keyValue.get( 0 ).toString(), (Expression)ValueExpression.eval( formatter, value ) );
+                        vars.put( keyValue.get( 0 ).toString(), ValueExpression.eval( formatter, value ) );
                     } else if( paramType ==  ValueExpression.class ) {
                         //pseudo guard, mixin with static parameter
                         final Operation op = new Operation( (LessObject)param, param, '=' );
