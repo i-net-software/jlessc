@@ -256,7 +256,7 @@ class LessParser implements FormattableContainer {
                     }
                     return;
                 case '/':
-                    if( !comment( isWhitespace( builder ) ? currentRule : null ) ) {
+                    if( !comment( isWhitespace( builder ) ? currentRule : null ) ) { //TODO quotes in selectors
                         builder.append( ch );
                     }
                     wasWhite = false;
@@ -945,9 +945,9 @@ class LessParser implements FormattableContainer {
     private boolean comment( FormattableContainer container ) {
         char ch = read();
         switch( ch ) {
-            case '/': // line comments will be skip
-                reader.skipLine();
-                return true;
+//            case '/': // line comments will be skip
+//                reader.skipLine();
+//                return true;
             case '*': // block comments
                 StringBuilder builder = new StringBuilder();
                 builder.append( "/*" );
