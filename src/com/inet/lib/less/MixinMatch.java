@@ -26,7 +26,6 @@
  */
 package com.inet.lib.less;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**

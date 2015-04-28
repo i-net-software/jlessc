@@ -54,7 +54,7 @@ import java.util.List;
 /**
  * A function (less or CSS).
  */
-class FunctionExpression extends AbstractExpression {
+class FunctionExpression extends Expression {
 
     private final List<Expression> parameters;
 

@@ -577,7 +577,7 @@ class CssFormatter implements Cloneable {
 
     void appendProperty( String name, Expression value ) {
         insets();
-        SelectorUtils.appendToWithPlaceHolder( this, name, 0, (LessObject)value );
+        SelectorUtils.appendToWithPlaceHolder( this, name, 0, value );
         output.append( ':' );
         space();
         value.appendTo( this );

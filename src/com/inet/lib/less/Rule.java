@@ -70,7 +70,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
                 if( lastEx.getClass() == VariableExpression.class || lastEx.getClass() == ValueExpression.class ) {
                     String name = lastEx.toString();
                     if( name.endsWith( "..." ) ) {
-                        varArg = new VariableExpression( (LessObject)lastEx, name.substring( 0, name.length() - 3 ) );
+                        varArg = new VariableExpression( lastEx, name.substring( 0, name.length() - 3 ) );
                         this.params.remove( count-1 );
                     }
                 }
@@ -312,7 +312,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
                         vars.put( keyValue.get( 0 ).toString(), ValueExpression.eval( formatter, value ) );
                     } else if( paramType ==  ValueExpression.class ) {
                         //pseudo guard, mixin with static parameter
-                        final Operation op = new Operation( (LessObject)param, param, '=' );
+                        final Operation op = new Operation( param, param, '=' );
                         op.addOperand( value );
                         if( !op.booleanValue( formatter ) ) {
                             return NO_MATCH;

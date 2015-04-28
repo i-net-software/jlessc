@@ -29,7 +29,7 @@ package com.inet.lib.less;
 /**
  * A reference to a variable
  */
-class VariableExpression extends AbstractExpression {
+class VariableExpression extends Expression {
 
     VariableExpression( LessObject reader, String name ) {
         super( reader, name );

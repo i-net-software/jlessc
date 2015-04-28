@@ -34,7 +34,7 @@ import java.util.HashMap;
 /**
  * A arithmetic operation.
  */
-class Operation extends AbstractExpression {
+class Operation extends Expression {
 
     private final ArrayList<Expression> operands = new ArrayList<>();
 

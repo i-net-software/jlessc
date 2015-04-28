@@ -29,11 +29,9 @@ package com.inet.lib.less;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 
 /**
  * The main class of JLessC library. Its contain all start points for converting LESS to CSS files.
