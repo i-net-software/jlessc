@@ -26,10 +26,12 @@
  */
 package com.inet.lib.less;
 
+import static com.inet.lib.less.ColorUtils.*;
+
 /**
- * A expression that can be evaluate to a value.
+ * Base expression with value formating.
  */
-interface Expression extends Formattable {
+abstract class Expression extends LessObject implements Formattable {
 
     static final int UNKNOWN = 0;
 
@@ -54,6 +56,71 @@ interface Expression extends Formattable {
 
     static final double BLACK = Double.longBitsToDouble( ALPHA_1 );
 
+    private String str;
+
+    /**
+     * Create a new instance.
+     * 
+     * @param obj
+     *            another LessObject with parse position.
+     * @param str
+     *            a string from the parser
+     */
+    Expression( LessObject obj, String str ) {
+        super( obj );
+        this.str = str;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final int getType() {
+        return EXPRESSION;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void appendTo( CssFormatter formatter ) {
+        switch( getDataType( formatter ) ) {
+            case BOOLEAN:
+                formatter.append( Boolean.toString( booleanValue( formatter ) ) );
+                return;
+            case PERCENT:
+                double d = doubleValue( formatter );
+                formatter.append( d );
+                formatter.append( '%' );
+                return;
+            case NUMBER:
+                d = doubleValue( formatter );
+                formatter.appendValue( d, unit( formatter ) );
+                return;
+            case COLOR:
+                formatter.appendColor( doubleValue( formatter ), null );
+                return;
+            case RGBA:
+                double color = doubleValue( formatter );
+                if( color == 0 && Double.doubleToRawLongBits( color ) == 0 ) {
+                    formatter.append( "transparent" );
+                } else {
+                    final double alpha = alpha( color );
+                    if( alpha >= 1 ) {
+                        formatter.appendColor( color, null );
+                    } else {
+                        formatter.append( "rgba(" );
+                        formatter.append( red( color ) ).append( ',' ).space();
+                        formatter.append( green( color ) ).append( ',' ).space();
+                        formatter.append( blue( color ) ).append( ',' ).space();
+                        formatter.append( alpha ).append( ')' );
+                    }
+                }
+                return;
+        }
+        formatter.append( str );
+    }
+
     /**
      * The data type of the expression
      * 
@@ -62,7 +129,7 @@ interface Expression extends Formattable {
      * 
      * @return one of the constant
      */
-    int getDataType( CssFormatter formatter );
+    abstract int getDataType( CssFormatter formatter );
 
     /**
      * Get the numeric value.
@@ -71,7 +138,7 @@ interface Expression extends Formattable {
      *            the CCS target
      * @return the value
      */
-    double doubleValue( CssFormatter formatter );
+    abstract double doubleValue( CssFormatter formatter );
 
     /**
      * Get the boolean value
@@ -80,7 +147,7 @@ interface Expression extends Formattable {
      *            the CCS target
      * @return the value
      */
-    boolean booleanValue( CssFormatter formatter );
+    abstract boolean booleanValue( CssFormatter formatter );
 
     /**
      * Get the string value
@@ -89,7 +156,15 @@ interface Expression extends Formattable {
      *            the CCS target
      * @return the value
      */
-    String stringValue( CssFormatter formatter );
+    public String stringValue( CssFormatter formatter ) {
+        try {
+            formatter.addOutput();
+            appendTo( formatter );
+            return formatter.releaseOutput();
+        } catch( Exception ex ) {
+            throw createException( ex );
+        }
+    }
 
     /**
      * Get the value as a list
@@ -98,7 +173,13 @@ interface Expression extends Formattable {
      *            the CCS target
      * @return the value
      */
-    Operation listValue( CssFormatter formatter );
+    public Operation listValue( CssFormatter formatter ) {
+        Expression expr = unpack( formatter );
+        if( expr == this ) {
+            throw createException( "Exprestion is not a list: " + this );
+        }
+        return expr.listValue( formatter );
+    }
 
     /**
      * Get the unit of a NUMBER value.
@@ -107,12 +188,34 @@ interface Expression extends Formattable {
      *            the CCS target
      * @return the unit or empty string if nothing
      */
-    String unit( CssFormatter formatter );
+    abstract String unit( CssFormatter formatter );
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return str;
+    }
 
     /**
      * Unpack this expression to return the core expression
      * @param formatter the CCS target
      * @return the core expression
      */
-    Expression unpack( CssFormatter formatter );
+    public Expression unpack( CssFormatter formatter ) {
+        Expression unpack = this;
+        do { // unpack packed expressions like parenthesis or variables
+            if( unpack.getClass() == FunctionExpression.class && ((FunctionExpression)unpack).toString().isEmpty() ) { //Parenthesis
+                unpack = ((FunctionExpression)unpack).get( 0 );
+                continue;
+            }
+            if( unpack.getClass() == VariableExpression.class ) {
+                unpack = ((VariableExpression)unpack).getValue( formatter );
+                continue;
+            }
+            break;
+        } while(true);
+        return unpack;
+    }
 }

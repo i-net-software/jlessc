@@ -171,7 +171,7 @@ class LessParser implements FormattableContainer {
                         builder.append( ch );
                         do {
                             ch = read();
-                            builder.append( (char)ch );
+                            builder.append( ch );
                         } while( ch != '}' );
                         break;
                     } else {

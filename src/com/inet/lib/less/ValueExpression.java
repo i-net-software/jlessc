@@ -32,7 +32,7 @@ import java.util.ArrayList;
 /**
  * A constant value.
  */
-class ValueExpression extends AbstractExpression {
+class ValueExpression extends Expression {
 
     private int    type;
 
@@ -51,7 +51,7 @@ class ValueExpression extends AbstractExpression {
         if( expr.getClass() == ValueExpression.class ) {
             return (ValueExpression)expr;
         }
-        ValueExpression valueEx = new ValueExpression( (LessObject)expr, expr.stringValue( formatter ) );
+        ValueExpression valueEx = new ValueExpression( expr, expr.stringValue( formatter ) );
         valueEx.type = expr.getDataType( formatter );
         valueEx.unit = expr.unit( formatter );
         switch( valueEx.type ) {
@@ -59,7 +59,7 @@ class ValueExpression extends AbstractExpression {
             case BOOLEAN:
                 break; //string is already set
             case LIST:
-                Operation op = valueEx.op = new Operation( (LessObject)expr, ' ' );
+                Operation op = valueEx.op = new Operation( expr, ' ' );
                 ArrayList<Expression> operants = expr.listValue( formatter ).getOperands();
                 for( int j = 0; j < operants.size(); j++ ) {
                     op.addOperand( ValueExpression.eval( formatter, operants.get( j ) ) );
