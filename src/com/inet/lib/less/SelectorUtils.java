@@ -117,7 +117,7 @@ class SelectorUtils {
 
                     Expression exp = formatter.getVariable( name );
                     if( exp == null ) {
-                        throw caller.createException( "Undefine Variable: " + name );
+                        throw caller.createException( "Undefine Variable: " + name + " in " + str );
                     }
                     formatter.setInineMode( true );
                     exp.appendTo( formatter );
