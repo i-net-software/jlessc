@@ -788,6 +788,9 @@ class LessParser implements FormattableContainer {
                     wasWhite = false;
                     left = concat( left, ' ', new ValueExpression( reader, readQuote( ch ) ) );
                     break;
+                case '`':
+                    left = concat( left, ' ', new JavaScriptExpression( reader, readQuote( ch ) ) );
+                    break;
                 default:
                     boolean isWhite = Character.isWhitespace( ch );
                     if( isWhite ) {

@@ -74,9 +74,11 @@ class SelectorUtils {
     }
 
     static void appendToWithPlaceHolder( CssFormatter formatter, String str, int i, LessObject caller ) {
+        int length = str.length();
+        boolean isJavaScript = length > 0 && str.charAt( 0 ) == '`';
         int appendIdx = 0;
         char quote = 0;
-        for( ; i < str.length(); i++ ) {
+        for( ; i < length; i++ ) {
             char ch = str.charAt( i );
             switch( ch ) {
                 case '\"':
@@ -119,7 +121,7 @@ class SelectorUtils {
                     if( exp == null ) {
                         throw caller.createException( "Undefine Variable: " + name + " in " + str );
                     }
-                    formatter.setInineMode( true );
+                    formatter.setInineMode( !isJavaScript );
                     exp.appendTo( formatter );
                     formatter.setInineMode( false );
 
