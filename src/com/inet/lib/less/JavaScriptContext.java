@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015 Volker Berlin
+ * Copyright (c) 2015 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,48 +26,38 @@
  */
 package com.inet.lib.less;
 
-/**
- * A base object for the parser that hold a parse position.
- */
-class LessObject {
+import java.util.HashMap;
 
-    String filename;
+import javax.script.SimpleScriptContext;
 
-    int    line, column;
+class JavaScriptContext extends SimpleScriptContext {
 
-    LessObject( String filename ) {
-        this.filename = filename;
+    private final JavaScriptExpression    expr;
+
+    private final HashMap<String, Object> attributes = new HashMap<>();
+
+    JavaScriptContext( CssFormatter formatter, JavaScriptExpression expr ) {
+        this.expr = expr;
+        engineScope = new JavaScriptBindings( formatter );
     }
 
     /**
-     * Create a new instance with filename, line number and column position from the LessObject.
-     * 
-     * @param obj
-     *            another LessObject with parse position.
+     * {@inheritDoc}
      */
-    LessObject( LessObject obj ) {
-        this.filename = obj.filename;
-        this.line = obj.line;
-        this.column = obj.column;
-    }
-
-    LessException createException( String msg ) {
-        LessException lessEx = new LessException( msg );
-        lessEx.addPosition( filename, line, column );
-        return lessEx;
-    }
-
-    LessException createException( Throwable ex ) {
-        LessException lessEx = ex.getClass() == LessException.class ? (LessException)ex : new LessException( ex );
-        lessEx.addPosition( filename, line, column );
-        return lessEx;
+    @Override
+    public Object getAttribute( String name ) {
+        switch( name ) {
+            case "javax.script.filename":
+                return expr.getFileName();
+        }
+        return attributes.get( name );
     }
 
     /**
-     * Get the file name in which the current object is define.
-     * @return the filename, can be null if a string was parsed.
+     * {@inheritDoc}
      */
-    String getFileName() {
-        return filename;
+    @Override
+    public void setAttribute( String name, Object value, int scope ) {
+        attributes.put( name, value );
     }
 }

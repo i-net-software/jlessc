@@ -46,6 +46,21 @@ class ValueExpression extends Expression {
         super( reader, str );
     }
 
+    ValueExpression( JavaScriptExpression expr, Object obj ) {
+        super( expr, String.valueOf( obj ) );
+        if( obj instanceof Number ) {
+            type = NUMBER;
+            value = ((Number)obj).doubleValue();
+            unit = "";
+        }
+    }
+
+    /**
+     * Create a value expression as parameter for a mixin which not change it value in a different context.
+     * @param formatter current formatter
+     * @param expr current expression
+     * @return a ValueExpression
+     */
     public static ValueExpression eval( CssFormatter formatter, Expression expr ) {
         expr = expr.unpack( formatter ); // unpack to increase the chance to find a ValueExpression
         if( expr.getClass() == ValueExpression.class ) {
