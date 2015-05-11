@@ -203,7 +203,7 @@ abstract class Expression extends LessObject implements Formattable {
      * @param formatter the CCS target
      * @return the core expression
      */
-    public Expression unpack( CssFormatter formatter ) {
+    Expression unpack( CssFormatter formatter ) {
         Expression unpack = this;
         do { // unpack packed expressions like parenthesis or variables
             if( unpack.getClass() == FunctionExpression.class && ((FunctionExpression)unpack).toString().isEmpty() ) { //Parenthesis
