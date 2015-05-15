@@ -121,9 +121,20 @@ class SelectorUtils {
                     if( exp == null ) {
                         throw caller.createException( "Undefine Variable: " + name + " in " + str );
                     }
-                    formatter.setInineMode( !isJavaScript );
-                    exp.appendTo( formatter );
-                    formatter.setInineMode( false );
+                    if( isJavaScript ) {
+                        boolean isList = exp.getDataType( formatter ) == Expression.LIST;
+                        if( isList ) {
+                            formatter.append( '[' );
+                            exp.appendTo( formatter );
+                            formatter.append( ']' );
+                        } else {
+                            exp.appendTo( formatter );
+                        }
+                    } else {
+                        formatter.setInineMode( true );
+                        exp.appendTo( formatter );
+                        formatter.setInineMode( false );
+                    }
 
                     break;
             }
