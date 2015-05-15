@@ -26,6 +26,8 @@
  */
 package com.inet.lib.less;
 
+import java.util.List;
+
 /**
  * Some utilities methods.
  */
@@ -125,7 +127,13 @@ class SelectorUtils {
                         boolean isList = exp.getDataType( formatter ) == Expression.LIST;
                         if( isList ) {
                             formatter.append( '[' );
-                            exp.appendTo( formatter );
+                            List<Expression> values = exp.listValue( formatter ).getOperands();
+                            for( int j = 0; j < values.size(); j++ ) {
+                                if( j > 0 ) {
+                                    formatter.append( ", " );
+                                }
+                                values.get( j ).appendTo( formatter );
+                            }
                             formatter.append( ']' );
                         } else {
                             exp.appendTo( formatter );
