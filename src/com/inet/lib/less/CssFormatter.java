@@ -38,6 +38,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -598,17 +599,51 @@ class CssFormatter implements Cloneable {
         newline();
     }
 
-    void appendProperty( String name, Expression value ) {
+    /**
+     * Append a property to the output like:
+     * name: value;
+     * @param name the name
+     * @param value the value
+     */
+    void appendProperty( @Nonnull String name, @Nonnull Expression value ) {
         insets();
-        SelectorUtils.appendToWithPlaceHolder( this, name, 0, value );
-        output.append( ':' );
+        name = SelectorUtils.replacePlaceHolder( this, name, value );
+        output.append( name ).append( ':' );
         space();
-        value.appendTo( this );
+        if( "font".equals( name ) && value.getClass() == Operation.class ) {
+            appendFontPropertyValue( (Operation)value );
+        } else {
+            value.appendTo( this );
+        }
         if( important ) {
             output.append( " !important" );
         }
         semicolon();
         newline();
+    }
+
+    /**
+     * Special hack for property "font" which contains a value font-size/line-height
+     * @param value the value
+     */
+    void appendFontPropertyValue( Operation value ) {
+        ArrayList<Expression> operands = value.getOperands();
+        char operator = value.getOperator();
+        if( operator == '~' ) {
+            value.appendTo( this );
+            return;
+        }
+        for( int i = 0; i < operands.size(); i++ ) {
+            if( i > 0 ) {
+                this.append( operator );
+            }
+            Expression operand = operands.get( i );
+            if( operand.getClass() == Operation.class ) {
+                appendFontPropertyValue( (Operation)operand );
+            } else {
+                operand.appendTo( this );
+            }
+        }
     }
 
     void setImportant( boolean important ) {
