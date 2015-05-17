@@ -38,6 +38,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.annotation.Nullable;
+
 /**
  * A formatter for the CSS output. Hold some formating states.
  */
@@ -436,14 +438,29 @@ class CssFormatter implements Cloneable {
         return output;
     }
 
-    void setInineMode( boolean mode ) {
+    /**
+     * Set the inline mode. In the inline mode: 
+     * <li>quotes are removed from strings
+     * <li>colors are written ever as full color RGB value
+     * @param mode the new mode.
+     */
+    void setInlineMode( boolean mode ) {
         inlineMode = mode;
     }
 
+    /**
+     * Current inline mode
+     * @return the mode
+     */
     boolean inlineMode() {
         return inlineMode;
     }
 
+    /**
+     * Append a string to the output. In inline mode quotes are removed.
+     * @param str the string
+     * @return this
+     */
     CssFormatter append( String str ) {
         if( inlineMode ) {
             str = UrlUtils.removeQuote( str );
@@ -452,7 +469,13 @@ class CssFormatter implements Cloneable {
         return this;
     }
 
-    CssFormatter appendColor( double color, String hint ) {
+    /**
+     * Append a color. In inline mode it is ever a 6 digit RGB value.
+     * @param color the color value
+     * @param hint the original spelling of the color if not calculated
+     * @return this
+     */
+    CssFormatter appendColor( double color, @Nullable String hint ) {
         if( !inlineMode && hint != null ) {
             output.append( hint );
         } else {

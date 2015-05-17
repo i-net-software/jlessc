@@ -85,9 +85,9 @@ class VariableExpression extends Expression {
             name = name.substring( 1 );
             value = formatter.getVariable( name );
             if( value != null ) {
-                formatter.setInineMode( true );
+                formatter.setInlineMode( true );
                 name = '@' + value.stringValue( formatter );
-                formatter.setInineMode( false );
+                formatter.setInlineMode( false );
                 value = formatter.getVariable( name );
                 if( value != null ) {
                     return value;

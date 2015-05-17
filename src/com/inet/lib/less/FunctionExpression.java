@@ -192,11 +192,11 @@ class FunctionExpression extends Expression {
                     return;
                 case "replace":
                     String str = get( 0 ).stringValue( formatter );
-                    formatter.setInineMode( true );
+                    formatter.setInlineMode( true );
                     String pattern = get( 1 ).stringValue( formatter );
                     String replacement = get( 2 ).stringValue( formatter );
                     String flags = parameters.size() > 3 ? get( 3 ).stringValue( formatter ) : "";
-                    formatter.setInineMode( false );
+                    formatter.setInlineMode( false );
                     if( str.length() > 1 ) {
                         char ch = str.charAt( 0 );
                         boolean quote = false;
@@ -666,12 +666,12 @@ class FunctionExpression extends Expression {
                         formatter.append( str );
                         break;
                     case 's':
-                        formatter.setInineMode( true );
+                        formatter.setInlineMode( true );
                         get( idx++ ).appendTo( formatter );
-                        formatter.setInineMode( false );
+                        formatter.setInlineMode( false );
                         break;
                     case 'S':
-                        formatter.setInineMode( true );
+                        formatter.setInlineMode( true );
                         str = get( idx++ ).stringValue( formatter );
                         try {
                             str = new URI( null, null, str, null ).getRawPath();
@@ -679,7 +679,7 @@ class FunctionExpression extends Expression {
                             e.printStackTrace();
                         }
                         formatter.append( str );
-                        formatter.setInineMode( false );
+                        formatter.setInlineMode( false );
                         break;
                     default:
                         formatter.append( ch );
