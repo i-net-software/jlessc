@@ -139,9 +139,9 @@ class SelectorUtils {
                             exp.appendTo( formatter );
                         }
                     } else {
-                        formatter.setInineMode( true );
+                        formatter.setInlineMode( true );
                         exp.appendTo( formatter );
-                        formatter.setInineMode( false );
+                        formatter.setInlineMode( false );
                     }
 
                     break;
