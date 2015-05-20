@@ -651,8 +651,17 @@ class ValueExpression extends Expression {
                         ParsePosition pos = new ParsePosition( 0 );
                         Number number = formatter.getFormat().parse( str, pos );
                         if( number == null ) {
-                            type = STRING;
-                            return;
+                            if( str.startsWith( "+" ) ) { // DecimalFormat can not parse an option plus sign
+                                pos.setIndex( 1 );
+                                number = formatter.getFormat().parse( str, pos );
+                                if( number == null ) {
+                                    type = STRING;
+                                    return;
+                                }
+                            } else {
+                                type = STRING;
+                                return;
+                            }
                         }
                         value = number.doubleValue();
                         if( pos.getIndex() != str.length() ) {
