@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 Volker Berlin
+ * Copyright (c) 2014 - 2015 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ package com.inet.lib.less;
 /**
  * A exception that occur if some can not parse or converted.
  */
-class LessException extends RuntimeException {
+public class LessException extends RuntimeException {
 
     private String msg;
 
