@@ -629,9 +629,11 @@ class CssFormatter implements Cloneable {
     void appendFontPropertyValue( Operation value ) {
         ArrayList<Expression> operands = value.getOperands();
         char operator = value.getOperator();
-        if( operator == '~' ) {
-            value.appendTo( this );
-            return;
+        switch( operator ) {
+            case '~':
+            case ',':
+                value.appendTo( this );
+                return;
         }
         for( int i = 0; i < operands.size(); i++ ) {
             if( i > 0 ) {
