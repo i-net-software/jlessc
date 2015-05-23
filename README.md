@@ -9,6 +9,22 @@ JlessC requires Java SE 7 or higher. It is tested with Java SE 7 and 8 on [travi
 
 [![Build Status](https://travis-ci.org/i-net-software/jlessc.svg)](https://travis-ci.org/i-net-software/jlessc)
 
+Add Dependency
+----
+Gradle users should add the library using the following dependency:
+
+    dependencies {
+        compile 'de.inetsofware:jlessc:+'
+    }
+
+Maven users should add the library using the following dependency:
+
+    <dependency>
+      <groupId>de.inetsofware</groupId>
+      <artifactId>jlessc</artifactId>
+      <version>RELEASE</version>
+    </dependency>
+
 Usage
 ----
 Checkout the sources or download the binary and add it to your Java project. The following code sequence shows a sample usage:
