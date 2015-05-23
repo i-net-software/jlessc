@@ -63,7 +63,7 @@ apply plugin: 'signing'
 
 group = 'de.inetsofware'
 archivesBaseName = 'jlessc'
-version = '1.1-SNAPSHOT'
+version = '1.2-SNAPSHOT'
 
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
