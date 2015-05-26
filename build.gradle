@@ -61,7 +61,7 @@ test {
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-group = 'de.inetsofware'
+group = 'de.inetsoftware'
 archivesBaseName = 'jlessc'
 version = '1.2-SNAPSHOT'
 
