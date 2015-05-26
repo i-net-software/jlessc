@@ -14,13 +14,13 @@ Add Dependency
 Gradle users should add the library using the following dependency:
 
     dependencies {
-        compile 'de.inetsofware:jlessc:+'
+        compile 'de.inetsoftware:jlessc:+'
     }
 
 Maven users should add the library using the following dependency:
 
     <dependency>
-      <groupId>de.inetsofware</groupId>
+      <groupId>de.inetsoftware</groupId>
       <artifactId>jlessc</artifactId>
       <version>RELEASE</version>
     </dependency>
