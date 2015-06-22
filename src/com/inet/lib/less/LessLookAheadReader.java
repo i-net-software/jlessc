@@ -120,6 +120,7 @@ class LessLookAheadReader extends LessObject implements Closeable {
                         break;
                     case '"':
                     case '\'':
+                    case '`':
                         int ch2;
                         isSlash = false;
                         for( ;; ) {
