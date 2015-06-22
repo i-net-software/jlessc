@@ -29,11 +29,11 @@ Usage
 ----
 Checkout the sources or download the binary and add it to your Java project. The following code sequence shows a sample usage:
 
-    import com.inet.lib.less;
+    import com.inet.lib.less.Less;
     ...
     
     // Compile Less data to CSS output
-    String css = Less.compile( null, "@bgcol: red; #row { background-color: @bgcol; }", true ) );
+    String css = Less.compile( null, "@bgcol: red; #row { background-color: @bgcol; }", true );
 
 Benchmark
 ----
