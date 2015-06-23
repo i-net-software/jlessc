@@ -84,7 +84,7 @@ class LessParser implements FormattableContainer {
         } catch( Exception th ) {
             throw new LessException( th ); //should never occur
         }
-        this.reader = new LessLookAheadReader( input, null );
+        this.reader = new LessLookAheadReader( input, null, false );
         parse();
     }
 
@@ -381,6 +381,9 @@ class LessParser implements FormattableContainer {
             return;
         }
         String filename = name.trim();
+        boolean isReference = reader.isReference();
+        boolean isCss = false;
+        boolean isLess = false;
         if( filename.startsWith( "(" ) ) {
             int endIdx = filename.indexOf( ')', 1);
             if( endIdx > 0 ) {
@@ -389,14 +392,22 @@ class LessParser implements FormattableContainer {
                 while( tokenizer.hasMoreTokens() ) {
                     String keywordStr = tokenizer.nextToken().trim();
                     switch( keywordStr ) {
-                        case "reference":
                         case "inline":
-                        case "less":
-                        case "css":
                         case "once":
                         case "multiple":
                         case "optional":
-                            System.err.println( "not implemented @import keyword" ); //TODO
+                            System.err.println( "not implemented @import keyword: " + keywordStr ); //TODO
+                            break;
+                        case "less":
+                            isLess = true;
+                            isCss = false;
+                            break;
+                        case "css":
+                            isCss = true;
+                            isLess = false;
+                            break;
+                        case "reference":
+                            isReference = true;
                             break;
                         default:
                             throw new LessException( "Unknown @import keyword: " + keywordStr );
@@ -460,13 +471,13 @@ class LessParser implements FormattableContainer {
                 lazyImports.add( lazy );
                 return;
             }
-            if( filename.endsWith( "css" ) ) {
+            if( !isLess && (isCss || filename.endsWith( "css" )) ) {
                 // filenames ends with "css" will not be inline else a CSS @import directive is written
                 currentRule.add( new CssAtRule( reader, "@import " + name + ';') );
                 return;
             }
             baseURL = baseURL == null ? new URL( filename ) : new URL( baseURL, filename );
-            if( baseURL.getPath().endsWith( "css" ) ) {
+            if( !isLess && baseURL.getPath().endsWith( "css" ) ) {
                 // URL path ends with "css" will not be inline else a CSS @import directive is written
                 currentRule.add( new CssAtRule( reader, "@import " + name + ';') );
                 return;
@@ -477,7 +488,10 @@ class LessParser implements FormattableContainer {
                 baseURL = baseURL == null ? new URL( filename ) : new URL( baseURL, filename );
             }
             relativeURL = new URL( relativeURL, filename );
-            reader = new LessLookAheadReader( new InputStreamReader( baseURL.openStream(), StandardCharsets.UTF_8 ), filename );
+            if( isReference != reader.isReference() ) {
+                add( new ReferenceInfo( isReference ) );
+            }
+            reader = new LessLookAheadReader( new InputStreamReader( baseURL.openStream(), StandardCharsets.UTF_8 ), filename, isReference );
             parse();
             reader.close();
         } catch( LessException ex ) {
@@ -488,6 +502,9 @@ class LessParser implements FormattableContainer {
             reader = (LessLookAheadReader)old[0];
             baseURL = (URL)old[1];
             relativeURL = (URL)old[2];
+            if( isReference != reader.isReference() ) {
+                add( new ReferenceInfo( reader.isReference() ) );
+            }
         }
     }
 

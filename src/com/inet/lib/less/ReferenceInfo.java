@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015 Volker Berlin
+ * Copyright (c) 2015 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,31 +26,35 @@
  */
 package com.inet.lib.less;
 
-/**
- * An object that can be print as CSS.
- */
-interface Formattable {
+class ReferenceInfo implements Formattable {
 
-    static final int PROPERTY = 0;
-    static final int RULE = 1;
-    static final int MIXIN = 2;
-    static final int EXPRESSION = 3;
-    static final int COMMENT = 4;
-    static final int CSS_AT_RULE = 5;
-    static final int EXTENDS = 6;
-    static final int REFERENCE_INFO = 7;
+    private final boolean isReference;
 
     /**
-     * The type of formattable. Can be used in switches
-     * @return the type
+     * Create a new instance.
+     * @param isReference true, then the follow content is load via reference
      */
-    int getType();
+    ReferenceInfo( boolean isReference ) {
+        this.isReference = isReference;
+    }
 
     /**
-     * Write the object to the CSS output
-     * 
-     * @param formatter
-     *            the CCS target
+     * {@inheritDoc}
      */
-    void appendTo( CssFormatter formatter );
+    @Override
+    public int getType() {
+        return REFERENCE_INFO;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void appendTo( CssFormatter formatter ) {
+        throw new IllegalStateException();
+    }
+
+    boolean isReference() {
+        return isReference;
+    }
 }
