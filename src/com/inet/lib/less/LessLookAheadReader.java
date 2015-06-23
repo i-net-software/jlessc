@@ -39,11 +39,14 @@ class LessLookAheadReader extends LessObject implements Closeable {
 
     private final StringBuilder cache = new StringBuilder();
 
+    private final boolean       isReference;
+
     private int                 cachePos;
 
-    LessLookAheadReader( Reader reader, String fileName ) {
+    LessLookAheadReader( Reader reader, String fileName, boolean isReference ) {
         super( fileName );
         this.reader = reader;
+        this.isReference = isReference;
         line = 1;
         column = 0;
     }
@@ -284,5 +287,9 @@ class LessLookAheadReader extends LessObject implements Closeable {
     @Override
     public void close() throws IOException {
         reader.close();
+    }
+
+    boolean isReference() {
+        return isReference;
     }
 }

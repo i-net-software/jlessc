@@ -155,7 +155,15 @@ class CssFormatter implements Cloneable {
     void format( LessParser parser, URL baseURL, StringBuilder target ) {
         state.baseURL = baseURL;
         addVariables( parser.getVariables() );
+        boolean isReference = false;
         for( Formattable rule : parser.getRules() ) {
+            if( rule.getType() == Formattable.REFERENCE_INFO ) {
+                isReference = ((ReferenceInfo)rule).isReference();
+                continue;
+            }
+            if( isReference ) {
+                continue;
+            }
             if( rule.getClass() == Mixin.class ) {
                 ((Mixin)rule).appendSubRules( null, this );
             } else {
