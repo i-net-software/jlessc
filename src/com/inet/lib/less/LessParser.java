@@ -424,6 +424,7 @@ class LessParser implements FormattableContainer {
                 char ch = filename.charAt( i );
                 switch(ch){
                     case '\"':
+                    case '\'':
                         if( quote == 0 ) {
                             quote = ch;
                         } else {
@@ -432,6 +433,9 @@ class LessParser implements FormattableContainer {
                                 break LOOP;
                             }
                         }
+                        break;
+                    case '\\':
+                        builder.append( filename.charAt( ++i ) );
                         break;
                     case ')':
                         break LOOP;
