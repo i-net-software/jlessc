@@ -34,15 +34,18 @@ class CssRuleOutput extends CssOutput {
 
     private String[] selectors;
     private StringBuilder output;
+    private boolean isReference;
 
     /**
      * Create a instance.
      * @param selectors the selectors of the rule
      * @param output a buffer for the content of the rule. 
+     * @param isReference if this content was loaded via reference
      */
-    CssRuleOutput( String[] selectors, StringBuilder output ) {
+    CssRuleOutput( String[] selectors, StringBuilder output, boolean isReference ) {
         this.selectors = selectors;
         this.output = output;
+        this.isReference = isReference;
     }
 
     /**
@@ -51,10 +54,12 @@ class CssRuleOutput extends CssOutput {
     @Override
     void appendTo( StringBuilder target, LessExtendMap lessExtends, CssFormatter formatter ) {
         if( output.length() > 0 ) {
-            selectors = lessExtends.concatenateExtends( selectors );
-            formatter.startBlockImpl( selectors );
-            target.append( output );
-            formatter.endBlockImpl();
+            selectors = lessExtends.concatenateExtends( selectors, isReference );
+            if( selectors.length > 0 ) {
+                formatter.startBlockImpl( selectors );
+                target.append( output );
+                formatter.endBlockImpl();
+            }
         }
     }
 

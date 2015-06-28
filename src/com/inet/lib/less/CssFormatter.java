@@ -103,6 +103,8 @@ class CssFormatter implements Cloneable {
         private boolean                                      charsetDirective;
 
         private CssFormatter                                 header;
+
+        private boolean                                      isReference;
     }
 
     private String[] selectors;
@@ -155,13 +157,10 @@ class CssFormatter implements Cloneable {
     void format( LessParser parser, URL baseURL, StringBuilder target ) {
         state.baseURL = baseURL;
         addVariables( parser.getVariables() );
-        boolean isReference = false;
+        state.isReference = false;
         for( Formattable rule : parser.getRules() ) {
             if( rule.getType() == Formattable.REFERENCE_INFO ) {
-                isReference = ((ReferenceInfo)rule).isReference();
-                continue;
-            }
-            if( isReference ) {
+                state.isReference = ((ReferenceInfo)rule).isReference();
                 continue;
             }
             if( rule.getClass() == Mixin.class ) {
@@ -553,7 +552,7 @@ class CssFormatter implements Cloneable {
             block.incInsets();
             block.selectors = selectors;
             if( nextOutput == null ) {
-                results.add( new CssRuleOutput( selectors, block.output ) );
+                results.add( new CssRuleOutput( selectors, block.output, state.isReference ) );
             }
             block.blockDeep++;
             return block;
@@ -562,7 +561,7 @@ class CssFormatter implements Cloneable {
                 CssFormatter block = copy( null );
                 block.incInsets();
                 String[] sel = new String[]{ this.selectors[0] + " and " + selectors[0].substring( 6 ).trim() };
-                state.results.add( new CssRuleOutput( sel, block.output ) );
+                state.results.add( new CssRuleOutput( sel, block.output, state.isReference ) );
                 block.blockDeep = 1;
                 return block;
             } else {

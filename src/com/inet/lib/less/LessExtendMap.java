@@ -77,7 +77,7 @@ class LessExtendMap {
      * @param selectors current selectors
      * @return the selectors concatenate with extends or the original if there are no etends.
      */
-    public String[] concatenateExtends( String[] selectors ) {
+    public String[] concatenateExtends( String[] selectors, boolean isReference ) {
         selectorList.clear();
         for( String selector : selectors ) {
             List<String[]> list = exact.get( selector );
@@ -107,6 +107,10 @@ class LessExtendMap {
                     }
                 }
             } while( true );
+        }
+
+        if( isReference ) {
+            return selectorList.toArray( new String[selectorList.size()] );
         }
 
         if( selectorList.size() > 0 ) {
