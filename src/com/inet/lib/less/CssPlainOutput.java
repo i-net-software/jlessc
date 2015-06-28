@@ -33,6 +33,10 @@ class CssPlainOutput extends CssOutput {
 
     private StringBuilder output;
 
+    /**
+     * Create a new output sequence.
+     * @param output a string builder to hold the plain output.
+     */
     CssPlainOutput( StringBuilder output ) {
         this.output = output;
     }
