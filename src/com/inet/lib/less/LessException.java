@@ -33,16 +33,47 @@ public class LessException extends RuntimeException {
 
     private String msg;
 
-    LessException( String msg ) {
-        super( msg );
-        this.msg = msg;
-    }
-
-    LessException( Throwable th ) {
-        super( th );
+    /**
+     * Constructs a new less exception with the specified detail message.
+     *
+     * @param message
+     *            the detail message.
+     */
+    LessException( String message ) {
+        super( message );
         this.msg = super.getMessage();
     }
 
+    /**
+     * Constructs a new runtime exception with the specified cause.
+     * 
+     * @param cause
+     *            the cause
+     */
+    LessException( Throwable cause ) {
+        super( cause );
+        this.msg = super.getMessage();
+    }
+
+    /**
+     * Constructs a new runtime exception with the specified detail message and cause.
+     * 
+     * @param message
+     *            the detail message.
+     * @param cause
+     *            the cause
+     */
+    LessException( String message, Throwable cause ) {
+        super( message, cause );
+        this.msg = super.getMessage();
+    }
+
+    /**
+     * Add a position to the less file stacktrace
+     * @param filename the less file, can be null if a string was parsed
+     * @param line the line number in the less file
+     * @param column the column in the less file
+     */
     void addPosition( String filename, int line, int column ) {
         StringBuilder builder = new StringBuilder();
         builder.append( " on line " ).append( line ).append( ", column " ).append( column );
@@ -54,6 +85,10 @@ public class LessException extends RuntimeException {
         }
     }
 
+    /**
+     * The message plus the less file stacktrace.
+     * {@inheritDoc}
+     */
     @Override
     public String getMessage() {
         return msg;

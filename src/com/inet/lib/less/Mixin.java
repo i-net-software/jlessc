@@ -76,7 +76,7 @@ class Mixin extends LessObject implements Formattable {
             ex.addPosition( filename, line, column );
             throw ex;
         } catch( StackOverflowError soe ) {
-            throw createException( "Maximum call stack size exceeded in mixin: " + name );
+            throw createException( "Maximum call stack size exceeded in mixin: " + name, soe );
         }
         formatter.setImportant( false );
     }
