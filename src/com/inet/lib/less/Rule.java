@@ -289,7 +289,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
                 if( paramType ==  Operation.class && ((Operation)param).getOperator() == ':' && ((Operation)param).getOperands().size() == 2 ) {
                     ArrayList<Expression> keyValue = ((Operation)param).getOperands();
                     String name = keyValue.get( 0 ).toString();
-                    vars.put( name, keyValue.get( 1 ) );
+                    vars.put( name, ValueExpression.eval( formatter, keyValue.get( 1 ) ) );
                 }
             }
 

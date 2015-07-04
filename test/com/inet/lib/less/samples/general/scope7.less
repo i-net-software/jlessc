@@ -1,0 +1,9 @@
+@context-px-size: 10;
+
+.font-size(@context-px-size: @context-px-size) {
+    context-px-size: @context-px-size;
+}
+
+body {
+    .font-size();
+}
