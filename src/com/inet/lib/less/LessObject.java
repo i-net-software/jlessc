@@ -57,6 +57,12 @@ class LessObject {
         return lessEx;
     }
 
+    LessException createException( String msg, Throwable ex ) {
+        LessException lessEx = new LessException( msg, ex );
+        lessEx.addPosition( filename, line, column );
+        return lessEx;
+    }
+
     LessException createException( Throwable ex ) {
         LessException lessEx = ex.getClass() == LessException.class ? (LessException)ex : new LessException( ex );
         lessEx.addPosition( filename, line, column );
