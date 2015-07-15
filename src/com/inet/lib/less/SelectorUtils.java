@@ -53,8 +53,8 @@ class SelectorUtils {
             String selector = base[j];
             int idx = selector.lastIndexOf( '&' );
             if( idx < 0 ) {
-                for( int m = 0; m < mainSelector.length; m++ ) {
-                    sel[t++] = mainSelector[m] + ' ' + selector;
+                for( String mainSel : mainSelector ) {
+                    sel[t++] = mainSel.isEmpty() ? selector : mainSel + ' ' + selector;
                 }
             } else {
                 int off = t;
