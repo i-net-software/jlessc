@@ -264,12 +264,12 @@ class LessParser implements FormattableContainer {
                 case '(':
                     String cmd;
                     if( name == null ) {
-                        if( isSelector(builder) || !reader.nextIsMixinParam( true ) ) {
+                        if( (isSelector(builder) || !reader.nextIsMixinParam( true )) && builder.indexOf( " when " ) < 0 ) {
                             builder.append( ch );
                             break;
                         }
                         name = trim( builder );
-                        int idx = name.lastIndexOf( ' ' );
+                        int idx = name.indexOf( ' ' );
                         if( idx < 0 ) {
                             expr = parseParameterList();
                             break;
