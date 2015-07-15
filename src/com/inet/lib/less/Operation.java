@@ -231,7 +231,7 @@ class Operation extends Expression {
                                     builder.append( ch );
                             }
                         }
-                        new ValueExpression( this, builder.toString() ).appendTo( formatter );
+                        formatter.append( builder.toString() ); // new ValueExpression( this, builder.toString() ).appendTo( formatter );
                         return;
                     default:
                         builder = new StringBuilder( "Not supported Operation '" ).append( operator ).append( "' for '" );
