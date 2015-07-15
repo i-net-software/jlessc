@@ -1,0 +1,15 @@
+@my-option: true;
+@width: 40;
+
+button when (@my-option = true) {
+  color: white;
+}
+
+& when not (@width) {
+  span {
+    color: white;
+  }
+  a {
+    color: blue;
+  }
+}
