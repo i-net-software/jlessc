@@ -75,6 +75,34 @@ class SelectorUtils {
         return sel;
     }
 
+    /**
+     * Fast string replace which work without regular expressions
+     * @param str original string
+     * @param target the string which should be replaced
+     * @param replacement the new part
+     * @return the original or a replaced string
+     */
+    static String fastReplace( String str, String target, String replacement ) {
+        int targetLength = target.length();
+        if( targetLength == 0 ) {
+            return str;
+        }
+        int idx2 = str.indexOf( target );
+        if( idx2 < 0 ) {
+            return str;
+        }
+        StringBuilder buffer = new StringBuilder( targetLength > replacement.length() ? str.length() : str.length() * 2 );
+        int idx1 = 0;
+        do {
+            buffer.append( str, idx1, idx2 );
+            buffer.append( replacement );
+            idx1 = idx2 + targetLength;
+            idx2 = str.indexOf( target, idx1 );
+        } while( idx2 > 0 );
+        buffer.append( str, idx1, str.length() );
+        return buffer.toString();
+    }
+
     static void appendToWithPlaceHolder( CssFormatter formatter, String str, int i, LessObject caller ) {
         int length = str.length();
         boolean isJavaScript = length > 0 && str.charAt( 0 ) == '`';
