@@ -123,7 +123,9 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
             }
 
             if( mainSelector == null ) {        // main ruls
-                //sel = sel;
+                for( int i = 0; i < sel.length; i++ ) {
+                    sel[i] = SelectorUtils.fastReplace( sel[i], "&", "" );
+                }
             } else if( sel[0].charAt( 0 ) == '@' ) {
                 // media
                 media( sel, mainSelector, formatter );
@@ -429,7 +431,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         if( params == null ) {
             if( guard != null ) {
                 //CSS Guards
-                guard = ValueExpression.eval( formatter, guard );
+//                guard = ValueExpression.eval( formatter, guard );
                 return guard.booleanValue( formatter );
             }
             return true;
