@@ -449,7 +449,10 @@ class LessParser implements FormattableContainer {
                         builder.append( filename.charAt( ++i ) );
                         break;
                     case ')':
-                        break LOOP;
+                        if( quote == 0 ) {
+                            break LOOP;
+                        }
+                        //$FALL-THROUGH$
                     default:
                         builder.append( ch );
                 }
