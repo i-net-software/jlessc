@@ -26,6 +26,8 @@
  */
 package com.inet.lib.less;
 
+import javax.annotation.Nonnull;
+
 /**
  * A single CSS property of a CSS rule in the format:
  * <p>
@@ -33,9 +35,11 @@ package com.inet.lib.less;
  */
 class RuleProperty implements Formattable {
 
-    private String     name;
+    @Nonnull
+    private final String     name;
 
-    private Expression value;
+    @Nonnull
+    private final Expression value;
 
     /**
      * Create a new property.
@@ -45,7 +49,7 @@ class RuleProperty implements Formattable {
      * @param value
      *            the value
      */
-    RuleProperty( String name, Expression value ) {
+    RuleProperty( @Nonnull String name, @Nonnull Expression value ) {
         this.name = name;
         this.value = value;
     }
@@ -63,6 +67,10 @@ class RuleProperty implements Formattable {
      */
     @Override
     public void appendTo( CssFormatter formatter ) {
-        formatter.appendProperty( name, value );
+        try {
+            formatter.appendProperty( name, value );
+        } catch( Exception ex ) {
+            throw value.createException( ex );
+        }
     }
 }
