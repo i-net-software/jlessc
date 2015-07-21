@@ -17,6 +17,15 @@ Gradle users should add the library using the following dependency:
         compile 'de.inetsoftware:jlessc:+'
     }
 
+If you want test a snapshot version with the latest bug fixes then add the snapshot repository:
+
+    repositories {
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+        jcenter() // or any other repository that you use
+    }
+
 Maven users should add the library using the following dependency:
 
     <dependency>
@@ -34,6 +43,8 @@ Checkout the sources or download the binary and add it to your Java project. The
     
     // Compile Less data to CSS output
     String css = Less.compile( null, "@bgcol: red; #row { background-color: @bgcol; }", true );
+
+API details can you find in the source of the [Less](https://github.com/i-net-software/jlessc/blob/master/src/com/inet/lib/less/Less.java) class. 
 
 Benchmark
 ----
