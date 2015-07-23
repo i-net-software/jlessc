@@ -1,0 +1,11 @@
+.menubtn-small1 span when (@font-size > 15) {
+    abc: 1;
+}
+.menubtn-small2 span when(@font-size > 15) {
+    abc: 2;
+}
+.menubtn-small3 span when(@font-size < 15), not(@font-size < 15) {
+    abc: 3;
+}
+
+@font-size: 16;
