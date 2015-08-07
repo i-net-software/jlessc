@@ -264,6 +264,25 @@ class ColorUtils {
         return Double.longBitsToDouble( argb1 );
     }
 
+    static double average( double color1, double color2 ) {
+        long argb1 = Double.doubleToRawLongBits( color1 );
+        long r1 = ((argb1 >> 32) & 0xFFFF);
+        long g1 = ((argb1 >> 16) & 0xFFFF);
+        long b1 = ((argb1) & 0xFFFF);
+
+        long argb2 = Double.doubleToRawLongBits( color2 );
+        long r2 = ((argb2 >> 32) & 0xFFFF);
+        long g2 = ((argb2 >> 16) & 0xFFFF);
+        long b2 = ((argb2) & 0xFFFF);
+
+        r1 = (r1 + r2) / 2;
+        g1 = (g1 + g2) / 2;
+        b1 = (b1 + b2) / 2;
+        argb1 = r1 << 32 | g1 << 16 | b1;
+
+        return Double.longBitsToDouble( argb1 );
+    }
+
     static double negation( double color1, double color2 ) {
         long argb1 = Double.doubleToRawLongBits( color1 );
         long r1 = ((argb1 >> 32) & 0xFFFF);

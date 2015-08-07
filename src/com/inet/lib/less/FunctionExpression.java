@@ -28,6 +28,7 @@ package com.inet.lib.less;
 
 import static com.inet.lib.less.ColorUtils.alpha;
 import static com.inet.lib.less.ColorUtils.argb;
+import static com.inet.lib.less.ColorUtils.average;
 import static com.inet.lib.less.ColorUtils.blue;
 import static com.inet.lib.less.ColorUtils.colorDigit;
 import static com.inet.lib.less.ColorUtils.contrast;
@@ -590,6 +591,9 @@ class FunctionExpression extends Expression {
                     return;
                 case "multiply":
                     doubleValue = multiply( getColor( 0, formatter ), getColor( 1, formatter ) );
+                    return;
+                case "average":
+                    doubleValue = average( getColor( 0, formatter ), getColor( 1, formatter ) );
                     return;
                 case "negation":
                     doubleValue = negation( getColor( 0, formatter ), getColor( 1, formatter ) );
