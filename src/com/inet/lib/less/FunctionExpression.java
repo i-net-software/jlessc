@@ -32,7 +32,10 @@ import static com.inet.lib.less.ColorUtils.average;
 import static com.inet.lib.less.ColorUtils.blue;
 import static com.inet.lib.less.ColorUtils.colorDigit;
 import static com.inet.lib.less.ColorUtils.contrast;
+import static com.inet.lib.less.ColorUtils.difference;
+import static com.inet.lib.less.ColorUtils.exclusion;
 import static com.inet.lib.less.ColorUtils.green;
+import static com.inet.lib.less.ColorUtils.hardlight;
 import static com.inet.lib.less.ColorUtils.hsla;
 import static com.inet.lib.less.ColorUtils.hsva;
 import static com.inet.lib.less.ColorUtils.luma;
@@ -40,9 +43,12 @@ import static com.inet.lib.less.ColorUtils.luminance;
 import static com.inet.lib.less.ColorUtils.mix;
 import static com.inet.lib.less.ColorUtils.multiply;
 import static com.inet.lib.less.ColorUtils.negation;
+import static com.inet.lib.less.ColorUtils.overlay;
 import static com.inet.lib.less.ColorUtils.red;
 import static com.inet.lib.less.ColorUtils.rgb;
 import static com.inet.lib.less.ColorUtils.rgba;
+import static com.inet.lib.less.ColorUtils.screen;
+import static com.inet.lib.less.ColorUtils.softlight;
 import static com.inet.lib.less.ColorUtils.toHSL;
 import static com.inet.lib.less.ColorUtils.toHSV;
 
@@ -591,6 +597,24 @@ class FunctionExpression extends Expression {
                     return;
                 case "multiply":
                     doubleValue = multiply( getColor( 0, formatter ), getColor( 1, formatter ) );
+                    return;
+                case "screen":
+                    doubleValue = screen( getColor( 0, formatter ), getColor( 1, formatter ) );
+                    return;
+                case "overlay":
+                    doubleValue = overlay( getColor( 0, formatter ), getColor( 1, formatter ) );
+                    return;
+                case "softlight":
+                    doubleValue = softlight( getColor( 0, formatter ), getColor( 1, formatter ) );
+                    return;
+                case "hardlight":
+                    doubleValue = hardlight( getColor( 0, formatter ), getColor( 1, formatter ) );
+                    return;
+                case "difference":
+                    doubleValue = difference( getColor( 0, formatter ), getColor( 1, formatter ) );
+                    return;
+                case "exclusion":
+                    doubleValue = exclusion( getColor( 0, formatter ), getColor( 1, formatter ) );
                     return;
                 case "average":
                     doubleValue = average( getColor( 0, formatter ), getColor( 1, formatter ) );
