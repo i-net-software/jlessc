@@ -32,6 +32,17 @@ package com.inet.lib.less;
  */
 class ColorUtils {
 
+    // color blending functions
+    private static final int MULTIPLY = 0;
+    private static final int SCREEN = 1;
+    private static final int OVERLAY = 2;
+    private static final int SOFTLIGHT = 3;
+    private static final int HARDLIGHT = 4;
+    private static final int DIFFERENCE = 5;
+    private static final int EXCLUSION = 6;
+    private static final int AVERAGE = 7;
+    private static final int NEGATION = 8;
+
     static HSL toHSL( double color ) {
         long argb = Double.doubleToRawLongBits( color );
         double a = alpha( color );
@@ -249,22 +260,42 @@ class ColorUtils {
     }
 
     static double multiply( double color1, double color2 ) {
-        long argb1 = Double.doubleToRawLongBits( color1 );
-        long r1 = ((argb1 >> 32) & 0xFFFF);
-        long g1 = ((argb1 >> 16) & 0xFFFF);
-        long b1 = ((argb1) & 0xFFFF);
+        return colorBlending( color1, color2, MULTIPLY );
+    }
 
-        long argb2 = Double.doubleToRawLongBits( color2 );
-        long r2 = ((argb2 >> 32) & 0xFFFF);
-        long g2 = ((argb2 >> 16) & 0xFFFF);
-        long b2 = ((argb2) & 0xFFFF);
+    static double screen( double color1, double color2 ) {
+        return colorBlending( color1, color2, SCREEN );
+    }
 
-        argb1 = ((r1 * r2) / 0xFF00) << 32 | ((g1 * g2) / 0xFF00) << 16 | ((b1 * b2) / 0xFF00);
+    static double overlay( double color1, double color2 ) {
+        return colorBlending( color1, color2, OVERLAY );
+    }
 
-        return Double.longBitsToDouble( argb1 );
+    static double softlight( double color1, double color2 ) {
+        return colorBlending( color1, color2, SOFTLIGHT );
+    }
+
+    static double hardlight( double color1, double color2 ) {
+        return colorBlending( color1, color2, HARDLIGHT );
+    }
+
+    static double difference( double color1, double color2 ) {
+        return colorBlending( color1, color2, DIFFERENCE );
+    }
+
+    static double exclusion( double color1, double color2 ) {
+        return colorBlending( color1, color2, EXCLUSION );
     }
 
     static double average( double color1, double color2 ) {
+        return colorBlending( color1, color2, AVERAGE );
+    }
+
+    static double negation( double color1, double color2 ) {
+        return colorBlending( color1, color2, NEGATION );
+    }
+
+    private static double colorBlending( double color1, double color2, int op ) {
         long argb1 = Double.doubleToRawLongBits( color1 );
         long r1 = ((argb1 >> 32) & 0xFFFF);
         long g1 = ((argb1 >> 16) & 0xFFFF);
@@ -275,31 +306,48 @@ class ColorUtils {
         long g2 = ((argb2 >> 16) & 0xFFFF);
         long b2 = ((argb2) & 0xFFFF);
 
-        r1 = (r1 + r2) / 2;
-        g1 = (g1 + g2) / 2;
-        b1 = (b1 + b2) / 2;
+        r1 = colorBlendingDigit( r1, r2, op );
+        g1 = colorBlendingDigit( g1, g2, op );
+        b1 = colorBlendingDigit( b1, b2, op );
         argb1 = r1 << 32 | g1 << 16 | b1;
 
         return Double.longBitsToDouble( argb1 );
     }
 
-    static double negation( double color1, double color2 ) {
-        long argb1 = Double.doubleToRawLongBits( color1 );
-        long r1 = ((argb1 >> 32) & 0xFFFF);
-        long g1 = ((argb1 >> 16) & 0xFFFF);
-        long b1 = ((argb1) & 0xFFFF);
-
-        long argb2 = Double.doubleToRawLongBits( color2 );
-        long r2 = ((argb2 >> 32) & 0xFFFF);
-        long g2 = ((argb2 >> 16) & 0xFFFF);
-        long b2 = ((argb2) & 0xFFFF);
-
-        r1 = 0xFF00 - Math.abs(r1 + r2 - 0xFF00);
-        g1 = 0xFF00 - Math.abs(g1 + g2 - 0xFF00);
-        b1 = 0xFF00 - Math.abs(b1 + b2 - 0xFF00);
-        argb1 = r1 << 32 | g1 << 16 | b1;
-
-        return Double.longBitsToDouble( argb1 );
+    private static long colorBlendingDigit( long longDigit1, long longDigit2, int op ) {
+        switch( op ) {
+            case MULTIPLY:
+                return longDigit1 * longDigit2 / 0xFF00;
+            case SCREEN:
+                return longDigit1 + longDigit2 - longDigit1 * longDigit2 / 0xFF00;
+            case OVERLAY:
+                longDigit1 *= 2;
+                if( longDigit1 <= 0xFF00 ) {
+                    return colorBlendingDigit( longDigit1, longDigit2, MULTIPLY );
+                } else {
+                    return colorBlendingDigit( longDigit1 - 0xFF00, longDigit2, SCREEN );
+                }
+            case SOFTLIGHT:
+                long d = 0xFF00, e = longDigit1;
+                if (longDigit2 > 0x8000) {
+                    e = 0xFF00;
+                    d = (longDigit1 > 0x4000) ? (long)(Math.sqrt(longDigit1 / (double)0xFF00 ) * 0xFF00)
+                        : ((16 * longDigit1 - 12 * 0xFF00) * longDigit1 / 0xFF00 + 4 * 0xFF00) * longDigit1 / 0xFF00;
+                }
+                return longDigit1 - (0xFF00 - 2 * longDigit2) * e * (d - longDigit1) / 0xFF00 / 0xFF00;
+            case HARDLIGHT:
+                return colorBlendingDigit( longDigit2, longDigit1, OVERLAY );
+            case DIFFERENCE:
+                return Math.abs( longDigit1 - longDigit2 );
+            case EXCLUSION:
+                return longDigit1 + longDigit2 - 2 * longDigit1 * longDigit2 / 0xFF00;
+            case AVERAGE:
+                return (longDigit1 + longDigit2) / 2;
+            case NEGATION:
+                return 0xFF00 - Math.abs( longDigit1 + longDigit2 - 0xFF00 );
+            default:
+                throw new IllegalArgumentException( String.valueOf( op ) );
+        }
     }
 
     static int colorDigit( double value ) {
