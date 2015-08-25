@@ -133,10 +133,8 @@ public class JavaScriptExpression extends Expression {
             } else {
                 type = STRING;
             }
-        } catch( Exception e ) {
-            //TODO throw exception
-            result = e.toString();
-            type = STRING;
+        } catch( Exception ex ) {
+            throw createException( ex );
         }
     }
 }
