@@ -128,7 +128,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
                 }
             } else if( sel[0].charAt( 0 ) == '@' ) {
                 // media
-                media( sel, mainSelector, formatter );
+                bubbling( sel, mainSelector, formatter );
                 return;
             } else {
                 sel = SelectorUtils.merge( mainSelector, sel );
@@ -171,28 +171,55 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         }
     }
 
-    private void media( String[] mediaSelector, String[] blockSelector, CssFormatter formatter ) {
+    /**
+     * Nested Directives are bubbling.
+     * 
+     * @param mediaSelector
+     *            the selector of the media, must start with an @
+     * @param blockSelector
+     *            current block selector
+     * @param formatter
+     *            current formatter
+     */
+    private void bubbling( String[] mediaSelector, String[] blockSelector, CssFormatter formatter ) {
         if( properties.size() > 0 ) {
-            int size0 = formatter.getOutputSize();
-            CssFormatter block = formatter.startBlock( mediaSelector );
-            if( block != formatter ) {
-                size0 = block.getOutputSize();
+            String media = mediaSelector[0];
+            int spaceIdx = media.indexOf( ' ' );
+            if( spaceIdx > 0 ) {
+                media = media.substring( 0, spaceIdx ); // cut the conditions from conditional directives
             }
-            block.startBlock( blockSelector );
-            int size1 = block.getOutputSize();
-            appendPropertiesTo( block );
-            int size2 = block.getOutputSize();
-            block.endBlock();
-            int size3 = block.getOutputSize();
-            for( Formattable prop : properties ) {
-                if( prop instanceof Mixin ) {
-                    ((Mixin)prop).appendSubRules( blockSelector, block );
-                }
-            }
-            int size4 = block.getOutputSize();
-            block.endBlock();
-            if( size1 == size2 && size3 == size4 ) {
-                block.setOutputSize( size0 );
+            switch( media ) {
+                case "@media":
+                case "@supports":
+                case "@document":
+                    // conditional directives
+                    int size0 = formatter.getOutputSize();
+                    CssFormatter block = formatter.startBlock( mediaSelector );
+                    if( block != formatter ) {
+                        size0 = block.getOutputSize();
+                    }
+                    block.startBlock( blockSelector );
+                    int size1 = block.getOutputSize();
+                    appendPropertiesTo( block );
+                    int size2 = block.getOutputSize();
+                    block.endBlock();
+                    int size3 = block.getOutputSize();
+                    for( Formattable prop : properties ) {
+                        if( prop instanceof Mixin ) {
+                            ((Mixin)prop).appendSubRules( blockSelector, block );
+                        }
+                    }
+                    int size4 = block.getOutputSize();
+                    block.endBlock();
+                    if( size1 == size2 && size3 == size4 ) {
+                        block.setOutputSize( size0 );
+                    }
+                    break;
+                default:
+                    // non-conditional directives for example @font-face or @keyframes
+                    block = formatter.startBlock( mediaSelector );
+                    appendPropertiesTo( block );
+                    block.endBlock();
             }
         }
 
@@ -201,9 +228,9 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
             String name = ruleSelector[0];
             name = SelectorUtils.replacePlaceHolder( formatter, name, this );
             if( name.startsWith( "@media" ) ) {
-                rule.media( new String[]{mediaSelector[0] + " and " + name.substring( 6 ).trim()}, blockSelector, formatter );
+                rule.bubbling( new String[]{mediaSelector[0] + " and " + name.substring( 6 ).trim()}, blockSelector, formatter );
             } else {
-                rule.media( mediaSelector, SelectorUtils.merge( blockSelector, ruleSelector ), formatter );
+                rule.bubbling( mediaSelector, SelectorUtils.merge( blockSelector, ruleSelector ), formatter );
             }
         }
     }
