@@ -59,9 +59,9 @@ class ValueExpression extends Expression {
     ValueExpression( JavaScriptExpression expr, Object value ) {
         super( expr, String.valueOf( value ) );
         if( value instanceof Number ) {
-            type = NUMBER;
-            value = ((Number)value).doubleValue();
-            unit = "";
+            this.type = NUMBER;
+            this.value = ((Number)value).doubleValue();
+            this.unit = "";
         }
     }
 
