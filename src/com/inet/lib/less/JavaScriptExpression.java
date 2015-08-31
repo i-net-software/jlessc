@@ -99,6 +99,9 @@ public class JavaScriptExpression extends Expression {
         return "";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Operation listValue( CssFormatter formatter ) {
         eval( formatter );

@@ -26,6 +26,8 @@
  */
 package com.inet.lib.less;
 
+import javax.annotation.Nullable;
+
 /**
  * Split a Selector string in single selectors.
  */
@@ -35,10 +37,19 @@ class SelectorTokenizer {
 
     private int          idx, lastIdx;
 
+    /**
+     * Create a new tokenizer. 
+     * @param selector all selectors
+     */
     SelectorTokenizer( String selector ) {
         this.selector = selector;
     }
 
+    /**
+     * Get the next selector.
+     * @return the next or null
+     */
+    @Nullable
     String next() {
         if( lastIdx >= selector.length() ) {
             return null;

@@ -35,7 +35,7 @@ class HSV {
 
     /**
      * Create a new color value.
-     * @param h hue
+     * @param h hue value
      * @param s saturation
      * @param v value
      * @param a alpha

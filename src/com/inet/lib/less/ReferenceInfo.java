@@ -26,6 +26,9 @@
  */
 package com.inet.lib.less;
 
+/**
+ * Marker in the list of Formatter to mark a reference flag switch.
+ */
 class ReferenceInfo implements Formattable {
 
     private final boolean isReference;
@@ -54,6 +57,10 @@ class ReferenceInfo implements Formattable {
         throw new IllegalStateException();
     }
 
+    /**
+     * If the follow content is loaded via "reference"
+     * @return true, if reference
+     */
     boolean isReference() {
         return isReference;
     }

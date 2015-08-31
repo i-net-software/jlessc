@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 Volker Berlin
+ * Copyright (c) 2014 - 2015 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,7 @@ class HSL {
 
     /**
      * Create a new color value.
-     * @param h hue
+     * @param h hue value
      * @param s saturation
      * @param l lightness
      * @param a alpha

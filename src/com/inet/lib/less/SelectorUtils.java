@@ -28,12 +28,20 @@ package com.inet.lib.less;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 /**
  * Some utilities methods.
  */
 class SelectorUtils {
 
-    static String[] merge( String[] mainSelector, String[] base ) {
+    /**
+     * Merge the main selector together with base selector. The base selector can contain '&' as place holder for the main selector.
+     * @param mainSelector the parent selector
+     * @param base the current selector
+     * @return the resulting selector
+     */
+    static String[] merge( @Nonnull String[] mainSelector, @Nonnull String[] base ) {
         int count = 0;
 
         // counting the & characters and calculate the resulting selectors
@@ -103,6 +111,13 @@ class SelectorUtils {
         return buffer.toString();
     }
 
+    /**
+     * Append the str with possible variable place holder to the formatter.
+     * @param formatter current formatter
+     * @param str the string
+     * @param i a start position for search for place holders
+     * @param caller for exception handling
+     */
     static void appendToWithPlaceHolder( CssFormatter formatter, String str, int i, LessObject caller ) {
         int length = str.length();
         boolean isJavaScript = length > 0 && str.charAt( 0 ) == '`';
@@ -178,6 +193,13 @@ class SelectorUtils {
         formatter.append( str.substring( appendIdx ) );
     }
 
+    /**
+     * Replace the possible variable place holder.
+     * @param formatter current formatter
+     * @param str the string
+     * @param caller for exception handling
+     * @return the result
+     */
     static String replacePlaceHolder( CssFormatter formatter, String str, LessObject caller ) {
         int pos = str.startsWith( "@{" ) ? 0 : str.indexOf( "@", 1 );
         if( pos >= 0 ) {

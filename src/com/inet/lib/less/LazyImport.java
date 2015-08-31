@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 Volker Berlin
+ * Copyright (c) 2014 -2015 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,10 +41,15 @@ class LazyImport extends ValueExpression {
     private final Formattable                 lastRuleBefore;
 
     /**
-     * Create a instance.
+     * Create a new instance.
+     * @param obj another LessObject with parse position.
+     * @param baseURL current baseURL
+     * @param filename value of the filename, can contain place holders.
+     * @param variables variables
+     * @param lastRuleBefore pointer to the rules where the import should be included.
      */
-    LazyImport( LessLookAheadReader parser, URL baseURL, String filename, HashMap<String, Expression> variables, Formattable lastRuleBefore ) {
-        super( parser, filename );
+    LazyImport( LessObject obj, URL baseURL, String filename, HashMap<String, Expression> variables, Formattable lastRuleBefore ) {
+        super( obj, filename );
         this.baseURL = baseURL;
         this.variables = variables;
         this.lastRuleBefore = lastRuleBefore;
