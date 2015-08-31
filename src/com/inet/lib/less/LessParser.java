@@ -1206,6 +1206,9 @@ class LessParser implements FormattableContainer {
         return new LessException( msg );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void add( Formattable formattable ) {
         if( formattable.getClass() == Rule.class && ((Rule)formattable).isMixin() ) {

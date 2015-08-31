@@ -37,16 +37,26 @@ class LessExtendResult {
 
     /**
      * Create a new instance.
+     * @param mainSelector the main selectors of the extend
+     * @param extendingSelectors the extends selectors
      */
     LessExtendResult( String[] mainSelector, String[] extendingSelectors ) {
         this.mainSelector = mainSelector;
         this.extendingSelectors = extendingSelectors;
     }
 
+    /**
+     * Get the main selectors.
+     * @return the selectors
+     */
     String[] getSelectors() {
         return mainSelector;
     }
 
+    /**
+     * Get the extending selectors.
+     * @return the selectors.
+     */
     String[] getExtendingSelectors() {
         return extendingSelectors;
     }

@@ -42,13 +42,18 @@ class HashMultimap<K, V> {
 
     private HashMap<K, List<V>> map = new HashMap<>();
 
-    void add( K key, V rule ) {
+    /**
+     * Add a value to this map.
+     * @param key the key
+     * @param value the value
+     */
+    void add( K key, V value ) {
         List<V> rules = map.get( key );
         if( rules == null ) {
             rules = new ArrayList<>();
             map.put( key, rules );
         }
-        rules.add( rule );
+        rules.add( value );
     }
 
     /**

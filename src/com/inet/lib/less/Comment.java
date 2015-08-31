@@ -33,6 +33,10 @@ class Comment implements Formattable {
 
     private String msg;
 
+    /**
+     * Create new instance
+     * @param msg the comment text
+     */
     Comment( String msg ) {
         this.msg = msg;
     }

@@ -38,8 +38,17 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+/**
+ * Contains functions which are not in the less standard. 
+ */
 class CustomFunctions {
 
+    /**
+     * Colorize an image and inline it as base64.
+     * @param formatter current formatter
+     * @param parameters the parameters (url, main_color, contrast_color)
+     * @throws IOException if any I/O error occur
+     */
     static void colorizeImage( CssFormatter formatter, List<Expression> parameters ) throws IOException {
         if( parameters.size() < 4 ) {
             throw new LessException( "error evaluating function colorize-image expects url, main_color, contrast_color " );

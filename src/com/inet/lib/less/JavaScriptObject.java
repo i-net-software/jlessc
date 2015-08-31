@@ -33,6 +33,10 @@ public class JavaScriptObject {
 
     private Object obj;
 
+    /**
+     * New object.
+     * @param obj the native value
+     */
     JavaScriptObject( Object obj ) {
         this.obj = obj;
     }

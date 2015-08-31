@@ -35,6 +35,7 @@ abstract class CssOutput {
     /**
      * Write the this output to the target
      * @param target the target
+     * @param lessExtends all extends in the less
      * @param formatter a formatter
      */
     abstract void appendTo( StringBuilder target, LessExtendMap lessExtends, CssFormatter formatter );

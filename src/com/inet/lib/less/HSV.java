@@ -26,10 +26,20 @@
  */
 package com.inet.lib.less;
 
+/**
+ * A HSV color value.
+ */
 class HSV {
 
     double h, s, v, a;
 
+    /**
+     * Create a new color value.
+     * @param h hue
+     * @param s saturation
+     * @param v value
+     * @param a alpha
+     */
     public HSV( double h, double s, double v, double a ) {
         this.h = h;
         this.s = s;

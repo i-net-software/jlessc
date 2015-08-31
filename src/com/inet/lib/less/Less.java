@@ -48,8 +48,10 @@ public class Less {
      * @param compress
      *            true, if the CSS data should be compressed without any extra formating characters.
      * @return the resulting less data
+     * @throws LessException 
+     *            if any error occur on compiling.
      */
-    public static String compile( URL baseURL, String lessData, boolean compress ) {
+    public static String compile( URL baseURL, String lessData, boolean compress ) throws LessException {
         LessParser parser = new LessParser();
         parser.parse( baseURL, new StringReader( lessData ) );
 

@@ -26,10 +26,20 @@
  */
 package com.inet.lib.less;
 
+/**
+ * A HSL color value.
+ */
 class HSL {
 
     double h, s, l, a;
 
+    /**
+     * Create a new color value.
+     * @param h hue
+     * @param s saturation
+     * @param l lightness
+     * @param a alpha
+     */
     public HSL( double h, double s, double l, double a ) {
         this.h = h;
         this.s = s;

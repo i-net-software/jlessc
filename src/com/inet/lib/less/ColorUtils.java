@@ -43,6 +43,11 @@ class ColorUtils {
     private static final int AVERAGE = 7;
     private static final int NEGATION = 8;
 
+    /**
+     * Create a HSL color.
+     * @param color argb color
+     * @return the HSL
+     */
     static HSL toHSL( double color ) {
         long argb = Double.doubleToRawLongBits( color );
         double a = alpha( color );
@@ -174,6 +179,11 @@ class ColorUtils {
         }
     }
 
+    /**
+     * Create a HSV color.
+     * @param color argb color
+     * @return the HSL
+     */
     static HSV toHSV( double color ) {
         long argb = Double.doubleToRawLongBits( color );
         double a = alpha( color );
