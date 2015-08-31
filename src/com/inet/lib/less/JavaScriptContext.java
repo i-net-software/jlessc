@@ -30,12 +30,20 @@ import java.util.HashMap;
 
 import javax.script.SimpleScriptContext;
 
+/**
+ * A ScriptContext for executing a JavaScript expression.
+ */
 class JavaScriptContext extends SimpleScriptContext {
 
     private final JavaScriptExpression    expr;
 
     private final HashMap<String, Object> attributes = new HashMap<>();
 
+    /**
+     * Create a new instance.
+     * @param formatter the formatter with a reference to the variables of the current scope
+     * @param expr the JavaScript expression
+     */
     JavaScriptContext( CssFormatter formatter, JavaScriptExpression expr ) {
         this.expr = expr;
         engineScope = new JavaScriptBindings( formatter );

@@ -37,11 +37,16 @@ class LessExtendMap {
 
     private final HashMultimap<String, LessExtendResult> all          = new HashMultimap<>();
 
-    private final HashMultimap<String, String[]> exact        = new HashMultimap<>();
+    private final HashMultimap<String, String[]>         exact        = new HashMultimap<>();
 
     // use a LinkedHashSet as cache to remove duplicates and hold the original order
-    private LinkedHashSet<String> selectorList                  = new LinkedHashSet<>();
+    private LinkedHashSet<String>                        selectorList = new LinkedHashSet<>();
 
+    /**
+     * Is calling on formatting if an extends was include.
+     * @param lessExtend the extend
+     * @param mainSelector the selectors in which the extend is placed.
+     */
     void add( LessExtend lessExtend, String[] mainSelector ) {
         if( mainSelector == null ) {
             mainSelector = lessExtend.getSelectors();
@@ -75,6 +80,7 @@ class LessExtendMap {
     /**
      * Add to the given selectors all possible extends and return the resulting selectors.
      * @param selectors current selectors
+     * @param isReference if the current rul is in a less file which was import with "reference" keyword
      * @return the selectors concatenate with extends or the original if there are no etends.
      */
     public String[] concatenateExtends( String[] selectors, boolean isReference ) {

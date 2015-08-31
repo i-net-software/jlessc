@@ -33,7 +33,15 @@ import java.util.HashMap;
  */
 interface FormattableContainer {
 
+    /**
+     * Add a formattable to this container
+     * @param formattable the formattable object
+     */
     void add( Formattable formattable );
 
+    /**
+     * Get the container for variables of this container.
+     * @return the variables
+     */
     HashMap<String, Expression> getVariables();
 }

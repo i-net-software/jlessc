@@ -32,7 +32,7 @@ package com.inet.lib.less;
  */
 class CompressCssFormatter extends CssFormatter {
 
-    boolean wasSemicolon;
+    private boolean wasSemicolon;
 
     /**
      * Create an instance.
@@ -136,6 +136,9 @@ class CompressCssFormatter extends CssFormatter {
         wasSemicolon = true;
     }
 
+    /**
+     * Check is a semicolon should be write.
+     */
     private void checkSemicolon() {
         if( wasSemicolon ) {
             wasSemicolon = false;

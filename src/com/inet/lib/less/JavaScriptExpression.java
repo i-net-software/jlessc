@@ -41,6 +41,11 @@ public class JavaScriptExpression extends Expression {
 
     private Object result;
 
+    /**
+     * Create a new instance.
+     * @param obj another LessObject with parse position.
+     * @param str the JavaScript
+     */
     JavaScriptExpression( LessObject obj, String str ) {
         super( obj, str );
     }
@@ -108,6 +113,10 @@ public class JavaScriptExpression extends Expression {
         }
     }
 
+    /**
+     * Execute the JavaScript 
+     * @param formatter current formatter
+     */
     private void eval( CssFormatter formatter ) {
         if( type != UNKNOWN ) {
             return;

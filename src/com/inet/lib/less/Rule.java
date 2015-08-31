@@ -87,6 +87,9 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         return RULE;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void add( Formattable formattable ) {
         properties.add( formattable );
@@ -95,6 +98,9 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void appendTo( CssFormatter formatter ) {
         if( isValidCSS( formatter ) ) {
@@ -378,6 +384,10 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         return selectors;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public HashMap<String, Expression> getVariables() {
         return variables;
     }
