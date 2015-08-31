@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 Volker Berlin
+ * Copyright (c) 2014 - 2015 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,9 @@ package com.inet.lib.less;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Converter for less regular expressions and Java regular expressiosn
+ */
 class RegExp {
 
     // In JS syntax, a \ in the replacement string has no special meaning.
@@ -73,6 +76,11 @@ class RegExp {
 
     private final Pattern        pattern;
 
+    /**
+     * Create an new instance.
+     * @param pattern the regular expression pattern
+     * @param flags some flags
+     */
     RegExp( String pattern, String flags ) {
         int patternFlags = Pattern.UNIX_LINES;
         for( int i = 0; i < flags.length(); i++ ) {
@@ -94,6 +102,12 @@ class RegExp {
         this.pattern = Pattern.compile( pattern, patternFlags );
     }
 
+    /**
+     * Replace the matches in the input with the replacement.
+     * @param input the input string
+     * @param replacement the replacment
+     * @return the resulting string
+     */
     public String replace( String input, String replacement ) {
         // Replace \ in the replacement with \\ to escape it for Java replace.
         replacement = REPLACEMENT_BACKSLASH.matcher( replacement ).replaceAll( REPLACEMENT_BACKSLASH_FOR_JAVA );

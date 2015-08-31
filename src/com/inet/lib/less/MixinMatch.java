@@ -55,21 +55,33 @@ class MixinMatch {
         this.wasDefault = wasDefault;
     }
 
+    /**
+     * The rule of the match.
+     * @return the rule
+     */
     Rule getRule() {
         return rule;
     }
 
+    /**
+     * The calling parameters 
+     * @return the parameters
+     */
     Map<String, Expression> getMixinParameters() {
         return mixinParameters;
     }
 
+    /**
+     * if the guard is TRUE
+     * @return if true
+     */
     boolean getGuard() {
         return guard;
     }
 
     /**
      * If the guard of this mixin use the default function
-     * @return true, if default function
+     * @return true, if default function is used
      */
     boolean wasDefault() {
         return wasDefault;

@@ -29,6 +29,8 @@ package com.inet.lib.less;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 /**
  * The placeholder of a mixin.
  */
@@ -41,8 +43,15 @@ class Mixin extends LessObject implements Formattable {
     private List<MixinMatch> mixinRules;
     private int stackID;
 
-    Mixin( LessLookAheadReader reader, String name, Operation paramValues, HashMultimap<String,Rule> mixins ) {
-        super( reader );
+    /**
+     * Create a new instance.
+     * @param obj another LessObject with parse position.
+     * @param name the name of the mixin
+     * @param paramValues the parameters.
+     * @param mixins map with all mixins
+     */
+    Mixin( LessObject obj, String name, Operation paramValues, HashMultimap<String,Rule> mixins ) {
+        super( obj );
         if( name.endsWith( "!important" ) ) {
             important = true;
             name = name.substring( 0, name.length() - 10 ).trim();
@@ -62,6 +71,9 @@ class Mixin extends LessObject implements Formattable {
         return MIXIN;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void appendTo( CssFormatter formatter ) {
         formatter.setImportant( important );
@@ -81,6 +93,11 @@ class Mixin extends LessObject implements Formattable {
         formatter.setImportant( false );
     }
 
+    /**
+     * Append the rules of the mixins to the formatter.
+     * @param parentSelector the selectors of the caller
+     * @param formatter the formatter
+     */
     void appendSubRules( String[] parentSelector, CssFormatter formatter ) {
         try {
             for( MixinMatch match : getRules( formatter ) ) {
@@ -100,7 +117,14 @@ class Mixin extends LessObject implements Formattable {
         }
     }
 
-    private List<MixinMatch> getRules( CssFormatter formatter ) {
+    /**
+     * Get the rules of the mixin
+     * @param formatter the formatter
+     * @return the rules, can be empty if no condition matched but not null 
+     * @throws LessException if no rule match the name of the mixin.
+     */
+    @Nonnull
+    private List<MixinMatch> getRules( CssFormatter formatter ) throws LessException {
         if( mixinRules != null && stackID == formatter.stackID() ) {
             return mixinRules;
         }

@@ -42,15 +42,25 @@ class ValueExpression extends Expression {
 
     private Operation op;
 
-    ValueExpression( LessObject reader, String str ) {
-        super( reader, str );
+    /**
+     * Create a new instance.
+     * @param obj another LessObject with parse position.
+     * @param value the value
+     */
+    ValueExpression( LessObject obj, String value ) {
+        super( obj, value );
     }
 
-    ValueExpression( JavaScriptExpression expr, Object obj ) {
-        super( expr, String.valueOf( obj ) );
-        if( obj instanceof Number ) {
+    /**
+     * Create a new value expression from a JavaScriptExpression.
+     * @param expr another LessObject with parse position.
+     * @param value the value
+     */
+    ValueExpression( JavaScriptExpression expr, Object value ) {
+        super( expr, String.valueOf( value ) );
+        if( value instanceof Number ) {
             type = NUMBER;
-            value = ((Number)obj).doubleValue();
+            value = ((Number)value).doubleValue();
             unit = "";
         }
     }
@@ -160,6 +170,7 @@ class ValueExpression extends Expression {
 
     /**
      * Evaluate the type and value.
+     * @param formatter current formatter
      */
     private void eval( CssFormatter formatter ) {
         try {

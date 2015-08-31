@@ -34,7 +34,7 @@ class Comment implements Formattable {
     private String msg;
 
     /**
-     * Create new instance
+     * Create a new instance of Comment.
      * @param msg the comment text
      */
     Comment( String msg ) {

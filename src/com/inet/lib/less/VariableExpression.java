@@ -31,8 +31,13 @@ package com.inet.lib.less;
  */
 class VariableExpression extends Expression {
 
-    VariableExpression( LessObject reader, String name ) {
-        super( reader, name );
+    /**
+     * Create a new instance.
+     * @param obj another LessObject with parse position.
+     * @param name the name of the variable starts with '@'
+     */
+    VariableExpression( LessObject obj, String name ) {
+        super( obj, name );
     }
 
     /**
@@ -75,6 +80,11 @@ class VariableExpression extends Expression {
         return getValue( formatter ).unit( formatter );
     }
 
+    /**
+     * Get the referencing expression
+     * @param formatter current formatter with all variables
+     * @return the Expression
+     */
     Expression getValue( CssFormatter formatter ) {
         String name = toString();
         Expression value = formatter.getVariable( name );

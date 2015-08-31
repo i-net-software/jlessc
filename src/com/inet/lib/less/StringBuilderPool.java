@@ -28,13 +28,20 @@ package com.inet.lib.less;
 
 import java.util.ArrayDeque;
 
+import javax.annotation.Nonnull;
+
 /**
- * A poll for StringBuilders to reduce the allocation of new objects.
+ * A pool for StringBuilders to reduce the allocation of new objects.
  */
 final class StringBuilderPool {
 
     private final ArrayDeque<StringBuilder> pool = new ArrayDeque<StringBuilder>();
 
+    /**
+     * Get a StringBuilder
+     * @return a StringBuilder
+     */
+    @Nonnull
     StringBuilder get() {
         if( pool.size() == 0 ) {
             return new StringBuilder();
@@ -45,6 +52,10 @@ final class StringBuilderPool {
         }
     }
 
+    /**
+     * Return a StringBuilder to the pool.
+     * @param builder a StringBuilder 
+     */
     void free( StringBuilder builder ) {
         pool.addLast( builder );
     }
