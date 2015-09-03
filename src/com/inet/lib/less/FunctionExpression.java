@@ -639,6 +639,12 @@ class FunctionExpression extends Expression {
                     type = BOOLEAN;
                     booleanValue = get( 0 ).getDataType( formatter ) == STRING;
                     return;
+                case "isunit":
+                    type = BOOLEAN;
+                    unit = get( 1 ).stringValue( formatter );
+                    param = get( 0 );
+                    booleanValue = param.getDataType( formatter ) == NUMBER && param.unit( formatter ).equals( unit );
+                    return;
                 case "default":
                     if( formatter.isGuard() ) {
                         type = BOOLEAN;
