@@ -43,6 +43,12 @@ class LessLookAheadReader extends LessObject implements Closeable {
 
     private int                 cachePos;
 
+    /**
+     * Create a new instance.
+     * @param reader the underlying reader
+     * @param fileName the filename of the less file or null if a String is parsed.
+     * @param isReference true, if the less file is imported as reference
+     */
     LessLookAheadReader( Reader reader, String fileName, boolean isReference ) {
         super( fileName );
         this.reader = reader;
@@ -51,6 +57,10 @@ class LessLookAheadReader extends LessObject implements Closeable {
         column = 0;
     }
 
+    /**
+     * Get the next parse type. This can be -1, ';', '{' or '}'. It copy the input until this marker in the look ahead cache.
+     * @return the block type of the next data.
+     */
     int nextBlockMarker() {
         cache.setLength( cachePos = 0 );
         int parenthesis = 0;
@@ -149,7 +159,11 @@ class LessLookAheadReader extends LessObject implements Closeable {
             throw new LessException( ex );
         }
     }
-    
+
+    /**
+     * The read data from nextBlockMarker(). Is used for an error message only.
+     * @return the look ahead cache.
+     */
     String getLookAhead(){
         return cache.toString();
     }
@@ -262,6 +276,11 @@ class LessLookAheadReader extends LessObject implements Closeable {
         } while( ch != '\n' && ch != -1 );
     }
 
+    /**
+     * Increment the line and column count depending on the character.
+     * @param ch current character
+     * @return the character parameter 
+     */
     private char incLineColumn( int ch ) {
         if( ch == '\n' ) {
             line++;
@@ -272,23 +291,34 @@ class LessLookAheadReader extends LessObject implements Closeable {
         return (char)ch;
     }
 
+    /**
+     * The current line number for error messages.
+     * @return line number
+     */
     int getLine() {
         return line;
     }
 
+    /**
+     * The current column number for error messages.
+     * @return column number.
+     */
     int getColumn() {
         return column;
     }
 
-    String getFileName() {
-        return filename;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void close() throws IOException {
         reader.close();
     }
 
+    /**
+     * If the less file of this reader was import with "reference" keyword.
+     * @return true, if reference
+     */
     boolean isReference() {
         return isReference;
     }

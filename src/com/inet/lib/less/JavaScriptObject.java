@@ -34,7 +34,7 @@ public class JavaScriptObject {
     private Object obj;
 
     /**
-     * New object.
+     * New wrapper object.
      * @param obj the native value
      */
     JavaScriptObject( Object obj ) {

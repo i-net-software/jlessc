@@ -27,7 +27,7 @@
 package com.inet.lib.less;
 
 /**
- * A comment
+ * A comment in the less file.
  */
 class Comment implements Formattable {
 
