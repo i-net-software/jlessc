@@ -160,6 +160,9 @@ class ValueExpression extends Expression {
         return Boolean.parseBoolean( toString() );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Operation listValue( CssFormatter formatter ) {
         if( type == LIST ) {

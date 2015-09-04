@@ -80,8 +80,9 @@ class RegExp {
      * Create an new instance.
      * @param pattern the regular expression pattern
      * @param flags some flags
+     * @throws ParameterOutOfBoundsException if the flags are invalid
      */
-    RegExp( String pattern, String flags ) {
+    RegExp( String pattern, String flags ) throws ParameterOutOfBoundsException {
         int patternFlags = Pattern.UNIX_LINES;
         for( int i = 0; i < flags.length(); i++ ) {
             char flag = flags.charAt( i );
@@ -105,10 +106,11 @@ class RegExp {
     /**
      * Replace the matches in the input with the replacement.
      * @param input the input string
-     * @param replacement the replacment
+     * @param replacement the replacement
      * @return the resulting string
+     * @throws ParameterOutOfBoundsException if Java can not replace it like Javascript
      */
-    public String replace( String input, String replacement ) {
+    public String replace( String input, String replacement ) throws ParameterOutOfBoundsException {
         // Replace \ in the replacement with \\ to escape it for Java replace.
         replacement = REPLACEMENT_BACKSLASH.matcher( replacement ).replaceAll( REPLACEMENT_BACKSLASH_FOR_JAVA );
 

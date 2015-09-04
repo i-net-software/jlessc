@@ -29,7 +29,7 @@ package com.inet.lib.less;
 import java.util.ArrayDeque;
 
 /**
- * A single less extends
+ * A single less extends in the less file.
  */
 class LessExtend extends LessObject implements Formattable {
 
@@ -41,8 +41,13 @@ class LessExtend extends LessObject implements Formattable {
 
     private String[] extendingSelectors;
 
-    LessExtend( LessLookAheadReader reader, String extendSelector, ArrayDeque<Rule> ruleStack ) {
-        super( reader );
+    /**
+     * Create a new instance.
+     * @param obj another LessObject with parse position.
+     * @param extendSelector the completely selector like "foo:extends(bar all)"
+     */
+    LessExtend( LessObject obj, String extendSelector ) {
+        super( obj );
 
         int idx1 = extendSelector.indexOf( ":extend(" );
         int idx2 = extendSelector.indexOf( ')', idx1 );
@@ -57,18 +62,34 @@ class LessExtend extends LessObject implements Formattable {
         baseSelector = new String[] { this.selector };
     }
 
+    /**
+     * If keyword "all" was set
+     * @return true, if all was available
+     */
     boolean isAll() {
         return all;
     }
 
+    /**
+     * Get the base selector.
+     * @return the selector
+     */
     String getSelector() {
         return selector;
     }
 
+    /**
+     * Get the base selectors as single size array.
+     * @return the selector
+     */
     String[] getSelectors() {
         return baseSelector;
     }
 
+    /**
+     * Get the list of selectors to extends
+     * @return the selector list
+     */
     String[] getExtendingSelectors() {
         return extendingSelectors;
     }

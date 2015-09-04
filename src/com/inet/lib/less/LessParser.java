@@ -73,10 +73,18 @@ class LessParser implements FormattableContainer {
         return rules;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public HashMap<String, Expression> getVariables() {
         return variables;
     }
 
+    /**
+     * Main method for parsing of main less file.
+     * @param baseURL the baseURL for import of external less data.
+     * @param input the less input data
+     */
     void parse( URL baseURL, Reader input ) {
         this.baseURL = baseURL;
         try {
@@ -88,6 +96,10 @@ class LessParser implements FormattableContainer {
         parse();
     }
 
+    /**
+     * If there are some imports with variables then this will parse after a formatter if available.
+     * @param formatter the formatter to evaluate variables
+     */
     void parseLazy( CssFormatter formatter ) {
         if( lazyImports != null ) {
             HashMap<String, Expression> vars = variables;
@@ -105,14 +117,16 @@ class LessParser implements FormattableContainer {
         }
     }
 
+    /**
+     * Parse main and import less files.
+     */
     private void parse() {
         try {
-            
             for( ;; ) {
                 int ch = reader.nextBlockMarker();
                 switch( ch ) {
                     case -1:
-                        return; //TODO
+                        return; // end of input reached
                     case ';':
                         parseSemicolon( this );
                         break;
@@ -133,6 +147,10 @@ class LessParser implements FormattableContainer {
         }
     }
 
+    /**
+     * Parse an expression which ends with a semicolon. This can be a property assignment, variable assignment, a directive or other. 
+     * @param currentRule the current container. This can be the root or a rule.
+     */
     private void parseSemicolon( FormattableContainer currentRule ) {
         String selector = null;
         Operation params = null;
@@ -205,7 +223,7 @@ class LessParser implements FormattableContainer {
                     }
                     if( selector != null ) {
                         if( selector.contains( ":extend(" ) ) {
-                            currentRule.add( new LessExtend( reader, selector, ruleStack ) );
+                            currentRule.add( new LessExtend( reader, selector ) );
                         } else {
                             Mixin mixin = new Mixin( reader, selector, params, mixins );
                             currentRule.add( mixin );
@@ -242,7 +260,7 @@ class LessParser implements FormattableContainer {
                         break;
                     }
                     if( selector.contains( ":extend(" ) ) {
-                        LessExtend lessExtend = new LessExtend( reader, selector, ruleStack );
+                        LessExtend lessExtend = new LessExtend( reader, selector );
                         currentRule.add( lessExtend );
                         selector = lessExtend.getSelector();
                     }
@@ -376,6 +394,11 @@ class LessParser implements FormattableContainer {
         variables.put( name, value );
     }
 
+    /**
+     * Parse and handle an <code>@import</code> directive.
+     * @param currentRule current container. This can be the root or a rule.
+     * @param name the content of the directive like a file name and keywords 
+     */
     private void importFile( FormattableContainer currentRule, final String name ) {
         if( currentRule != this ) {
             //import is inside of a mixin and will be process if the mixin will be process
@@ -1035,7 +1058,7 @@ class LessParser implements FormattableContainer {
      *            the builder.
      * @return a trim string
      */
-    private String trim( StringBuilder builder ) {
+    private static String trim( StringBuilder builder ) {
         //TODO can be optimize
         String str = builder.toString().trim();
         builder.setLength( 0 );
@@ -1049,7 +1072,7 @@ class LessParser implements FormattableContainer {
      *            the builder.
      * @return true if there is no content
      */
-    private boolean isWhitespace( StringBuilder builder ) {
+    private static boolean isWhitespace( StringBuilder builder ) {
         for( int i = 0; i < builder.length(); i++ ) {
             if( !Character.isWhitespace( builder.charAt( i ) ) ) {
                 return false;
@@ -1065,7 +1088,7 @@ class LessParser implements FormattableContainer {
      *            the builder.
      * @return true if content can be an Mixin
      */
-    private boolean isMixin( StringBuilder builder ){
+    private static boolean isMixin( StringBuilder builder ){
         switch( firstNonWhitespace( builder ) ) { 
             case '&': // pseudo-selectors
             case '.': // Mixin
@@ -1080,7 +1103,7 @@ class LessParser implements FormattableContainer {
      * @param builder the builder
      * @return true, if it 100% a selector and not a mixin with parameters
      */
-    private boolean isSelector( StringBuilder builder ) {
+    private static boolean isSelector( StringBuilder builder ) {
         int length = builder.length();
         if( length == 0 ) {
             return false;
@@ -1113,9 +1136,9 @@ class LessParser implements FormattableContainer {
      * 
      * @param builder
      *            the builder to check
-     * @return
+     * @return true, if identifier
      */
-    private boolean isIdentifier( StringBuilder builder ) {
+    private static boolean isIdentifier( StringBuilder builder ) {
         char ch = 0;
         int i;
         for( i = 0; i < builder.length(); ) {
@@ -1155,7 +1178,7 @@ class LessParser implements FormattableContainer {
      * @param builder the builder
      * @return true, if a variable; false, if it is an at-rule.
      */
-    private boolean isVariableName( StringBuilder builder ) {
+    private static boolean isVariableName( StringBuilder builder ) {
         for( int i = 1; i < builder.length(); ) {
             char ch = builder.charAt( i++ );
             switch( ch ) {
@@ -1174,7 +1197,7 @@ class LessParser implements FormattableContainer {
      *            the builder.
      * @return the first non whitespace
      */
-    private char firstNonWhitespace( StringBuilder builder ) {
+    private static char firstNonWhitespace( StringBuilder builder ) {
         for( int i = 0; i < builder.length(); i++ ) {
             if( !Character.isWhitespace( builder.charAt( i ) ) ) {
                 return builder.charAt( i );
@@ -1186,7 +1209,8 @@ class LessParser implements FormattableContainer {
     /**
      * Throw an unrecognized input exception if there content in the StringBuilder.
      * 
-     * @param builder
+     * @param builder the StringBuilder
+     * @param ch the last character
      */
     private void throwUnrecognizedInputIfAny( StringBuilder builder, int ch ) {
         if( !isWhitespace( builder ) ) {
@@ -1203,7 +1227,7 @@ class LessParser implements FormattableContainer {
      * @return the created exception
      */
     private LessException createException( String msg ) {
-        return new LessException( msg );
+        return reader.createException( msg );
     }
 
     /**
