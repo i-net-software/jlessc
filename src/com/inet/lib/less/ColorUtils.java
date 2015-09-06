@@ -235,9 +235,13 @@ class ColorUtils {
 
     /**
      * Calculate the mix color of 2 colors.
+     * 
      * @param color1
+     *            first color
      * @param color2
-     * @param weight balance point between the two colors in range of 0 to 1. 
+     *            second color
+     * @param weight
+     *            balance point between the two colors in range of 0 to 1.
      * @return the resulting color
      */
     static double mix( double color1, double color2, double weight ) {
@@ -386,11 +390,15 @@ class ColorUtils {
      * 
      * @param expression
      *            the expression
+     * @param formatter
+     *            current formatter
      * @return the percent value
      */
     static double getPercent( Expression expression, CssFormatter formatter ) {
         double d = expression.doubleValue( formatter );
         if( expression.getDataType( formatter ) == Expression.PERCENT ) {
+            d /= 100;
+        } else if( d > 1.0 && d == (int)d ) {
             d /= 100;
         }
         return d;
