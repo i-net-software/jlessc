@@ -513,6 +513,16 @@ class FunctionExpression extends Expression {
                     double weight = getPercent( 2, 0.5, formatter );
                     doubleValue = mix( c1, c2, weight );
                     return;
+                case "tint":
+                    c1 = getColor( 0, formatter );
+                    weight = getPercent( 1, 0.5, formatter );
+                    doubleValue = mix( WHITE, c1, weight );
+                    return;
+                case "shade":
+                    c1 = getColor( 0, formatter );
+                    weight = getPercent( 1, 0.5, formatter );
+                    doubleValue = mix( BLACK, c1, weight );
+                    return;
                 case "saturation":
                     type = PERCENT;
                     hsl = toHSL( getDouble( 0, formatter ) );
