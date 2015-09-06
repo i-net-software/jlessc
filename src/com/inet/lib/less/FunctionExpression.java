@@ -486,6 +486,11 @@ class FunctionExpression extends Expression {
                     b = getColorDigit( 2, formatter );
                     doubleValue = rgb( r, g, b );
                     return;
+                case "color":
+                    param = get( 0 );
+                    String str = UrlUtils.removeQuote( param.stringValue( formatter ) );
+                    doubleValue = getColor( new ValueExpression( param, str ), formatter );
+                    return;
                 case "argb":
                     type = STRING;
                     return;
@@ -665,7 +670,7 @@ class FunctionExpression extends Expression {
                     type = BOOLEAN;
                     param = get( 0 );
                     if( param.getDataType( formatter ) == STRING ) {
-                        String str = param.stringValue( formatter );
+                        str = param.stringValue( formatter );
                         booleanValue = str == UrlUtils.removeQuote( str );
                     } else {
                         booleanValue = false;
@@ -933,7 +938,19 @@ class FunctionExpression extends Expression {
      * @return the the color value
      */
     private double getColor( int idx, CssFormatter formatter ) {
-        Expression exp = get( idx );
+        return getColor( get( idx ), formatter );
+    }
+
+    /**
+     * Get a color value from the expression. And set the type variable.
+     * 
+     * @param exp
+     *            the expression
+     * @param formatter
+     *            current formatter
+     * @return the the color value
+     */
+    private double getColor( Expression exp, CssFormatter formatter ) {
         type = exp.getDataType( formatter );
         switch( type ) {
             case COLOR:
