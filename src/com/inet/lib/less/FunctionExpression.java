@@ -58,6 +58,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 /**
  * A function (less or CSS).
  */
@@ -71,8 +73,18 @@ class FunctionExpression extends Expression {
 
     private boolean                booleanValue;
 
-    FunctionExpression( LessLookAheadReader reader, String str, Operation parameters ) {
-        super( reader, str );
+    /**
+     * Create a new instance.
+     * 
+     * @param obj
+     *            another LessObject with parse position.
+     * @param name
+     *            the name of the method, if empty then it are parenthesis
+     * @param parameters
+     *            the parameters of the function
+     */
+    FunctionExpression( LessObject obj, @Nonnull String name, @Nonnull Operation parameters ) {
+        super( obj, name );
         this.parameters = parameters.getOperands();
     }
 
@@ -751,6 +763,9 @@ class FunctionExpression extends Expression {
 
     /**
      * Implementation of the escape function: http://lesscss.org/functions/#string-functions-escape
+     * 
+     * @param formatter
+     *            current formatter
      */
     private void escape( CssFormatter formatter ) {
         String url = get( 0 ).stringValue( formatter );
@@ -823,6 +838,8 @@ class FunctionExpression extends Expression {
      * 
      * @param idx
      *            the index starting with 0
+     * @param formatter
+     *            current formatter
      * @return the expression
      */
     private int getColorDigit( int idx, CssFormatter formatter ) {
@@ -839,6 +856,8 @@ class FunctionExpression extends Expression {
      * 
      * @param idx
      *            the index starting with 0
+     * @param formatter
+     *            current formatter
      * @return the expression
      */
     private int getInt( int idx, CssFormatter formatter ) {
@@ -846,10 +865,14 @@ class FunctionExpression extends Expression {
     }
 
     /**
-     * Get the idx parameter from the parameter list.
+     * Get the idx parameter from the parameter list as a int value.
      * 
      * @param idx
      *            the index starting with 0
+     * @param defaultValue
+     *            the result if such a parameter idx does not exists.
+     * @param formatter
+     *            current formatter
      * @return the expression
      */
     private int getInt( int idx, int defaultValue, CssFormatter formatter ) {
@@ -864,6 +887,8 @@ class FunctionExpression extends Expression {
      * 
      * @param idx
      *            the index starting with 0
+     * @param formatter
+     *            current formatter
      * @return the the percent value
      */
     private double getPercent( int idx, CssFormatter formatter ) {
@@ -875,6 +900,10 @@ class FunctionExpression extends Expression {
      * 
      * @param idx
      *            the index starting with 0
+     * @param defaultValue
+     *            the result if such a parameter idx does not exists.
+     * @param formatter
+     *            current formatter
      * @return the the percent value
      */
     private double getPercent( int idx, double defaultValue, CssFormatter formatter ) {
@@ -889,6 +918,8 @@ class FunctionExpression extends Expression {
      * 
      * @param idx
      *            the index starting with 0
+     * @param formatter
+     *            current formatter
      * @return the the color value
      */
     private double getColor( int idx, CssFormatter formatter ) {
@@ -918,6 +949,8 @@ class FunctionExpression extends Expression {
      * 
      * @param idx
      *            the index starting with 0
+     * @param formatter
+     *            current formatter
      * @return the expression
      */
     private double getDouble( int idx, CssFormatter formatter ) {
@@ -925,10 +958,14 @@ class FunctionExpression extends Expression {
     }
 
     /**
-     * Get the idx parameter from the parameter list.
+     * Get the idx parameter from the parameter list as double.
      * 
      * @param idx
      *            the index starting with 0
+     * @param defaultValue
+     *            the result if such a parameter idx does not exists.
+     * @param formatter
+     *            current formatter
      * @return the expression
      */
     private double getDouble( int idx, double defaultValue, CssFormatter formatter ) {
@@ -950,6 +987,13 @@ class FunctionExpression extends Expression {
         return super.listValue( formatter );
     }
 
+    /**
+     * Get for extract and length the first parameter as parameter list.
+     * 
+     * @param formatter
+     *            current formatter
+     * @return the list
+     */
     private List<Expression> getParamList( CssFormatter formatter ) {
         Expression ex0 = get( 0 ).unpack( formatter );
         if( ex0.getDataType( formatter ) == LIST ) {
