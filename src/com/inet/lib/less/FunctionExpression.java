@@ -572,11 +572,11 @@ class FunctionExpression extends Expression {
                     return;
                 case "hsv":
                     type = COLOR;
-                    doubleValue = hsva( getPercent( 0, formatter ), getPercent( 1, formatter ), getPercent( 2, formatter ), 1 );
+                    doubleValue = hsva( getDouble( 0, formatter ), getPercent( 1, formatter ), getPercent( 2, formatter ), 1 );
                     return;
                 case "hsva":
                     type = RGBA;
-                    doubleValue = hsva( getPercent( 0, formatter ), getPercent( 1, formatter ), getPercent( 2, formatter ), getPercent( 3, formatter ) );
+                    doubleValue = hsva( getDouble( 0, formatter ), getPercent( 1, formatter ), getPercent( 2, formatter ), getPercent( 3, formatter ) );
                     return;
                 case "hsvhue":
                     doubleValue = toHSV( getColor( 0, formatter ) ).h;
