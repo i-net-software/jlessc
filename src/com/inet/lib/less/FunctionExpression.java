@@ -639,11 +639,36 @@ class FunctionExpression extends Expression {
                     type = BOOLEAN;
                     booleanValue = get( 0 ).getDataType( formatter ) == STRING;
                     return;
+                case "iskeyword":
+                    type = BOOLEAN;
+                    param = get( 0 );
+                    if( param.getDataType( formatter ) == STRING ) {
+                        String str = param.stringValue( formatter );
+                        booleanValue = str == UrlUtils.removeQuote( str );
+                    } else {
+                        booleanValue = false;
+                    }
+                    return;
+                case "ispixel":
+                    type = BOOLEAN;
+                    param = get( 0 );
+                    booleanValue = param.unit( formatter ).equals( "px" );
+                    return;
+                case "isem":
+                    type = BOOLEAN;
+                    param = get( 0 );
+                    booleanValue = param.unit( formatter ).equals( "em" );
+                    return;
+                case "ispercentage":
+                    type = BOOLEAN;
+                    param = get( 0 );
+                    booleanValue = param.unit( formatter ).equals( "%" );
+                    return;
                 case "isunit":
                     type = BOOLEAN;
                     unit = get( 1 ).stringValue( formatter );
                     param = get( 0 );
-                    booleanValue = param.getDataType( formatter ) == NUMBER && param.unit( formatter ).equals( unit );
+                    booleanValue = param.unit( formatter ).equals( unit );
                     return;
                 case "default":
                     if( formatter.isGuard() ) {
@@ -769,7 +794,7 @@ class FunctionExpression extends Expression {
 
     /** 
      * NUMBER or PERCENT as data type.
-     * @param formatter
+     * @param formatter current formatter
      * @return the type
      */
     private int getNumberDataType( CssFormatter formatter ) {
