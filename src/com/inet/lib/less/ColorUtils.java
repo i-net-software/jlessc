@@ -80,6 +80,14 @@ class ColorUtils {
         return Math.min( 1, Math.max( 0, val ) );
     }
 
+    /**
+     * Create a color from rgba values
+     * @param r red in range of 0 to 0xFFFF
+     * @param g green in range of 0 to 0xFFFF
+     * @param b blue in range of 0 to 0xFFFF
+     * @param a alpha in range of 0 to 0xFFFF
+     * @return argb value
+     */
     static double rgba( double r, double g, double b, double a ) {
         return Double.longBitsToDouble( Math.round( a * 0xFFFF ) << 48 | (colorLargeDigit(r) << 32) | (colorLargeDigit(g) << 16) | colorLargeDigit(b) );
     }
@@ -273,42 +281,113 @@ class ColorUtils {
         return Double.longBitsToDouble( color );
     }
 
+    /**
+     * Color blending function multiply
+     * 
+     * @param color1 left color
+     * @param color2 right color
+     * @return argb color value
+     */
     static double multiply( double color1, double color2 ) {
         return colorBlending( color1, color2, MULTIPLY );
     }
 
+    /**
+     * Color blending function screen
+     * 
+     * @param color1 left color
+     * @param color2 right color
+     * @return argb color value
+     */
     static double screen( double color1, double color2 ) {
         return colorBlending( color1, color2, SCREEN );
     }
 
+    /**
+     * Color blending function overlay
+     * 
+     * @param color1 left color
+     * @param color2 right color
+     * @return argb color value
+     */
     static double overlay( double color1, double color2 ) {
         return colorBlending( color1, color2, OVERLAY );
     }
 
+    /**
+     * Color blending function softlight
+     * 
+     * @param color1 left color
+     * @param color2 right color
+     * @return argb color value
+     */
     static double softlight( double color1, double color2 ) {
         return colorBlending( color1, color2, SOFTLIGHT );
     }
 
+    /**
+     * Color blending function hardlight
+     * 
+     * @param color1 left color
+     * @param color2 right color
+     * @return argb color value
+     */
     static double hardlight( double color1, double color2 ) {
         return colorBlending( color1, color2, HARDLIGHT );
     }
 
+    /**
+     * Color blending function difference
+     * 
+     * @param color1 left color
+     * @param color2 right color
+     * @return argb color value
+     */
     static double difference( double color1, double color2 ) {
         return colorBlending( color1, color2, DIFFERENCE );
     }
 
+    /**
+     * Color blending function exclusion
+     * 
+     * @param color1 left color
+     * @param color2 right color
+     * @return argb color value
+     */
     static double exclusion( double color1, double color2 ) {
         return colorBlending( color1, color2, EXCLUSION );
     }
 
+    /**
+     * Color blending function average
+     * 
+     * @param color1 left color
+     * @param color2 right color
+     * @return argb color value
+     */
     static double average( double color1, double color2 ) {
         return colorBlending( color1, color2, AVERAGE );
     }
 
+    /**
+     * Color blending function negation
+     * 
+     * @param color1 left color
+     * @param color2 right color
+     * @return argb color value
+     */
     static double negation( double color1, double color2 ) {
         return colorBlending( color1, color2, NEGATION );
     }
 
+    /**
+     * Color blending operation
+     * 
+     * @param color1 left color
+     * @param color2 right color
+     * @param op blending operation
+     * @return argb color value
+     */
     private static double colorBlending( double color1, double color2, int op ) {
         long argb1 = Double.doubleToRawLongBits( color1 );
         long r1 = ((argb1 >> 32) & 0xFFFF);
@@ -328,6 +407,14 @@ class ColorUtils {
         return Double.longBitsToDouble( argb1 );
     }
 
+    /**
+     * Color blending operation for a single color channel.
+     * 
+     * @param longDigit1 left digit
+     * @param longDigit2 right digit
+     * @param op blending operation
+     * @return resulting color digit
+     */
     private static long colorBlendingDigit( long longDigit1, long longDigit2, int op ) {
         switch( op ) {
             case MULTIPLY:

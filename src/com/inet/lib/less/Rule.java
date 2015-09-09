@@ -33,8 +33,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 /**
- * A CSS rule.
+ * A single CSS rule or mixin.
  */
 class Rule extends LessObject implements Formattable, FormattableContainer {
 
@@ -51,11 +53,19 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
     private List<Formattable>           properties = new ArrayList<>();
 
     private List<Rule>                  subrules = new ArrayList<>();
-    
+
     private HashMap<String, Expression> variables  = new HashMap<>();
 
-    Rule( LessLookAheadReader reader, String selectors, Operation params, Expression guard ) {
-        super( reader );
+    /**
+     * Create new instance.
+     * 
+     * @param obj another LessObject with parse position.
+     * @param selectors the selectors of the rule
+     * @param params the parameter if the rule is a mixin.
+     * @param guard a guard condition for the mixin or CSS rule
+     */
+    Rule( LessObject obj, String selectors, @Nullable Operation params, Expression guard ) {
+        super( obj );
         this.selectors = selectors.split( "," );
         for( int i = 0; i < this.selectors.length; i++ ) {
             this.selectors[i] = this.selectors[i].trim();
@@ -113,7 +123,13 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         }
     }
 
-    void appendTo( String[] mainSelector, CssFormatter formatter ) {
+    /**
+     * Append this rule the formatter.
+     * 
+     * @param mainSelector optional selectors of the calling rule if this is a mixin.
+     * @param formatter current formatter
+     */
+    void appendTo( @Nullable String[] mainSelector, CssFormatter formatter ) {
         try {
             String[] sel = selectors;
 
@@ -242,9 +258,10 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
     }
 
     /**
+     * Directives like @media in the root.
      * 
-     * @param sel
-     * @param formatter
+     * @param sel the selectors
+     * @param formatter current formatter
      */
     private void ruleset( String[] sel, CssFormatter formatter ) {
         formatter = formatter.startBlock( sel );
@@ -434,6 +451,14 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         return formatter.releaseOutput();
     }
 
+    /**
+     * If this mixin match the calling parameters.
+     * 
+     * @param formatter current formatter
+     * @param paramValues calling parameters
+     * @param isDefault the value of the keyword "default" in guard.
+     * @return the match or null if there is no match of the parameter lists
+     */
     MixinMatch match( CssFormatter formatter, List<Expression> paramValues, boolean isDefault ) {
         if( guard == null && formatter.containsRule( this ) ) {
             return null;
@@ -455,12 +480,18 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         return new MixinMatch( this, mixinParameters, matching, formatter.wasDefaultFunction() );
     }
 
+    /**
+     * If this is a mixin or a CSS rule.
+     * 
+     * @return true, if it is a mixin.
+     */
     boolean isMixin() {
         return params != null;
     }
 
     /**
      * If this rule is a CSS rule (not a mixin declaration) and if an guard exists if it true.
+     * 
      * @param formatter the CCS target
      * @return true, if a CSS rule
      */
@@ -476,6 +507,12 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         return false;
     }
 
+    /**
+     * If there is only a special selector "&" and also all subrules have only this special selector.
+     * 
+     * @param formatter current formatter
+     * @return true, if selector is "&"
+     */
     boolean isInlineRule( CssFormatter formatter ) {
         if( selectors.length == 1 && selectors[0].equals( "&" ) ) {
             return hasOnlyInlineProperties( formatter );
@@ -483,6 +520,12 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         return false;
     }
 
+    /**
+     * If there are only properties that should be inlined.
+     * 
+     * @param formatter current formatter
+     * @return true, if only inline
+     */
     boolean hasOnlyInlineProperties( CssFormatter formatter ) {
         for( Formattable prop : properties ) {
             if( prop instanceof Mixin ) {
