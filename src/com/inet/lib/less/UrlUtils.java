@@ -44,7 +44,8 @@ class UrlUtils {
 
     /**
      * Remove a quote if exists.
-     * @param str a string 
+     * 
+     * @param str a string
      * @return the str without quotes
      */
     static @Nonnull String removeQuote( @Nonnull String str ) {
@@ -60,7 +61,10 @@ class UrlUtils {
     }
 
     /**
-     * Implementation of the function svg-Gradient
+     * Implementation of the function svg-Gradient.
+     * 
+     * @param formatter current formatter
+     * @param parameters function parameters
      */
     static void svgGradient( CssFormatter formatter, List<Expression> parameters ) {
         if( parameters.size() < 3 ) {
@@ -135,9 +139,14 @@ class UrlUtils {
     }
 
     /**
-     * Get the color value of the expression or fire an exception if not a color. 
+     * Get the color value of the expression or fire an exception if not a color.
+     * 
+     * @param param the expression to evaluate
+     * @param formatter current formatter
+     * @return the color value of the expression
+     * @throws LessException if the expression is not a color value
      */
-    static double getColor( Expression param, CssFormatter formatter ) {
+    static double getColor( Expression param, CssFormatter formatter ) throws LessException {
         switch( param.getDataType( formatter ) ) {
             case Expression.COLOR:
             case Expression.RGBA:
@@ -146,6 +155,15 @@ class UrlUtils {
         throw new LessException( "Not a color: " + param );
     }
 
+    /**
+     * Implementation of the function data-uri.
+     * 
+     * @param formatter current formatter
+     * @param relativeURL relative URL of the less script. Is used as base URL
+     * @param urlString the url parameter of the function
+     * @param type the mime type
+     * @throws IOException If any I/O errors occur on reading the content
+     */
     static void dataUri( CssFormatter formatter, String relativeURL, final String urlString, String type ) throws IOException {
         URL url = new URL( formatter.getBaseURL(), relativeURL );
         String urlStr = removeQuote( urlString );
@@ -176,6 +194,14 @@ class UrlUtils {
         }
     }
 
+    /**
+     * Write the bytes as inline url.
+     * 
+     * @param formatter current formatter
+     * @param bytes the bytes
+     * @param urlStr used if mime type is null to detect the mime type
+     * @param type the mime type
+     */
     static void dataUri( CssFormatter formatter, byte[] bytes, String urlStr, String type ) {
         if( type == null ) {
             switch( urlStr.substring( urlStr.lastIndexOf( '.' ) + 1 ) ) {
@@ -207,6 +233,12 @@ class UrlUtils {
         }
     }
 
+    /**
+     * Append the bytes URL encoded.
+     * 
+     * @param formatter current formatter
+     * @param bytes the bytes
+     */
     private static void appendEncode( CssFormatter formatter, byte[] bytes ) {
         for( byte b : bytes ) {
             if ((b >= 'a' && b <= 'z' ) || (b >= 'A' && b <= 'Z' ) || (b >= '0' && b <= '9' )) {
