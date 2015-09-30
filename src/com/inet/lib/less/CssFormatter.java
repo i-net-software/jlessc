@@ -85,6 +85,9 @@ class CssFormatter implements Cloneable {
         }
     }
 
+    /**
+     * The global state of the sequential formatting.
+     */
     private static class SharedState {
         private final StringBuilderPool                      pool             = new StringBuilderPool();
 
@@ -133,6 +136,9 @@ class CssFormatter implements Cloneable {
 
     private boolean                         wasDefaultFunction;
 
+    /**
+     * Create a initial instance.
+     */
     CssFormatter() {
         state = new SharedState();
         state.header = copy( null );
@@ -141,9 +147,10 @@ class CssFormatter implements Cloneable {
 
     /**
      * Create a new formatter for a single rule with optional output. 
-     * @param parent the parent CssFormatter
+     * @param output optional target
+     * @return a new formatter
      */
-    private CssFormatter copy( StringBuilder output ) {
+    private CssFormatter copy( @Nullable StringBuilder output ) {
         try {
             CssFormatter formatter = (CssFormatter)clone();
             formatter.output = output == null ? state.pool.get() : output;
@@ -154,6 +161,13 @@ class CssFormatter implements Cloneable {
         }
     }
 
+    /**
+     * Format the a parsed less file.
+     * 
+     * @param parser the parser result
+     * @param baseURL the URL of the less file
+     * @param target the output of the resulting string
+     */
     void format( LessParser parser, URL baseURL, StringBuilder target ) {
         state.baseURL = baseURL;
         addVariables( parser.getVariables() );
@@ -185,10 +199,18 @@ class CssFormatter implements Cloneable {
         return state.header;//results.get( 0 );
     }
 
+    /**
+     * If already was write a character directive. Such directive can write only once.
+     * 
+     * @return true, if already write.
+     */
     boolean isCharsetDirective(){
         return state.charsetDirective;
     }
-    
+
+    /**
+     * Mark that there was write a character directive.
+     */
     void setCharsetDirective() {
         state.charsetDirective = true;
     }
@@ -237,14 +259,26 @@ class CssFormatter implements Cloneable {
         return output == null ? -1 : output.length();
     }
 
+    /**
+     * Reset the output to a previous marker.
+     * @param size the marker position
+     */
     void setOutputSize( int size ) {
         output.setLength( size );
     }
 
+    /**
+     * Add a processed extend
+     * @param lessExtend the extend
+     */
     void add( LessExtend lessExtend ) {
         state.lessExtends.add( lessExtend, this.selectors );
     }
 
+    /**
+     * Get the URL of the top less file.
+     * @return the URL
+     */
     URL getBaseURL() {
         return state.baseURL;
     }
@@ -354,7 +388,9 @@ class CssFormatter implements Cloneable {
 
     /**
      * Add the parameters of a guard
+     * 
      * @param parameters the parameters
+     * @param isDefault if the default case will be evaluated, in this case the expression "default" in guard is true.
      */
     void addGuardParameters( Map<String, Expression> parameters, boolean isDefault ) {
         isGuard = true;
@@ -384,11 +420,21 @@ class CssFormatter implements Cloneable {
         return isGuard;
     }
 
+    /**
+     * Get the current value of "default" in a guard.
+     * 
+     * @return true if the default case will be evaluate.
+     */
     boolean getGuardDefault() {
         wasDefaultFunction = true;
         return guardDefault;
     }
 
+    /**
+     * If the state of "default" was requested since the last guard parameter was added.
+     * 
+     * @return true, if default was called
+     */
     boolean wasDefaultFunction() {
         return wasDefaultFunction;
     }
@@ -397,7 +443,7 @@ class CssFormatter implements Cloneable {
     /**
      * A mixin inline never it self.
      * 
-     * @param rule
+     * @param rule the rule
      * @return true, if the mixin is currently formatting
      */
     boolean containsRule( Rule rule ) {
@@ -433,10 +479,19 @@ class CssFormatter implements Cloneable {
         return null;
     }
 
+    /**
+     * The counter of the variable stack changes. This is an optimizing that some expression does not need reevaluate if this ID has not changed. 
+     * @return the id
+     */
     int stackID() {
         return state.rulesStackModCount;
     }
 
+    /**
+     * Get the current output of the formatter.
+     * 
+     * @return the output.
+     */
     StringBuilder getOutput() {
         if( output == null ) {
             CssFormatter block = copy( null );
@@ -494,6 +549,12 @@ class CssFormatter implements Cloneable {
         return this;
     }
 
+    /**
+     * Append an hex value to the output.
+     * 
+     * @param value the value
+     * @param digits the digits to write.
+     */
     void appendHex( int value, int digits ) {
         if( digits > 1 ) {
             appendHex( value >>> 4, digits-1 );
@@ -501,11 +562,23 @@ class CssFormatter implements Cloneable {
         output.append( DIGITS[ value & 0xF ] );
     }
 
+    /**
+     * Append a single character to the output.
+     * 
+     * @param ch the character
+     * @return a reference to this object
+     */
     CssFormatter append( char ch ) {
         output.append( ch );
         return this;
     }
 
+    /**
+     * Append a decimal number to the output.
+     * 
+     * @param value the number
+     * @return a reference to this object
+     */
     CssFormatter append( double value ) {
         if( value == (int)value ) {
             output.append( Integer.toString( (int)value ) );
@@ -515,16 +588,29 @@ class CssFormatter implements Cloneable {
         return this;
     }
 
+    /**
+     * Append a value with a unit. In compress mode not all units are written.
+     * 
+     * @param value the value.
+     * @param unit the unit
+     * @return a reference to this object
+     */
     CssFormatter appendValue( double value, String unit ) {
         append( value );
         append( unit );
         return this;
     }
 
+    /**
+     * Increment the insets of the output.
+     */
     void incInsets() {
         insets.append( "  " );
     }
 
+    /**
+     * Decrement the insets of the output.
+     */
     void decInsets() {
         insets.setLength( insets.length() - 2 );
     }
@@ -572,6 +658,11 @@ class CssFormatter implements Cloneable {
         }
     }
 
+    /**
+     * Output a new block and increment the insets.
+     * 
+     * @param selectors the selectors of the block.
+     */
     void startBlockImpl( String[] selectors ) {
         for( int i=0; i<selectors.length; i++ ) {
             if( i > 0 ) {
@@ -587,6 +678,11 @@ class CssFormatter implements Cloneable {
         incInsets();
     }
 
+    /**
+     * Terminate a CSS block.
+     * 
+     * @return a reference to this object
+     */
     CssFormatter endBlock() {
         blockDeep--;
         if( blockDeep == 0 ) {
@@ -599,6 +695,9 @@ class CssFormatter implements Cloneable {
         return this;
     }
 
+    /**
+     * Decrement the insets and output the end block.
+     */
     void endBlockImpl() {
         decInsets();
         insets();
@@ -658,28 +757,54 @@ class CssFormatter implements Cloneable {
         }
     }
 
+    /**
+     * Set the flag important.
+     * 
+     * @param important the new value
+     */
     void setImportant( boolean important ) {
         this.important = important;
     }
 
+    /**
+     * Write a single space. The compress formatter do nothing.
+     * 
+     * @return a reference to this object
+     */
     CssFormatter space() {
         output.append( ' ' );
         return this;
     }
 
+    /**
+     * Write a newline. The compress formatter do nothing.
+     * 
+     * @return a reference to this object
+     */
     CssFormatter newline() {
         output.append( '\n' );
         return this;
     }
 
+    /**
+     * Write a semicolon. The compress formatter do nothing before an end block.
+     */
     void semicolon() {
         output.append( ';' );
     }
 
+    /**
+     * Write the current insets. The compress formatter do nothing.
+     */
     void insets() {
         output.append( insets );
     }
 
+    /**
+     * Write a comment. The compress formatter do nothing.
+     * @param msg the comment including the comment markers
+     * @return a reference to this object
+     */
     CssFormatter comment( String msg ) {
         getOutput().append( insets ).append( msg ).append( '\n' );
         return this;
