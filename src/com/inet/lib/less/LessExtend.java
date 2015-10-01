@@ -26,7 +26,6 @@
  */
 package com.inet.lib.less;
 
-import java.util.ArrayDeque;
 
 /**
  * A single less extends in the less file.
@@ -95,7 +94,8 @@ class LessExtend extends LessObject implements Formattable {
     }
 
     /**
-     * For debugging
+     * For debugging of the library.
+     * @return the debug string
      */
     @Override
     public String toString() {
