@@ -327,6 +327,11 @@ class FunctionExpression extends Expression {
         formatter.append( ')' );
     }
 
+    /**
+     * Evaluate this function.
+     * 
+     * @param formatter the current formation context
+     */
     private void eval( CssFormatter formatter ) {
         try {
             switch( super.toString().toLowerCase() ) {
@@ -726,6 +731,11 @@ class FunctionExpression extends Expression {
         return;
     }
 
+    /**
+     * Implements the format function "%"
+     * 
+     * @param formatter the current formation context
+     */
     private void format( CssFormatter formatter ) {
         String fmt = get( 0 ).stringValue( formatter );
         int idx = 1;
@@ -840,6 +850,7 @@ class FunctionExpression extends Expression {
      * @param idx
      *            the index starting with 0
      * @return the expression
+     * @throws ParameterOutOfBoundsException if the parameter with the index does not exists
      */
     Expression get( int idx ) {
         if( parameters.size() <= idx ) {
@@ -949,6 +960,7 @@ class FunctionExpression extends Expression {
      * @param formatter
      *            current formatter
      * @return the the color value
+     * @throws ParameterOutOfBoundsException if the parameter with the index does not exists
      */
     private double getColor( Expression exp, CssFormatter formatter ) {
         type = exp.getDataType( formatter );

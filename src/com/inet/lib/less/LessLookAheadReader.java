@@ -58,10 +58,13 @@ class LessLookAheadReader extends LessObject implements Closeable {
     }
 
     /**
-     * Get the next parse type. This can be -1, ';', '{' or '}'. It copy the input until this marker in the look ahead cache.
+     * Get the next parse type. This can be -1, ';', '{' or '}'. It copy the input until this marker in the look ahead
+     * cache.
+     * 
      * @return the block type of the next data.
+     * @throws LessException if any parsing error occur.
      */
-    int nextBlockMarker() {
+    int nextBlockMarker() throws LessException {
         cache.setLength( cachePos = 0 );
         int parenthesis = 0;
         boolean isSlash = false;
@@ -263,6 +266,8 @@ class LessLookAheadReader extends LessObject implements Closeable {
 
     /**
      * Skip all data until a newline occur or an EOF
+     * 
+     * @throws LessException if an IO error occur
      */
     void skipLine() {
         int ch;

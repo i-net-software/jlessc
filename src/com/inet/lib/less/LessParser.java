@@ -36,6 +36,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import javax.annotation.Nonnull;
+
 /**
  * The parser of the less stream.
  */
@@ -82,8 +84,10 @@ class LessParser implements FormattableContainer {
 
     /**
      * Main method for parsing of main less file.
+     * 
      * @param baseURL the baseURL for import of external less data.
      * @param input the less input data
+     * @throws LessException if any parsing error occurred
      */
     void parse( URL baseURL, Reader input ) {
         this.baseURL = baseURL;
@@ -236,6 +240,11 @@ class LessParser implements FormattableContainer {
         }
     }
 
+    /**
+     * Parse a block including also the selectors.
+     * 
+     * @param currentRule container of the block
+     */
     void parseBlock( FormattableContainer currentRule ) {
         Operation expr = null;
         String name = null;
@@ -355,6 +364,12 @@ class LessParser implements FormattableContainer {
         }
     }
 
+    /**
+     * Parse an expression which starts with an "@".
+     * 
+     * @param variables container for variables
+     * @param currentRule parent container which contains the variable
+     */
     private void variable( HashMap<String, Expression> variables, FormattableContainer currentRule ) {
         StringBuilder builder = cachesBuilder;
         builder.append( '@' );
@@ -396,8 +411,10 @@ class LessParser implements FormattableContainer {
 
     /**
      * Parse and handle an <code>@import</code> directive.
+     * 
      * @param currentRule current container. This can be the root or a rule.
-     * @param name the content of the directive like a file name and keywords 
+     * @param name the content of the directive like a file name and keywords
+     * @throws LessException if any parsing error occurred
      */
     private void importFile( FormattableContainer currentRule, final String name ) {
         if( currentRule != this ) {
@@ -536,12 +553,26 @@ class LessParser implements FormattableContainer {
         }
     }
 
+    /**
+     * Create a rule and parse the content of an block.
+     * 
+     * @param selector the selectors
+     * @param params the parameters if it is a mxin.
+     * @param guard an optional guard expression
+     * @return the rule
+     */
+    @Nonnull
     private Rule rule( String selector, Operation params, Expression guard ) {
         Rule rule = new Rule( reader, selector, params, guard );
         parseRule( rule );
         return rule;
     }
-    
+
+    /**
+     * Parse the content of an block.
+     * 
+     * @param rule the container for the content
+     */
     private void parseRule( Rule rule ) {
         ruleStack.add( rule );
         for( ;; ) {
@@ -627,6 +658,12 @@ class LessParser implements FormattableContainer {
         }
     }*/
 
+    /**
+     * Parse the next expression.
+     * 
+     * @param leftOperator the operator on the left side or 0 if this is the first expression.
+     * @return the expression or null if it an empty function parameter list like ()
+     */
     private Expression parseExpression( char leftOperator ) {
         StringBuilder builder = cachesBuilder;
         Expression left = null;
@@ -742,6 +779,7 @@ class LessParser implements FormattableContainer {
                                     back( ch2 );
                             }
                             break;
+                        default:
                     }
                     wasWhite = false;
                     if( left == null ) {
@@ -871,7 +909,13 @@ class LessParser implements FormattableContainer {
             }
         }
     }
-        
+
+    /**
+     * Parse a parameter list for a function.
+     * 
+     * @return the operation
+     */
+    @Nonnull
     Operation parseParameterList() {
         Expression left = null;
         char ch;
@@ -895,7 +939,13 @@ class LessParser implements FormattableContainer {
         }
         return new Operation( reader, left, ',' );
     }
-    
+
+    /**
+     * Read a quoted string.
+     * 
+     * @param quote the quote character.
+     * @return the string with quotes
+     */
     private String readQuote( char quote ) {
         StringBuilder builder = cachesBuilder;
         builder.setLength( 0 );
@@ -913,6 +963,11 @@ class LessParser implements FormattableContainer {
         }
     }
 
+    /**
+     * Parse the parameter of an "url" function which has some curious fallbacks.
+     * 
+     * @return the parameter of the function
+     */
     private Operation parseUrlParam() {
         StringBuilder builder = cachesBuilder;
         builder.setLength( 0 );
@@ -955,6 +1010,8 @@ class LessParser implements FormattableContainer {
      * 
      * @param left
      *            the left, can be null
+     * @param operator
+     *            the expression operation
      * @param right
      *            the right, can not be null
      * @return the resulting expression
@@ -976,6 +1033,13 @@ class LessParser implements FormattableContainer {
         return op;
     }
 
+    /**
+     * Create an expression from the given atomic string.
+     * 
+     * @param str the expression like a number, color, variable, string, etc
+     * @return the expression
+     */
+    @Nonnull
     private Expression buildExpression( String str ) {
         switch( str.charAt( 0 ) ) {
             case '@':

@@ -89,10 +89,10 @@ class ColorUtils {
 
     /**
      * Create a color from rgba values
-     * @param r red in range of 0 to 0xFFFF
-     * @param g green in range of 0 to 0xFFFF
-     * @param b blue in range of 0 to 0xFFFF
-     * @param a alpha in range of 0 to 0xFFFF
+     * @param r red in range of 0 to 255.0
+     * @param g green in range of 0 to 255.0
+     * @param b blue in range of 0 to 255.0
+     * @param a alpha in range of 0.0 to 1.0
      * @return color value as long
      */
     static double rgba( double r, double g, double b, double a ) {
@@ -192,7 +192,14 @@ class ColorUtils {
         return colorDigit( (Double.doubleToRawLongBits( color ) & 0xFFFF) / 256.0 ); 
     }
 
-    private static double hsla_hue(double h, double m1, double m2) {
+    /**
+     * Calculate a single color channel of the HSLA function
+     * @param h hue value
+     * @param m1 value 1 in range of 0.0 to 1.0
+     * @param m2 value 2 in range of 0.0 to 1.0
+     * @return channel value in range of 0.0 to 1.0
+     */
+    private static double hslaHue(double h, double m1, double m2) {
         h = h < 0 ? h + 1 : (h > 1 ? h - 1 : h);
         if      (h * 6 < 1) { return m1 + (m2 - m1) * h * 6; }
         else if (h * 2 < 1) { return m2; }
@@ -207,7 +214,7 @@ class ColorUtils {
      *            a HSL value
      * @return a color as long
      */
-    static double hsla (HSL hsl) {
+    static double hsla( HSL hsl ) {
         return hsla(hsl.h, hsl.s, hsl.l, hsl.a);
     }
 
@@ -232,9 +239,9 @@ class ColorUtils {
         double m2 = l <= 0.5 ? l * (s + 1) : l + s - l * s;
         double m1 = l * 2 - m2;
 
-        return rgba( hsla_hue(h + 1.0/3, m1, m2) * 255,
-                     hsla_hue(h        , m1, m2) * 255,
-                     hsla_hue(h - 1.0/3, m1, m2) * 255,
+        return rgba( hslaHue(h + 1.0/3, m1, m2) * 255,
+                     hslaHue(h        , m1, m2) * 255,
+                     hslaHue(h - 1.0/3, m1, m2) * 255,
                      a);
     }
 
@@ -540,6 +547,7 @@ class ColorUtils {
      * @param longDigit2 right digit
      * @param op blending operation
      * @return resulting color digit
+     * @throws IllegalArgumentException if the operation is unknown
      */
     private static long colorBlendingDigit( long longDigit1, long longDigit2, int op ) {
         switch( op ) {
