@@ -76,6 +76,13 @@ class ColorUtils {
         return new HSL( h * 360, s, l, a );
     }
 
+    /**
+     * Limit the value between 0.0 and 1.0
+     * 
+     * @param val
+     *            the value
+     * @return the limited value
+     */
     static double clamp( double val ) {
         return Math.min( 1, Math.max( 0, val ) );
     }
@@ -86,20 +93,51 @@ class ColorUtils {
      * @param g green in range of 0 to 0xFFFF
      * @param b blue in range of 0 to 0xFFFF
      * @param a alpha in range of 0 to 0xFFFF
-     * @return argb value
+     * @return color value as long
      */
     static double rgba( double r, double g, double b, double a ) {
         return Double.longBitsToDouble( Math.round( a * 0xFFFF ) << 48 | (colorLargeDigit(r) << 32) | (colorLargeDigit(g) << 16) | colorLargeDigit(b) );
     }
 
+    /**
+     * Create an color value.
+     * 
+     * @param r
+     *            red in range from 0 to 255
+     * @param g
+     *            green in range from 0 to 255
+     * @param b
+     *            blue in range from 0 to 255
+     * @param a
+     *            alpha in range from 0.0 to 1.0
+     * @return color value as long
+     */
     static double rgba( int r, int g, int b, double a ) {
         return Double.longBitsToDouble( Math.round( a * 0xFFFF ) << 48 | (colorLargeDigit(r) << 32) | (colorLargeDigit(g) << 16) | colorLargeDigit(b) );
     }
 
+    /**
+     * Create an color value.
+     * 
+     * @param r
+     *            red in range from 0 to 255
+     * @param g
+     *            green in range from 0 to 255
+     * @param b
+     *            blue in range from 0 to 255
+     * @return color value as long
+     */
     static double rgb( int r, int g, int b ) {
         return Double.longBitsToDouble( Expression.ALPHA_1 | (colorLargeDigit(r) << 32) | (colorLargeDigit(g) << 16) | colorLargeDigit(b) );
     }
 
+    /**
+     * Convert an color value as long into integer color value
+     * 
+     * @param color
+     *            color value as long
+     * @return color value as int
+     */
     static int argb( double color ) {
         long value = Double.doubleToRawLongBits( color );
         int result = colorDigit( ((value >>> 48)) / 256.0 ) << 24;
@@ -109,19 +147,47 @@ class ColorUtils {
         return result;
     }
 
+    /**
+     * Get the alpha value from a color value
+     * 
+     * @param color
+     *            color value as long
+     * @return the alpha in the range 0.0 to 1.0
+     */
     static double alpha( double color ) {
         double value = (Double.doubleToRawLongBits( color ) >>> 48) / (double)0XFFFF;
         return Math.round( value * 10000 ) / 10000.0;
     }
 
+    /**
+     * Get the red value from a color value
+     * 
+     * @param color
+     *            color value as long
+     * @return the alpha in the range 0 to 255
+     */
     static int red( double color ) {
         return colorDigit( ((Double.doubleToRawLongBits( color ) >> 32) & 0xFFFF) / 256.0 ); 
     }
 
+    /**
+     * Get the green value from a color value
+     * 
+     * @param color
+     *            color value as long
+     * @return the alpha in the range 0 to 255
+     */
     static int green( double color ) {
         return colorDigit( ((Double.doubleToRawLongBits( color ) >> 16 & 0xFFFF)) / 256.0 ); 
     }
 
+    /**
+     * Get the blue value from a color value
+     * 
+     * @param color
+     *            color value as long
+     * @return the alpha in the range 0 to 255
+     */
     static int blue( double color ) {
         return colorDigit( (Double.doubleToRawLongBits( color ) & 0xFFFF) / 256.0 ); 
     }
@@ -134,10 +200,30 @@ class ColorUtils {
         else                { return m1; }
     }
 
+    /**
+     * Create a color value.
+     * 
+     * @param hsl
+     *            a HSL value
+     * @return a color as long
+     */
     static double hsla (HSL hsl) {
         return hsla(hsl.h, hsl.s, hsl.l, hsl.a);
     }
 
+    /**
+     * Create a color value.
+     * 
+     * @param h
+     *            hue value
+     * @param s
+     *            saturation
+     * @param l
+     *            lightness
+     * @param a
+     *            alpha
+     * @return a color value as long
+     */
     static double hsla( double h, double s, double l, double a ) {
 
         h = (h % 360) / 360;
@@ -152,6 +238,13 @@ class ColorUtils {
                      a);
     }
 
+    /**
+     * The less function "luminance".
+     * 
+     * @param color
+     *            a color value as long
+     * @return a value in the range from 0.0 to 1.0
+     */
     static double luminance( double color ) {
         long argb = Double.doubleToRawLongBits( color );
         double r = ((argb >> 32) & 0xFFFF) / (double)0xFF00;
@@ -160,6 +253,13 @@ class ColorUtils {
         return (0.2126 * r) + (0.7152 * g) + (0.0722 * b);
     }
 
+    /**
+     * The less function "luma".
+     * 
+     * @param color
+     *            a color value as long
+     * @return a value in the range from 0.0 to 1.0
+     */
     static double luma( double color ) {
         long argb = Double.doubleToRawLongBits( color );
         double r = ((argb >> 32) & 0xFFFF) / (double)0xFF00;
@@ -173,6 +273,19 @@ class ColorUtils {
         return 0.2126 * r + 0.7152 * g + 0.0722 * b;
     }
 
+    /**
+     * The less function "contrast".
+     * 
+     * @param color
+     *            a color value as long
+     * @param dark
+     *            a designated dark color
+     * @param light
+     *            a designated light color
+     * @param threshold
+     *            percentage 0-100% specifying where the transition from "dark" to "light" is
+     * @return a color value as long
+     */
     static double contrast( double color, double dark, double light, double threshold ) {
         //Figure out which is actually light and dark!
         if( luma( dark ) > luma( light ) ) {
@@ -230,6 +343,19 @@ class ColorUtils {
                     { 3, 1, 0 }, //
                     { 0, 1, 2 }           }; //
 
+    /**
+     * Create a color value.
+     * 
+     * @param hue
+     *            hue value
+     * @param saturation
+     *            saturation
+     * @param value
+     *            the value
+     * @param alpha
+     *            alpha
+     * @return a color value as long
+     */
     static double hsva( double hue, double saturation, double value, double alpha ) {
         hue = ((hue % 360) / 360) * 360;
 
@@ -451,6 +577,13 @@ class ColorUtils {
         }
     }
 
+    /**
+     * Limit a value in the range 0 to 255.
+     * 
+     * @param value
+     *            the color channel digit
+     * @return the limited value
+     */
     static int colorDigit( double value ) {
         if( value >= 255 ) {
             return 255;
@@ -461,6 +594,13 @@ class ColorUtils {
         }
     }
 
+    /**
+     * Limit a value in the range 0 to 65535 (0xFFFF).
+     * 
+     * @param value
+     *            the color channel digit in the range 0.0 to 256.0
+     * @return the limited value
+     */
     private static long colorLargeDigit( double value ) {
         value *= 0x100;
         if( value >= 0xFFFF ) {
