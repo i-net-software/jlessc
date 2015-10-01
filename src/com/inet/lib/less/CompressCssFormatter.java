@@ -44,7 +44,6 @@ class CompressCssFormatter extends CssFormatter {
     /**
      * Do nothing.
      * {@inheritDoc}
-     * @return 
      */
     @Override
     CssFormatter space() {
@@ -54,7 +53,6 @@ class CompressCssFormatter extends CssFormatter {
     /**
      * Do nothing.
      * {@inheritDoc}
-     * @return 
      */
     @Override
     CssFormatter newline() {
@@ -71,7 +69,6 @@ class CompressCssFormatter extends CssFormatter {
 
     /**
      * {@inheritDoc}
-     * @return 
      */
     @Override
     CssFormatter comment( String msg ) {
@@ -85,7 +82,6 @@ class CompressCssFormatter extends CssFormatter {
     /**
      * Write a 3 digit color definition if possible.
      * {@inheritDoc}
-     * @return 
      */
     @Override
     CssFormatter appendColor( double color, String hint ) {
@@ -111,7 +107,6 @@ class CompressCssFormatter extends CssFormatter {
     /**
      * Remove units if value is zero.
      * {@inheritDoc}
-     * @return 
      */
     @Override
     CssFormatter appendValue( double value, String unit ) {
@@ -148,7 +143,6 @@ class CompressCssFormatter extends CssFormatter {
 
     /**
      * {@inheritDoc}
-     * @return 
      */
     @Override
     CssFormatter startBlock( String[] selectors ) {
@@ -167,7 +161,6 @@ class CompressCssFormatter extends CssFormatter {
 
     /**
      * {@inheritDoc}
-     * @return 
      */
     @Override
     CssFormatter endBlock() {

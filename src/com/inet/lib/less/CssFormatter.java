@@ -146,9 +146,13 @@ class CssFormatter implements Cloneable {
     }
 
     /**
-     * Create a new formatter for a single rule with optional output. 
-     * @param output optional target
+     * Create a new formatter for a single rule with optional output.
+     * 
+     * @param output
+     *            optional target
      * @return a new formatter
+     * @throws LessException
+     *             if any error occur.
      */
     private CssFormatter copy( @Nullable StringBuilder output ) {
         try {
@@ -706,10 +710,14 @@ class CssFormatter implements Cloneable {
     }
 
     /**
-     * Append a property to the output like:
-     * name: value;
-     * @param name the name
-     * @param value the value
+     * Append a property to the output like: name: value;
+     * 
+     * @param name
+     *            the name
+     * @param value
+     *            the value
+     * @throws LessException
+     *             if write properties in the root
      */
     void appendProperty( @Nonnull String name, @Nonnull Expression value ) {
         if( output == null ) {
