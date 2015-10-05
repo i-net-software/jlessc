@@ -42,7 +42,7 @@ class Operation extends Expression {
     
     private int                         type;
 
-    private static final HashMap<String, HashMap<String, Double>> unitConversions = new HashMap<>();
+    private static final HashMap<String, HashMap<String, Double>> UNIT_CONVERSIONS = new HashMap<>();
     static {
         HashMap<String, Double> length = new HashMap<>();
         putConvertion( length, "m", 1 );
@@ -64,31 +64,50 @@ class Operation extends Expression {
         putConvertion( angle, "turn", 1 );
     }
 
+    /**
+     * Helper for creating static unit conversions.
+     * 
+     * @param group the unit group like length, duration or angles. Units of one group can convert in another.
+     * @param unit the unit name
+     * @param factor the convert factor
+     */
     private static void putConvertion( HashMap<String, Double> group, String unit, double factor ) {
-        unitConversions.put(unit, group );
+        UNIT_CONVERSIONS.put(unit, group );
         group.put( unit, factor );
     }
 
-    Operation( LessObject reader, Expression left, char operator ) {
-        this( reader, operator );
+    /**
+     * Create a new instance.
+     * 
+     * @param obj another LessObject with parse position.
+     * @param left left operand
+     * @param operator the operator like +, -, *, etc.
+     */
+    Operation( LessObject obj, Expression left, char operator ) {
+        this( obj, operator );
         if( left != null ) {
             this.operands.add( left );
         }
     }
 
     /**
-     * Empty parameter list
+     * Create a new instance with an empty parameter list.
+     * 
+     * @param obj another LessObject with parse position.
+     * @param operator the operator like +, -, *, etc.
      */
-    Operation( LessObject reader, char operator ) {
-        super( reader, String.valueOf( operator ) );
+    Operation( LessObject obj, char operator ) {
+        super( obj, String.valueOf( operator ) );
         this.operator = operator;
     }
 
     /**
-     * Empty parameter list
+     * Create a new instance with an empty parameter list and a comma as operation.
+     * 
+     * @param obj another LessObject with parse position.
      */
-    Operation( LessObject reader ) {
-        super( reader, "," );
+    Operation( LessObject obj ) {
+        super( obj, "," );
         this.operator = ',';
     }
 
@@ -112,12 +131,18 @@ class Operation extends Expression {
 
     /**
      * Add the next operand. It must use the same operator like this operation.
+     * 
      * @param right the next operand
      */
     void addOperand( Expression right ) {
         this.operands.add( right );
     }
 
+    /**
+     * Add an operand on the top position to the operand list.
+     * 
+     * @param left operand the new operand
+     */
     void addLeftOperand( Expression left ) {
         this.operands.add( 0, left );
     }
@@ -149,6 +174,11 @@ class Operation extends Expression {
         return type;
     }
 
+    /**
+     * Get the highest data type of different operands
+     * @param formatter current formatter
+     * @return the data type
+     */
     private int maxOperadType( CssFormatter formatter ) {
         int dataType = operands.get( 0 ).getDataType( formatter );
         for( int i = 1; i < operands.size(); i++ ) {
@@ -251,18 +281,20 @@ class Operation extends Expression {
 
     /**
      * Calculate the factor between 2 units.
+     * 
      * @param leftUnit left unit
      * @param rightUnit right unit
      * @param fail true, should be fail if units incompatible; false, return 1 is incompatible
      * @return the factor between the 2 units.
+     * @throws LessException if unit are incompatible and fail is true
      */
     static double unitFactor( String leftUnit, String rightUnit, boolean fail ) {
         if( leftUnit.length() == 0 || rightUnit.length() == 0 || leftUnit.equals( rightUnit ) ) {
             return 1;
         }
-        HashMap<String, Double> leftGroup = unitConversions.get( leftUnit );
+        HashMap<String, Double> leftGroup = UNIT_CONVERSIONS.get( leftUnit );
         if( leftGroup != null ) {
-            HashMap<String, Double> rightGroup = unitConversions.get( rightUnit );
+            HashMap<String, Double> rightGroup = UNIT_CONVERSIONS.get( rightUnit );
             if( leftGroup == rightGroup ) {
                 return leftGroup.get( leftUnit ) / leftGroup.get( rightUnit );
             }
@@ -305,6 +337,13 @@ class Operation extends Expression {
         return value;
     }
 
+    /**
+     * Calculate the number value of two operands if possible.
+     * 
+     * @param left the left
+     * @param right the right
+     * @return the result.
+     */
     private double doubleValue( double left, double right ) {
         switch( operator ) {
             case '+':
@@ -320,24 +359,48 @@ class Operation extends Expression {
         }
     }
 
+    /**
+     * Calculate a color on left with a number on the right side. The calculation occur for every color channel.
+     * 
+     * @param color the color
+     * @param right the right
+     * @return color value as long
+     */
     private double doubleValueLeftColor( double color, double right ) {
         return rgba( doubleValue( red( color ), right ), //
                         doubleValue( green( color ), right ), //
                         doubleValue( blue( color ), right ), 1 );
     }
 
+    /**
+     * Calculate a number on left with a color on the right side. The calculation occur for every color channel.
+     * 
+     * @param left the left
+     * @param color the color
+     * @return color value as long
+     */
     private double doubleValueRightColor( double left, double color ) {
         return rgba( doubleValue( left, red( color ) ), //
                         doubleValue( left, green( color ) ), //
                         doubleValue( left, blue( color ) ), 1 );
     }
 
+    /**
+     * Calculate two colors. The calculation occur for every color channel.
+     * 
+     * @param left the left color
+     * @param right the right color
+     * @return color value as long
+     */
     private double doubleValue2Colors( double left, double right ) {
         return rgba( doubleValue( red( left ), red( right ) ), //
                         doubleValue( green( left ), green( right ) ), //
                         doubleValue( blue( left ), blue( right ) ), 1 );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean booleanValue(CssFormatter formatter) {
         Expression leftOp = operands.get( 0 );
@@ -572,6 +635,9 @@ class Operation extends Expression {
         return 0;
     }
 
+    /**
+     * Helper class to count the resulting unit of an operation with different units
+     */
     private static class Unit {
         private int          numerator;
 
@@ -579,10 +645,18 @@ class Operation extends Expression {
 
         private final String unit;
 
+        /**
+         * Create a new instance.
+         * @param unit the unit to count.
+         */
         Unit( String unit ) {
             this.unit = unit;
         }
 
+        /**
+         * The resulting usage count of the unit.
+         * @return the count
+         */
         int useCount() {
             return numerator - denominator;
         }

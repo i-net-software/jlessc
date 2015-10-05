@@ -279,6 +279,12 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         formatter.endBlock();
     }
 
+    /**
+     * Append the mixins of this rule to current output.
+     * 
+     * @param parentSelector the resulting parent selector
+     * @param formatter current formatter
+     */
     void appendMixinsTo( String[] parentSelector, CssFormatter formatter ) {
         for( Formattable prop : properties ) {
             switch( prop.getType()) {
@@ -293,6 +299,11 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         }
     }
 
+    /**
+     * Append the properties of the rule.
+     * 
+     * @param formatter current formatter
+     */
     void appendPropertiesTo( CssFormatter formatter ) {
         for( Formattable prop : properties ) {
             switch( prop.getType() ) {
@@ -397,6 +408,11 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         }
     }
 
+    /**
+     * The selectors of the rule.
+     * 
+     * @return the selectors
+     */
     String[] getSelectors() {
         return selectors;
     }
@@ -409,6 +425,10 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         return variables;
     }
 
+    /**
+     * get the subrules if there any.
+     * @return the rules or an empty list.
+     */
     List<Rule> getSubrules() {
         return subrules;
     }
