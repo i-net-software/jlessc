@@ -458,6 +458,8 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
 
     /**
      * String only for debugging.
+     * 
+     * @return the debug info
      */
     @Override
     public String toString() {
