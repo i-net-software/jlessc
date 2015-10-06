@@ -305,6 +305,9 @@ class Operation extends Expression {
         return 1;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double doubleValue( CssFormatter formatter ) {
         Expression leftOp = operands.get( 0 );
@@ -611,6 +614,12 @@ class Operation extends Expression {
         return builder.toString();
     }
 
+    /**
+     * The level of the operation. This is used to detect if the left or right operator has the higher level.
+     * 
+     * @param operator the operator to test
+     * @return an abstract level, the higher the more significant
+     */
     static int level( char operator ) {
         switch( operator ) {
             case ',':
