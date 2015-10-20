@@ -603,6 +603,14 @@ class Operation extends Expression {
      * {@inheritDoc}
      */
     @Override
+    boolean isImportant() {
+        return super.isImportant() || operands.get( operands.size() -1 ) .isImportant();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         for( int i = 0; i < operands.size(); i++ ) {

@@ -732,7 +732,7 @@ class CssFormatter implements Cloneable {
         } else {
             value.appendTo( this );
         }
-        if( important ) {
+        if( important || value.isImportant() ) {
             output.append( " !important" );
         }
         semicolon();

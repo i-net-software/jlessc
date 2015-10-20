@@ -878,6 +878,31 @@ class LessParser implements FormattableContainer {
                 case '`':
                     left = concat( left, ' ', new JavaScriptExpression( reader, readQuote( ch ) ) );
                     break;
+                case '!':
+                    if( builder.length() > 0 ) {
+                        left = concat( left, ' ', buildExpression( trim( builder ) ) );
+                    }
+                    if( left != null ) {
+                        for( ;; ) {
+                            ch = read();
+                            switch( ch ) {
+                                case ';':
+                                case ')':
+                                case '}':
+                                    str = trim( builder );
+                                    if( str.equals( "important" ) ) {
+                                        left.setImportant();
+                                        back( ch );
+                                    } else {
+                                        left = concat( left, ' ', buildExpression( '!' + str ) );
+                                    }
+                                    return left;
+                                default:
+                                    builder.append( ch );
+                            }
+                        }
+                    }
+                    //$FALL-THROUGH$ 
                 default:
                     boolean isWhite = Character.isWhitespace( ch );
                     if( isWhite ) {
