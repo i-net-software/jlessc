@@ -58,6 +58,8 @@ abstract class Expression extends LessObject implements Formattable {
 
     private String str;
 
+    private boolean important;
+
     /**
      * Create a new instance.
      * 
@@ -156,7 +158,7 @@ abstract class Expression extends LessObject implements Formattable {
      *            the CCS target
      * @return the value
      */
-    public String stringValue( CssFormatter formatter ) {
+    String stringValue( CssFormatter formatter ) {
         try {
             formatter.addOutput();
             appendTo( formatter );
@@ -164,6 +166,21 @@ abstract class Expression extends LessObject implements Formattable {
         } catch( Exception ex ) {
             throw createException( ex );
         }
+    }
+
+    /**
+     * If this expression is mark as important
+     * @return true, if important
+     */
+    boolean isImportant() {
+        return important;
+    }
+
+    /**
+     * Enable the important flag.
+     */
+    void setImportant() {
+        important = true;
     }
 
     /**
