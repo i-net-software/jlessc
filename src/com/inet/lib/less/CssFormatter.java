@@ -629,7 +629,7 @@ class CssFormatter implements Cloneable {
             output = null;
             StringBuilder nextOutput = null;
             final List<CssOutput> results = state.results;
-            if( results.size() > 0 ) {
+            if( results.size() > 0 && !"@font-face".equals( selectors[0] ) ) {
                 CssOutput cssOutput = results.get( results.size() - 1 );
                 if( cssOutput.getClass() == CssRuleOutput.class ) {
                     CssRuleOutput ruleOutput = (CssRuleOutput)cssOutput;
