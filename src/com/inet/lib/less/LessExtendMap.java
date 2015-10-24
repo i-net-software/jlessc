@@ -79,40 +79,17 @@ class LessExtendMap {
 
     /**
      * Add to the given selectors all possible extends and return the resulting selectors.
-     * @param selectors current selectors
-     * @param isReference if the current rul is in a less file which was import with "reference" keyword
+     * 
+     * @param selectors
+     *            current selectors
+     * @param isReference
+     *            if the current rule is in a less file which was import with "reference" keyword
      * @return the selectors concatenate with extends or the original if there are no etends.
      */
     public String[] concatenateExtends( String[] selectors, boolean isReference ) {
         selectorList.clear();
         for( String selector : selectors ) {
-            List<String[]> list = exact.get( selector );
-            if( list != null ) {
-                for( String[] lessExtend : list ) {
-                    for( String sel : lessExtend ) {
-                        selectorList.add( sel );
-                    }
-                }
-            }
-            SelectorTokenizer tokenizer = new SelectorTokenizer( selector );
-            do {
-                String token = tokenizer.next();
-                if( token == null ) {
-                    break;
-                }
-                List<LessExtendResult> results = all.get( token );
-                if( results != null ) {
-                    for( LessExtendResult lessExtend : results ) {
-                        for( String extendingSelector : lessExtend.getExtendingSelectors() ) {
-                            if( selector.contains( extendingSelector ) ) {
-                                for( String replace : lessExtend.getSelectors() ) {
-                                    selectorList.add( selector.replace( extendingSelector, replace ) );
-                                }
-                            }
-                        }
-                    }
-                }
-            } while( true );
+            concatenateExtendsRecursive( selector, isReference );
         }
 
         if( isReference ) {
@@ -120,12 +97,62 @@ class LessExtendMap {
         }
 
         if( selectorList.size() > 0 ) {
-            int off = selectors.length;
-            selectors = Arrays.copyOf( selectors, off + selectorList.size() );
-            for( String str : selectorList ) {
-                selectors[off++] = str;
+            for( String selector : selectors ) {
+                selectorList.remove( selector ); // remove duplicates
+            }
+            if( selectorList.size() > 0 ) {
+                int off = selectors.length;
+                selectors = Arrays.copyOf( selectors, off + selectorList.size() );
+                for( String str : selectorList ) {
+                    selectors[off++] = str;
+                }
             }
         }
         return selectors;
+    }
+
+    /**
+     * Add to the given selector all possible extends to the internal selectorList. This method is call recursive.
+     * 
+     * @param selector
+     *            current selector
+     * @param isReference
+     *            if the current rule is in a less file which was import with "reference" keyword
+     */
+    private void concatenateExtendsRecursive( String selector, boolean isReference ) {
+        List<String[]> list = exact.get( selector );
+        if( list != null ) {
+            for( String[] lessExtend : list ) {
+                for( String sel : lessExtend ) {
+                    boolean needRecursion = selectorList.add( sel );
+                    if( needRecursion ) { //only if there are new entries then we need to try a recursion, else we have a stack overflow
+                        concatenateExtendsRecursive( sel, isReference );
+                    }
+                }
+            }
+        }
+        SelectorTokenizer tokenizer = new SelectorTokenizer( selector );
+        do {
+            String token = tokenizer.next();
+            if( token == null ) {
+                break;
+            }
+            List<LessExtendResult> results = all.get( token );
+            if( results != null ) {
+                for( LessExtendResult lessExtend : results ) {
+                    for( String extendingSelector : lessExtend.getExtendingSelectors() ) {
+                        if( selector.contains( extendingSelector ) ) {
+                            for( String replace : lessExtend.getSelectors() ) {
+                                String replacedSelector = selector.replace( extendingSelector, replace );
+                                boolean needRecursion = selectorList.add( replacedSelector );
+                                if( needRecursion && !replacedSelector.contains( extendingSelector ) ) {
+                                    concatenateExtendsRecursive( replacedSelector, isReference );
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } while( true );
     }
 }
