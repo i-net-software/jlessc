@@ -227,7 +227,7 @@ class LessParser implements FormattableContainer {
                     }
                     if( selector != null ) {
                         if( selector.contains( ":extend(" ) ) {
-                            currentRule.add( new LessExtend( reader, selector ) );
+                            LessExtend.addLessExtendsTo( currentRule, reader, selector );
                         } else {
                             Mixin mixin = new Mixin( reader, selector, params, mixins );
                             currentRule.add( mixin );
@@ -269,9 +269,7 @@ class LessParser implements FormattableContainer {
                         break;
                     }
                     if( selector.contains( ":extend(" ) ) {
-                        LessExtend lessExtend = new LessExtend( reader, selector );
-                        currentRule.add( lessExtend );
-                        selector = lessExtend.getSelector();
+                        selector = LessExtend.addLessExtendsTo( currentRule, reader, selector );
                     }
                     Rule rule = rule( selector, expr, guard );
                     currentRule.add( rule );
