@@ -57,23 +57,19 @@ class LessExtendMap {
             //TODO handling of scope
             return;
         }
-        String[] extendingSelectors = lessExtend.getExtendingSelectors();
+        String extendingSelector = lessExtend.getExtendingSelector();
         if( lessExtend.isAll() ) {
-            LessExtendResult extend = new LessExtendResult( mainSelector, extendingSelectors );
-            for( String selector : extendingSelectors ) {
-                SelectorTokenizer tokenizer = new SelectorTokenizer( selector );
-                do {
-                    String token = tokenizer.next();
-                    if( token == null ) {
-                        break;
-                    }
-                    all.add( token, extend );
-                } while( true );
-            }
+            LessExtendResult extend = new LessExtendResult( mainSelector, extendingSelector );
+            SelectorTokenizer tokenizer = new SelectorTokenizer( extendingSelector );
+            do {
+                String token = tokenizer.next();
+                if( token == null ) {
+                    break;
+                }
+                all.add( token, extend );
+            } while( true );
         } else {
-            for( String selector : extendingSelectors ) {
-                exact.add( selector, mainSelector );
-            }
+            exact.add( extendingSelector, mainSelector );
         }
     }
 
@@ -140,14 +136,13 @@ class LessExtendMap {
             List<LessExtendResult> results = all.get( token );
             if( results != null ) {
                 for( LessExtendResult lessExtend : results ) {
-                    for( String extendingSelector : lessExtend.getExtendingSelectors() ) {
-                        if( selector.contains( extendingSelector ) ) {
-                            for( String replace : lessExtend.getSelectors() ) {
-                                String replacedSelector = selector.replace( extendingSelector, replace );
-                                boolean needRecursion = selectorList.add( replacedSelector );
-                                if( needRecursion && !replacedSelector.contains( extendingSelector ) ) {
-                                    concatenateExtendsRecursive( replacedSelector, isReference );
-                                }
+                    String extendingSelector = lessExtend.getExtendingSelector();
+                    if( selector.contains( extendingSelector ) ) {
+                        for( String replace : lessExtend.getSelectors() ) {
+                            String replacedSelector = selector.replace( extendingSelector, replace );
+                            boolean needRecursion = selectorList.add( replacedSelector );
+                            if( needRecursion && !replacedSelector.contains( extendingSelector ) ) {
+                                concatenateExtendsRecursive( replacedSelector, isReference );
                             }
                         }
                     }

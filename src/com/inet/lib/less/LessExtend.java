@@ -38,27 +38,55 @@ class LessExtend extends LessObject implements Formattable {
 
     private boolean  all;
 
-    private String[] extendingSelectors;
+    private String extendingSelector;
+
+    /**
+     * Parse the extendSelector,create the needed LessExtend objects and add it to the container.
+     * 
+     * @param container
+     *            the container that should add the created LessExtend
+     * @param obj
+     *            another LessObject with parse position.
+     * @param extendSelector
+     *            the completely selector like "foo:extends(bar all)"
+     * @return the base selector
+     */
+    static String addLessExtendsTo( FormattableContainer container, LessObject obj, String extendSelector ) {
+        int idx1 = extendSelector.indexOf( ":extend(" );
+        int idx2 = extendSelector.indexOf( ')', idx1 );
+        String selector = extendSelector.substring( 0, idx1 );
+        String[] baseSelector = new String[] { selector };
+        String params = extendSelector.substring( idx1 + 8, idx2 ).trim();
+
+        for( String param : params.split( "," ) ) {
+            boolean all = param.endsWith( " all" );
+            if( all ) {
+                param = param.substring( 0, param.length() - 4 ).trim();
+            }
+            container.add( new LessExtend( obj, baseSelector, param, all ) );
+        }
+        return selector;
+    }
 
     /**
      * Create a new instance.
-     * @param obj another LessObject with parse position.
-     * @param extendSelector the completely selector like "foo:extends(bar all)"
+     * 
+     * @param obj
+     *            another LessObject with parse position.
+     * @param baseSelector
+     *            the base selector as single size array.
+     * @param extendingSelector
+     *            selector to extends
+     * @param all
+     *            If keyword "all" was set
      */
-    LessExtend( LessObject obj, String extendSelector ) {
+    private LessExtend( LessObject obj, String[] baseSelector, String extendingSelector, boolean all ) {
         super( obj );
 
-        int idx1 = extendSelector.indexOf( ":extend(" );
-        int idx2 = extendSelector.indexOf( ')', idx1 );
-        String param = extendSelector.substring( idx1 + 8, idx2 ).trim();
-        all = param.endsWith( " all" );
-        if( all ) {
-            param = param.substring( 0, param.length() - 4 ).trim();
-        }
-        extendingSelectors = param.split( "," );
-
-        this.selector = extendSelector.substring( 0, idx1 );
-        baseSelector = new String[] { this.selector };
+        this.selector = baseSelector[0];
+        this.baseSelector = baseSelector;
+        this.extendingSelector = extendingSelector;
+        this.all = all;
     }
 
     /**
@@ -78,7 +106,7 @@ class LessExtend extends LessObject implements Formattable {
     }
 
     /**
-     * Get the base selectors as single size array.
+     * Get the base selector as single size array.
      * @return the selector
      */
     String[] getSelectors() {
@@ -86,11 +114,11 @@ class LessExtend extends LessObject implements Formattable {
     }
 
     /**
-     * Get the list of selectors to extends
-     * @return the selector list
+     * Get selector to extends.
+     * @return the selector
      */
-    String[] getExtendingSelectors() {
-        return extendingSelectors;
+    String getExtendingSelector() {
+        return extendingSelector;
     }
 
     /**
@@ -107,12 +135,7 @@ class LessExtend extends LessObject implements Formattable {
             builder.append( baseSelector[i] );
         }
         builder.append( ":extend(" );
-        for( int i=0; i<extendingSelectors.length; i++ ) {
-            if( i > 0 ) {
-                builder.append( ' ' );
-            }
-            builder.append( extendingSelectors[i] );
-        }
+        builder.append( extendingSelector );
         if( all ) {
             builder.append( " all" );
         }
