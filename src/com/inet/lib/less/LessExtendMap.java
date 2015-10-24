@@ -85,7 +85,7 @@ class LessExtendMap {
     public String[] concatenateExtends( String[] selectors, boolean isReference ) {
         selectorList.clear();
         for( String selector : selectors ) {
-            concatenateExtendsRecursive( selector, isReference );
+            concatenateExtendsRecursive( selector, isReference, selector );
         }
 
         if( isReference ) {
@@ -114,20 +114,23 @@ class LessExtendMap {
      *            current selector
      * @param isReference
      *            if the current rule is in a less file which was import with "reference" keyword
+     * @param allSelector
+     *            selector that should match with the "all" keyword. By default is this equals of the selector. Only on
+     *            recursion this is only the replaced part.
      */
-    private void concatenateExtendsRecursive( String selector, boolean isReference ) {
+    private void concatenateExtendsRecursive( String selector, boolean isReference, String allSelector ) {
         List<String[]> list = exact.get( selector );
         if( list != null ) {
             for( String[] lessExtend : list ) {
                 for( String sel : lessExtend ) {
                     boolean needRecursion = selectorList.add( sel );
                     if( needRecursion ) { //only if there are new entries then we need to try a recursion, else we have a stack overflow
-                        concatenateExtendsRecursive( sel, isReference );
+                        concatenateExtendsRecursive( sel, isReference, sel );
                     }
                 }
             }
         }
-        SelectorTokenizer tokenizer = new SelectorTokenizer( selector );
+        SelectorTokenizer tokenizer = new SelectorTokenizer( allSelector );
         do {
             String token = tokenizer.next();
             if( token == null ) {
@@ -142,7 +145,7 @@ class LessExtendMap {
                             String replacedSelector = selector.replace( extendingSelector, replace );
                             boolean needRecursion = selectorList.add( replacedSelector );
                             if( needRecursion && !replacedSelector.contains( extendingSelector ) ) {
-                                concatenateExtendsRecursive( replacedSelector, isReference );
+                                concatenateExtendsRecursive( replacedSelector, isReference, replace );
                             }
                         }
                     }
