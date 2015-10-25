@@ -4,3 +4,27 @@
     color3: #777777 ! important;
     color4: #333 + 1 !important;
 }
+
+// import for mixins with different syntax
+
+.imp0 {
+  .mixin! important;
+}
+.imp1 {
+  .mixin (1) !important;
+}
+.imp2 {
+  .mixin (2) ! important;
+}
+
+// ignore important in mixin name
+.imp3 {
+  .mixin_important(3);
+}
+
+.mixin (@a:0) {
+  a:@a;
+}
+.mixin_important (@a) {
+  a:@a !important;
+}
