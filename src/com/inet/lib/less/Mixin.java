@@ -52,9 +52,21 @@ class Mixin extends LessObject implements Formattable {
      */
     Mixin( LessObject obj, String name, Operation paramValues, HashMultimap<String,Rule> mixins ) {
         super( obj );
-        if( name.endsWith( "!important" ) ) {
-            important = true;
-            name = name.substring( 0, name.length() - 10 ).trim();
+        if( name.endsWith( "important" ) ) { // it can be "!importan" or "! important"
+            boolean importantTemp = false;
+            LOOP: for( int i = name.length() - 10; i >= 0; i-- ) {
+                switch( name.charAt( i ) ) {
+                    case ' ':
+                        break;
+                    case '!':
+                        importantTemp = true;
+                        name = name.substring( 0, i ).trim();
+                        break LOOP;
+                    default:
+                        break LOOP;
+                }
+            }
+            important = importantTemp;
         } else {
             important = false;
         }
