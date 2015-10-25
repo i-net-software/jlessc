@@ -76,8 +76,10 @@ class Mixin extends LessObject implements Formattable {
      */
     @Override
     public void appendTo( CssFormatter formatter ) {
-        formatter.setImportant( important );
         try {
+            if( important ) {
+                formatter.incImportant();
+            }
             for( MixinMatch match : getRules( formatter ) ) {
                 Rule rule = match.getRule();
                 formatter.addMixin( rule, match.getMixinParameters(), rule.getVariables() );
@@ -89,8 +91,11 @@ class Mixin extends LessObject implements Formattable {
             throw ex;
         } catch( StackOverflowError soe ) {
             throw createException( "Maximum call stack size exceeded in mixin: " + name, soe );
+        } finally {
+            if( important ) {
+                formatter.decImportant();
+            }
         }
-        formatter.setImportant( false );
     }
 
     /**
@@ -100,6 +105,9 @@ class Mixin extends LessObject implements Formattable {
      */
     void appendSubRules( String[] parentSelector, CssFormatter formatter ) {
         try {
+            if( important ) {
+                formatter.incImportant();
+            }
             for( MixinMatch match : getRules( formatter ) ) {
                 Rule rule = match.getRule();
                 formatter.addMixin( rule, match.getMixinParameters(), rule.getVariables() );
@@ -114,6 +122,10 @@ class Mixin extends LessObject implements Formattable {
         } catch( LessException ex ) {
             ex.addPosition( filename, line, column );
             throw ex;
+        } finally {
+            if( important ) {
+                formatter.decImportant();
+            }
         }
     }
 

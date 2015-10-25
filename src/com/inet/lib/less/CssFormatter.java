@@ -108,6 +108,8 @@ class CssFormatter implements Cloneable {
         private CssFormatter                                 header;
 
         private boolean                                      isReference;
+
+        private int                                          importantCount;
     }
 
     private String[] selectors;
@@ -121,8 +123,6 @@ class CssFormatter implements Cloneable {
     private StringBuilder                   output;
 
     private StringBuilder                   insets    = new StringBuilder();
-
-    private boolean                         important;
 
     private boolean                         inlineMode;
 
@@ -732,7 +732,7 @@ class CssFormatter implements Cloneable {
         } else {
             value.appendTo( this );
         }
-        if( important || value.isImportant() ) {
+        if( state.importantCount > 0 || value.isImportant() ) {
             output.append( " !important" );
         }
         semicolon();
@@ -766,12 +766,17 @@ class CssFormatter implements Cloneable {
     }
 
     /**
-     * Set the flag important.
-     * 
-     * @param important the new value
+     * Increment the important flag.
      */
-    void setImportant( boolean important ) {
-        this.important = important;
+    void incImportant() {
+        state.importantCount++;
+    }
+
+    /**
+     * Decrement the important flag.
+     */
+    void decImportant() {
+        state.importantCount--;
     }
 
     /**
