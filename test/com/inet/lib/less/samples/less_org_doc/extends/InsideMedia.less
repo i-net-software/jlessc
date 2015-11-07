@@ -1,0 +1,14 @@
+@media print {
+  .screenClass:extend(.selector) {} // extend inside media
+  .selector { // this will be matched - it is in the same media
+    color: black;
+  }
+}
+.selector { // ruleset on top of style sheet - extend ignores it
+  color: red;
+}
+@media screen {
+  .selector {  // ruleset inside another media - extend ignores it
+    color: blue;
+  }
+}

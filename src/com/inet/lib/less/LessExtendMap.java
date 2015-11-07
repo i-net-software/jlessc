@@ -48,14 +48,10 @@ class LessExtendMap {
      * @param mainSelector the selectors in which the extend is placed.
      */
     void add( LessExtend lessExtend, String[] mainSelector ) {
-        if( mainSelector == null ) {
+        if( mainSelector == null || mainSelector[0].startsWith( "@media" ) ) {
             mainSelector = lessExtend.getSelectors();
         } else {
             mainSelector = SelectorUtils.merge( mainSelector, lessExtend.getSelectors() );
-        }
-        if( mainSelector[0].startsWith( "@media" ) ) {
-            //TODO handling of scope
-            return;
         }
         String extendingSelector = lessExtend.getExtendingSelector();
         if( lessExtend.isAll() ) {

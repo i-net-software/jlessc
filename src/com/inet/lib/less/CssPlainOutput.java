@@ -48,4 +48,28 @@ class CssPlainOutput extends CssOutput {
     void appendTo( StringBuilder target, LessExtendMap lessExtends, CssFormatter formatter ) {
         target.append( output );
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    boolean hasContent(LessExtendMap lessExtends ) {
+        return output.length() > 0;
+    }
+
+    /**
+     * Get null
+     * @return ever null
+     */
+    String[] getSelectors() {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    StringBuilder getOutput() {
+        return output;
+    }
 }
