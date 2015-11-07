@@ -220,11 +220,11 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
                     if( block != formatter ) {
                         size0 = block.getOutputSize();
                     }
-                    block.startBlock( blockSelector );
-                    int size1 = block.getOutputSize();
-                    appendPropertiesTo( block );
-                    int size2 = block.getOutputSize();
-                    block.endBlock();
+                    CssFormatter block2 = block.startBlock( blockSelector );
+                    int size1 = block2.getOutputSize();
+                    appendPropertiesTo( block2 );
+                    int size2 = block2.getOutputSize();
+                    block2.endBlock();
                     int size3 = block.getOutputSize();
                     for( Formattable prop : properties ) {
                         if( prop instanceof Mixin ) {

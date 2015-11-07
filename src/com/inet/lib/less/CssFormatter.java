@@ -97,8 +97,6 @@ class CssFormatter implements Cloneable {
 
         private int                                          stackIdx;
 
-        private final LessExtendMap                          lessExtends      = new LessExtendMap();
-
         private int                                          rulesStackModCount;
 
         private final List<CssOutput>                        results          = new ArrayList<>();
@@ -112,7 +110,9 @@ class CssFormatter implements Cloneable {
         private int                                          importantCount;
     }
 
-    private String[] selectors;
+    private LessExtendMap                   lessExtends      = new LessExtendMap();
+
+    private CssOutput currentOutput;
 
     private final static char[]             DIGITS    = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
@@ -142,7 +142,7 @@ class CssFormatter implements Cloneable {
     CssFormatter() {
         state = new SharedState();
         state.header = copy( null );
-        state.results.add( new CssPlainOutput( state.header.output ) ); // header
+        state.results.add( currentOutput = new CssPlainOutput( state.header.output ) ); // header
     }
 
     /**
@@ -159,6 +159,7 @@ class CssFormatter implements Cloneable {
             CssFormatter formatter = (CssFormatter)clone();
             formatter.output = output == null ? state.pool.get() : output;
             formatter.insets = state.pool.get();
+            formatter.insets.append( insets );
             return formatter;
         } catch( CloneNotSupportedException ex ) {
             throw new LessException( ex );
@@ -191,7 +192,7 @@ class CssFormatter implements Cloneable {
 
         output = target;
         for( CssOutput result : state.results ) {
-            result.appendTo( target, state.lessExtends, this );
+            result.appendTo( target, lessExtends, this );
         }
     }
 
@@ -276,7 +277,7 @@ class CssFormatter implements Cloneable {
      * @param lessExtend the extend
      */
     void add( LessExtend lessExtend ) {
-        state.lessExtends.add( lessExtend, this.selectors );
+        lessExtends.add( lessExtend, this.currentOutput.getSelectors() );
     }
 
     /**
@@ -625,39 +626,56 @@ class CssFormatter implements Cloneable {
      * @return this
      */
     CssFormatter startBlock( String[] selectors ) {
+        final List<CssOutput> results = state.results;
         if( blockDeep == 0 ) {
             output = null;
-            StringBuilder nextOutput = null;
-            final List<CssOutput> results = state.results;
+            CssOutput nextOutput = null;
             if( results.size() > 0 && !"@font-face".equals( selectors[0] ) ) {
                 CssOutput cssOutput = results.get( results.size() - 1 );
-                if( cssOutput.getClass() == CssRuleOutput.class ) {
-                    CssRuleOutput ruleOutput = (CssRuleOutput)cssOutput;
-                    if( Arrays.equals( selectors, ruleOutput.getSelectors() ) ) {
-                        nextOutput = ruleOutput.getOutput();
-                    }
+                if( Arrays.equals( selectors, cssOutput.getSelectors() ) ) {
+                    nextOutput = cssOutput;
                 }
             }
-            CssFormatter block = copy( nextOutput );
-            block.incInsets();
-            block.selectors = selectors;
+            CssFormatter block;
             if( nextOutput == null ) {
-                results.add( new CssRuleOutput( selectors, block.output, state.isReference ) );
+                block = copy( null );
+                if( selectors[0].startsWith( "@media" ) ) {
+                    block.lessExtends = new LessExtendMap();
+                    nextOutput = new CssMediaOutput( selectors, block.output, state.isReference, block.lessExtends ); 
+                } else {
+                    nextOutput = new CssRuleOutput( selectors, block.output, state.isReference );
+                }
+                results.add( nextOutput );
+            } else {
+                block = copy( nextOutput.getOutput() );
             }
+            block.currentOutput = nextOutput;
+            block.incInsets();
             block.blockDeep++;
             return block;
         } else {
             if( selectors[0].startsWith( "@media" ) ) {
                 CssFormatter block = copy( null );
-                block.incInsets();
-                String[] sel = new String[]{ this.selectors[0] + " and " + selectors[0].substring( 6 ).trim() };
-                state.results.add( new CssRuleOutput( sel, block.output, state.isReference ) );
+                block.lessExtends = new LessExtendMap();
+                String[] sel = new String[]{ this.currentOutput.getSelectors()[0] + " and " + selectors[0].substring( 6 ).trim() };
+                block.currentOutput = new CssMediaOutput( sel, block.output, state.isReference, block.lessExtends );
+                results.add( block.currentOutput );
+                block.insets.setLength( 2 );
                 block.blockDeep = 1;
                 return block;
             } else {
-                blockDeep++;
-                startBlockImpl( selectors );
-                return this;
+                if( blockDeep == 1 && this.currentOutput.getClass() == CssMediaOutput.class ) {
+                    CssFormatter block = copy( null );
+                    block.incInsets();
+                    block.currentOutput = this.currentOutput;
+                    ((CssMediaOutput)this.currentOutput).startBlock( selectors, block.output );
+                    block.blockDeep++;
+                    return block;
+                } else {
+                    blockDeep++;
+                    startBlockImpl( selectors );
+                    return this;
+                }
             }
         }
     }
@@ -694,7 +712,13 @@ class CssFormatter implements Cloneable {
             insets = null;
             inlineMode = false;
         } else {
-            endBlockImpl();
+            if( blockDeep == 1 && currentOutput.getClass() == CssMediaOutput.class ) {
+                state.pool.free( insets );
+                insets = null;
+                inlineMode = false;
+            } else {
+                endBlockImpl();
+            }
         }
         return this;
     }
