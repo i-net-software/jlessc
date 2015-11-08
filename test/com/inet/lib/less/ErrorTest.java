@@ -39,4 +39,15 @@ public class ErrorTest {
             assertEquals( "Incompatible types", message.substring( 0, message.indexOf( '\n' ) ) );
         }
     }
+
+    /**
+     * test for a JIT error
+     * https://github.com/i-net-software/jlessc/issues/20
+     */
+    @Test
+    public void colorConst() {
+        for( int i = 0; i < 10000; i++ ) {
+            assertEquals( Integer.toString( i ), ".t{c:#d3d3d3}", Less.compile( null, ".t{c:lightgrey}", true ) );
+        }
+    }
 }
