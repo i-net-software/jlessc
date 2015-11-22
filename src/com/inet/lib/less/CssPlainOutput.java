@@ -58,7 +58,7 @@ class CssPlainOutput extends CssOutput {
     }
 
     /**
-     * Get null
+     * Get ever null for this type of CssOutput.
      * @return ever null
      */
     String[] getSelectors() {
