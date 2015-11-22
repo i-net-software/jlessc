@@ -1,3 +1,9 @@
+buildscript {
+    dependencies {
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:+'
+    }
+}
+
 plugins {
   id "com.moowork.node" version "0.9"
 }
@@ -54,6 +60,20 @@ test {
 	}
 }
 
+/****************************************
+ * Coverage
+ ****************************************/
+apply plugin: 'jacoco'
+apply plugin: 'com.github.kt3k.coveralls'
+
+jacocoTestReport {
+    tasks.coveralls.dependsOn it
+    reports {
+        xml.enabled = true  // coveralls plugin depends on xml format report
+        html.enabled = true
+    }
+}
+check.dependsOn tasks.coveralls
 
 /****************************************
  * Deploy to Maven
