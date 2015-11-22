@@ -108,15 +108,17 @@ class CssFormatter implements Cloneable {
         private boolean                                      isReference;
 
         private int                                          importantCount;
+
+        private LessExtendMap                                lessExtends = new LessExtendMap();
     }
 
-    private LessExtendMap                   lessExtends      = new LessExtendMap();
+    private final SharedState               state = new SharedState();
+
+    private LessExtendMap                   lessExtends = state.lessExtends;
 
     private CssOutput currentOutput;
 
     private final static char[]             DIGITS    = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-
-    private final SharedState               state;
 
     private final ArrayDeque<StringBuilder> outputs   = new ArrayDeque<>();
 
@@ -140,7 +142,6 @@ class CssFormatter implements Cloneable {
      * Create a initial instance.
      */
     CssFormatter() {
-        state = new SharedState();
         state.header = copy( null );
         state.results.add( currentOutput = new CssPlainOutput( state.header.output ) ); // header
     }
@@ -640,7 +641,7 @@ class CssFormatter implements Cloneable {
             if( nextOutput == null ) {
                 block = copy( null );
                 if( selectors[0].startsWith( "@media" ) ) {
-                    block.lessExtends = new LessExtendMap( lessExtends );
+                    block.lessExtends = new LessExtendMap( state.lessExtends );
                     nextOutput = new CssMediaOutput( selectors, block.output, state.isReference, block.lessExtends ); 
                 } else {
                     nextOutput = new CssRuleOutput( selectors, block.output, state.isReference );
@@ -656,7 +657,7 @@ class CssFormatter implements Cloneable {
         } else {
             if( selectors[0].startsWith( "@media" ) ) {
                 CssFormatter block = copy( null );
-                block.lessExtends = new LessExtendMap( lessExtends );
+                block.lessExtends = new LessExtendMap( state.lessExtends );
                 String[] sel = new String[]{ this.currentOutput.getSelectors()[0] + " and " + selectors[0].substring( 6 ).trim() };
                 block.currentOutput = new CssMediaOutput( sel, block.output, state.isReference, block.lessExtends );
                 results.add( block.currentOutput );
