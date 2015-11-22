@@ -1,13 +1,17 @@
 JLessC
 ======
 
+[![Build Status](https://travis-ci.org/i-net-software/jlessc.svg)](https://travis-ci.org/i-net-software/jlessc)
+[![License](https://img.shields.io/github/license/i-net-software/jlessc.svg)](https://github.com/i-net-software/jlessc/blob/master/license.txt)
+[![Coverage Status](https://coveralls.io/repos/i-net-software/jlessc/badge.svg?branch=master&service=github)](https://coveralls.io/github/i-net-software/jlessc?branch=master)
+[![Download](https://img.shields.io/bintray/v/i-net-software/OSS/de.inetsoftware.jlessc.svg)](https://bintray.com/i-net-software/OSS/de.inetsoftware.jlessc)
+
 JLessC is a [Less CSS compiler](http://lesscss.org) written completely in Java (pure Java). It does not need any additional libraries at runtime (no JavaScript, no ANTLR). The main target of the project is performance and compatibility to bootstrap.
 
 Required Java Version
 ----
 JlessC requires Java SE 7 or higher. It is tested with Java SE 7 and 8 on [travis-ci.org](https://travis-ci.org/i-net-software/jlessc).
 
-[![Build Status](https://travis-ci.org/i-net-software/jlessc.svg)](https://travis-ci.org/i-net-software/jlessc)
 
 Add Dependency
 ----
@@ -56,10 +60,6 @@ JLessC runs a benchmark test on the travis build system using different less com
 | [less.js][lessJS] via Exec call to nodeJS           |   ~850 ms |
 | [Official LESS CSS Compiler for Java][lessOfficial] |  ~4400 ms |
 | [LESS Engine][lessEngine]                           | ~10800 ms |
-
-License
-----
-[![License](https://img.shields.io/github/license/i-net-software/jlessc.svg)](https://github.com/i-net-software/jlessc/blob/master/license.txt)
 
 
 Alternative libraries
