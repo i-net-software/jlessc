@@ -59,7 +59,8 @@ JLessC runs a benchmark test on the travis build system using different less com
 
 License
 ----
-MIT License
+[![License](https://img.shields.io/github/license/i-net-software/jlessc.svg)](https://github.com/i-net-software/jlessc/blob/master/license.txt)
+
 
 Alternative libraries
 ----
