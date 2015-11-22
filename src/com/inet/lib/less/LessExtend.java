@@ -54,7 +54,7 @@ class LessExtend extends LessObject implements Formattable {
     static String addLessExtendsTo( FormattableContainer container, LessObject obj, String extendSelector ) {
         int idx1 = extendSelector.indexOf( ":extend(" );
         int idx2 = extendSelector.indexOf( ')', idx1 );
-        String selector = extendSelector.substring( 0, idx1 );
+        String selector = extendSelector.substring( 0, idx1 ).trim();
         String[] baseSelector = new String[] { selector };
         String params = extendSelector.substring( idx1 + 8, idx2 ).trim();
 
