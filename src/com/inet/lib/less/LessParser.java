@@ -281,9 +281,14 @@ class LessParser implements FormattableContainer {
                     }
                     return;
                 case '/':
-                    if( !comment( isWhitespace( builder ) ? currentRule : null ) ) { //TODO quotes in selectors
+                    if( !comment( isWhitespace( builder ) ? currentRule : null ) ) {
                         builder.append( ch );
                     }
+                    wasWhite = false;
+                    break;
+                case '\"':
+                case '\'':
+                    readQuote( ch, builder );
                     wasWhite = false;
                     break;
                 case '(':
@@ -972,15 +977,26 @@ class LessParser implements FormattableContainer {
     private String readQuote( char quote ) {
         StringBuilder builder = cachesBuilder;
         builder.setLength( 0 );
+        readQuote( quote, builder );
+        String str = builder.toString();
+        builder.setLength( 0 );
+        return str;
+    }
+
+    /**
+     * Read a quoted string and append it to the builder.
+     * 
+     * @param quote the quote character.
+     * @param builder the target
+     */
+    private void readQuote( char quote, StringBuilder builder ) {
         builder.append( quote );
         boolean isBackslash = false;
         for( ;; ) {
             char ch = read();
             builder.append( ch );
             if( ch == quote && !isBackslash ) {
-                String str = builder.toString();
-                builder.setLength( 0 );
-                return str;
+                return;
             }
             isBackslash = ch == '\\';
         }
@@ -1146,7 +1162,6 @@ class LessParser implements FormattableContainer {
      * @return a trim string
      */
     private static String trim( StringBuilder builder ) {
-        //TODO can be optimize
         String str = builder.toString().trim();
         builder.setLength( 0 );
         return str;
