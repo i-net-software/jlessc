@@ -35,12 +35,31 @@ import java.util.List;
  */
 class LessExtendMap {
 
-    private final HashMultimap<String, LessExtendResult> all          = new HashMultimap<>();
+    private final HashMultimap<String, LessExtendResult> all;
 
-    private final HashMultimap<String, String[]>         exact        = new HashMultimap<>();
+    private final HashMultimap<String, String[]>         exact;
 
     // use a LinkedHashSet as cache to remove duplicates and hold the original order
-    private LinkedHashSet<String>                        selectorList = new LinkedHashSet<>();
+    private final LinkedHashSet<String>                  selectorList = new LinkedHashSet<>();
+
+    /**
+     * Default constructor
+     */
+    LessExtendMap() {
+        all = new HashMultimap<>();
+        exact = new HashMultimap<>();
+    }
+
+    /**
+     * Constructor with parent
+     * 
+     * @param parent
+     *            parent, will be hold by reference
+     */
+    LessExtendMap( LessExtendMap parent ) {
+        all = new HashMultimap<>( parent.all );
+        exact = new HashMultimap<>( parent.exact );
+    }
 
     /**
      * Is calling on formatting if an extends was include.
@@ -78,7 +97,7 @@ class LessExtendMap {
      *            if the current rule is in a less file which was import with "reference" keyword
      * @return the selectors concatenate with extends or the original if there are no etends.
      */
-    public String[] concatenateExtends( String[] selectors, boolean isReference ) {
+    String[] concatenateExtends( String[] selectors, boolean isReference ) {
         selectorList.clear();
         for( String selector : selectors ) {
             concatenateExtendsRecursive( selector, isReference, selector );

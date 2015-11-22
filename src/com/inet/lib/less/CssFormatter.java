@@ -640,7 +640,7 @@ class CssFormatter implements Cloneable {
             if( nextOutput == null ) {
                 block = copy( null );
                 if( selectors[0].startsWith( "@media" ) ) {
-                    block.lessExtends = new LessExtendMap();
+                    block.lessExtends = new LessExtendMap( lessExtends );
                     nextOutput = new CssMediaOutput( selectors, block.output, state.isReference, block.lessExtends ); 
                 } else {
                     nextOutput = new CssRuleOutput( selectors, block.output, state.isReference );
@@ -656,7 +656,7 @@ class CssFormatter implements Cloneable {
         } else {
             if( selectors[0].startsWith( "@media" ) ) {
                 CssFormatter block = copy( null );
-                block.lessExtends = new LessExtendMap();
+                block.lessExtends = new LessExtendMap( lessExtends );
                 String[] sel = new String[]{ this.currentOutput.getSelectors()[0] + " and " + selectors[0].substring( 6 ).trim() };
                 block.currentOutput = new CssMediaOutput( sel, block.output, state.isReference, block.lessExtends );
                 results.add( block.currentOutput );

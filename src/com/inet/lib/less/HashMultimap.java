@@ -40,10 +40,28 @@ import java.util.List;
  */
 class HashMultimap<K, V> {
 
-    private HashMap<K, List<V>> map = new HashMap<>();
+    private final HashMap<K, List<V>> map = new HashMap<>();
+
+    private HashMultimap<K, V> parent;
 
     /**
-     * Add a value to this map.
+     * Default constructor
+     */
+    HashMultimap() {
+    }
+
+    /**
+     * Constructor with parent
+     * 
+     * @param parent
+     *            parent, will be hold by reference
+     */
+    HashMultimap( HashMultimap<K, V> parent ) {
+        this.parent = parent;
+    }
+
+    /**
+     * Add a value to this map. If the map previously contained a mapping for the key, then there are two values now.
      * @param key the key
      * @param value the value
      */
@@ -64,7 +82,18 @@ class HashMultimap<K, V> {
      * @return the list or null
      */
     List<V> get( K key ) {
-        return map.get( key );
+        List<V> result = map.get( key );
+        if( parent != null ) {
+            List<V> resultParent = parent.get( key );
+            if( result == null ) {
+                return resultParent;
+            } else if( resultParent == null ){
+                return result;
+            } else {
+                result.addAll( resultParent );
+            }
+        }
+        return result;
     }
 
     /**
