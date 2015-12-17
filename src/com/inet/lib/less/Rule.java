@@ -206,42 +206,34 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
     private void bubbling( String[] mediaSelector, String[] blockSelector, CssFormatter formatter ) {
         if( properties.size() > 0 ) {
             String media = mediaSelector[0];
-            int spaceIdx = media.indexOf( ' ' );
-            if( spaceIdx > 0 ) {
-                media = media.substring( 0, spaceIdx ); // cut the conditions from conditional directives
-            }
-            switch( media ) {
-                case "@media":
-                case "@supports":
-                case "@document":
-                    // conditional directives
-                    int size0 = formatter.getOutputSize();
-                    CssFormatter block = formatter.startBlock( mediaSelector );
-                    if( block != formatter ) {
-                        size0 = block.getOutputSize();
+            if( media.startsWith( "@media" ) || media.startsWith( "@supports" ) || media.startsWith( "@document" ) ) {
+                // conditional directives
+                int size0 = formatter.getOutputSize();
+                CssFormatter block = formatter.startBlock( mediaSelector );
+                if( block != formatter ) {
+                    size0 = block.getOutputSize();
+                }
+                CssFormatter block2 = block.startBlock( blockSelector );
+                int size1 = block2.getOutputSize();
+                appendPropertiesTo( block2 );
+                int size2 = block2.getOutputSize();
+                block2.endBlock();
+                int size3 = block.getOutputSize();
+                for( Formattable prop : properties ) {
+                    if( prop instanceof Mixin ) {
+                        ((Mixin)prop).appendSubRules( blockSelector, block );
                     }
-                    CssFormatter block2 = block.startBlock( blockSelector );
-                    int size1 = block2.getOutputSize();
-                    appendPropertiesTo( block2 );
-                    int size2 = block2.getOutputSize();
-                    block2.endBlock();
-                    int size3 = block.getOutputSize();
-                    for( Formattable prop : properties ) {
-                        if( prop instanceof Mixin ) {
-                            ((Mixin)prop).appendSubRules( blockSelector, block );
-                        }
-                    }
-                    int size4 = block.getOutputSize();
-                    block.endBlock();
-                    if( size1 == size2 && size3 == size4 ) {
-                        block.setOutputSize( size0 );
-                    }
-                    break;
-                default:
-                    // non-conditional directives for example @font-face or @keyframes
-                    block = formatter.startBlock( mediaSelector );
-                    appendPropertiesTo( block );
-                    block.endBlock();
+                }
+                int size4 = block.getOutputSize();
+                block.endBlock();
+                if( size1 == size2 && size3 == size4 ) {
+                    block.setOutputSize( size0 );
+                }
+            } else {
+                // non-conditional directives for example @font-face or @keyframes
+                CssFormatter block = formatter.startBlock( mediaSelector );
+                appendPropertiesTo( block );
+                block.endBlock();
             }
         }
 
