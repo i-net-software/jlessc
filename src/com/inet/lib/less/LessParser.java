@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015 Volker Berlin
+ * Copyright (c) 2014 - 2016 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -420,11 +420,6 @@ class LessParser implements FormattableContainer {
      * @throws LessException if any parsing error occurred
      */
     private void importFile( FormattableContainer currentRule, final String name ) {
-        if( currentRule != this ) {
-            //import is inside of a mixin and will be process if the mixin will be process
-            currentRule.add( new CssAtRule( reader, "@import " + name + ';') );
-            return;
-        }
         String filename = name.trim();
         boolean isReference = reader.isReference();
         boolean isCss = false;
@@ -509,6 +504,11 @@ class LessParser implements FormattableContainer {
             filename = trim( builder );
 
             if( filename.contains( "@{" ) ) { // filename with variable name, we need to parse later
+                if( currentRule != this ) {
+                    //import is inside of a mixin and will be process if the mixin will be process
+                    currentRule.add( new CssAtRule( reader, "@import " + name + ';' ) );
+                    return;
+                }
                 HashMap<String, Expression> importVariables = new DefaultedHashMap<>( variables );
                 variables = new DefaultedHashMap<>( importVariables );
                 Formattable lastRuleBefore = rules.size() == 0 ? null : rules.get( rules.size() - 1 );
@@ -540,7 +540,11 @@ class LessParser implements FormattableContainer {
                 add( new ReferenceInfo( isReference ) );
             }
             reader = new LessLookAheadReader( new InputStreamReader( baseURL.openStream(), StandardCharsets.UTF_8 ), filename, isReference );
-            parse();
+            if( currentRule == this ) {
+                parse();
+            } else {
+                parseBlock( currentRule );
+            }
             reader.close();
         } catch( LessException ex ) {
             throw ex;
