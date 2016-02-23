@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015 Volker Berlin
+ * Copyright (c) 2014 - 2016 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -443,7 +443,7 @@ class ValueExpression extends Expression {
                 rgb = 0xf000_ff00_f000L;
                 break;
             case "hotpink":
-                rgb = 0xf000_ff00_f000L;
+                rgb = 0xff00_6900_b400L;
                 break;
             case "indianred":
                 rgb = 0xcd00_5c00_5c00L;
