@@ -97,7 +97,7 @@ class LessParser implements FormattableContainer {
             throw new LessException( th ); //should never occur
         }
         this.reader = new LessLookAheadReader( input, null, false );
-        parse();
+        parse( this );
     }
 
     /**
@@ -123,8 +123,9 @@ class LessParser implements FormattableContainer {
 
     /**
      * Parse main and import less files.
+     * @param currentRule the current container. This can be the root or a rule.
      */
-    private void parse() {
+    private void parse( FormattableContainer currentRule ) {
         try {
             for( ;; ) {
                 int ch = reader.nextBlockMarker();
@@ -132,10 +133,10 @@ class LessParser implements FormattableContainer {
                     case -1:
                         return; // end of input reached
                     case ';':
-                        parseSemicolon( this );
+                        parseSemicolon( currentRule );
                         break;
                     case '{':
-                        parseBlock( this );
+                        parseBlock( currentRule );
                         break;
                     default:
                         throw createException( "Unrecognized input: '" + reader.getLookAhead() + "'" );
@@ -540,11 +541,7 @@ class LessParser implements FormattableContainer {
                 add( new ReferenceInfo( isReference ) );
             }
             reader = new LessLookAheadReader( new InputStreamReader( baseURL.openStream(), StandardCharsets.UTF_8 ), filename, isReference );
-            if( currentRule == this ) {
-                parse();
-            } else {
-                parseBlock( currentRule );
-            }
+            parse( currentRule );
             reader.close();
         } catch( LessException ex ) {
             throw ex;
