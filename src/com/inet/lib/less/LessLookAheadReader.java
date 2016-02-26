@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015 Volker Berlin
+ * Copyright (c) 2014 - 2016 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@
  */
 package com.inet.lib.less;
 
+import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
@@ -51,7 +52,7 @@ class LessLookAheadReader extends LessObject implements Closeable {
      */
     LessLookAheadReader( Reader reader, String fileName, boolean isReference ) {
         super( fileName );
-        this.reader = reader;
+        this.reader = reader.markSupported() ? reader : new BufferedReader( reader );
         this.isReference = isReference;
         line = 1;
         column = 0;
