@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015 Volker Berlin
+ * Copyright (c) 2014 - 2016 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -52,8 +52,27 @@ public class Less {
      *            if any error occur on compiling.
      */
     public static String compile( URL baseURL, String lessData, boolean compress ) throws LessException {
+        return compile( baseURL, lessData, compress, new ReaderFactory() );
+    }
+
+    /**
+     * Compile the less data from a string.
+     * 
+     * @param baseURL
+     *            the baseURL for import of external less data.
+     * @param lessData
+     *            the input less data
+     * @param compress
+     *            true, if the CSS data should be compressed without any extra formating characters.
+     * @param readerFactory
+     *            A factory for the readers for imports.
+     * @return the resulting less data
+     * @throws LessException 
+     *            if any error occur on compiling.
+     */
+    public static String compile( URL baseURL, String lessData, boolean compress, ReaderFactory readerFactory ) throws LessException {
         LessParser parser = new LessParser();
-        parser.parse( baseURL, new StringReader( lessData ) );
+        parser.parse( baseURL, new StringReader( lessData ), readerFactory );
 
         StringBuilder builder = new StringBuilder();
         CssFormatter formatter = compress ? new CompressCssFormatter() :  new CssFormatter();
@@ -81,6 +100,24 @@ public class Less {
      */
     public static String compile( File lessFile, boolean compress ) throws IOException {
         String lessData = new String( Files.readAllBytes( lessFile.toPath() ), StandardCharsets.UTF_8 );
-        return Less.compile( lessFile.toURI().toURL(), lessData, compress );
+        return Less.compile( lessFile.toURI().toURL(), lessData, compress, new ReaderFactory() );
+    }
+
+    /**
+     * Compile the less data from a file.
+     * 
+     * @param lessFile
+     *            the less file
+     * @param compress
+     *            true, if the CSS data should be compressed without any extra formating characters.
+     * @param readerFactory
+     *            A factory for the readers for imports.
+     * @return the resulting less data
+     * @throws IOException
+     *             if an I/O error occurs reading from the less file
+     */
+    public static String compile( File lessFile, boolean compress, ReaderFactory readerFactory ) throws IOException {
+        String lessData = new String( Files.readAllBytes( lessFile.toPath() ), StandardCharsets.UTF_8 );
+        return Less.compile( lessFile.toURI().toURL(), lessData, compress, readerFactory );
     }
 }
