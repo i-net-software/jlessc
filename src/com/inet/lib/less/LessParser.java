@@ -26,10 +26,8 @@
  */
 package com.inet.lib.less;
 
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,6 +42,8 @@ import javax.annotation.Nonnull;
 class LessParser implements FormattableContainer {
 
     private URL                         baseURL;
+
+    private ReaderFactory               readerFactory;
 
     private URL                         relativeURL;
 
@@ -85,12 +85,18 @@ class LessParser implements FormattableContainer {
     /**
      * Main method for parsing of main less file.
      * 
-     * @param baseURL the baseURL for import of external less data.
-     * @param input the less input data
-     * @throws LessException if any parsing error occurred
+     * @param baseURL
+     *            the baseURL for import of external less data.
+     * @param input
+     *            the less input data
+     * @param readerFactory
+     *            A factory for the readers for imports.
+     * @throws LessException
+     *             if any parsing error occurred
      */
-    void parse( URL baseURL, Reader input ) {
+    void parse( URL baseURL, Reader input, ReaderFactory readerFactory  ) {
         this.baseURL = baseURL;
+        this.readerFactory = readerFactory;
         try {
             this.relativeURL = new URL( "file", null, "" );
         } catch( Exception th ) {
@@ -540,7 +546,7 @@ class LessParser implements FormattableContainer {
             if( isReference != reader.isReference() ) {
                 add( new ReferenceInfo( isReference ) );
             }
-            reader = new LessLookAheadReader( new InputStreamReader( baseURL.openStream(), StandardCharsets.UTF_8 ), filename, isReference );
+            reader = new LessLookAheadReader( readerFactory.create( baseURL ), filename, isReference );
             parse( currentRule );
             reader.close();
         } catch( LessException ex ) {
