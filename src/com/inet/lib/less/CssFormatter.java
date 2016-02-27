@@ -747,7 +747,7 @@ class CssFormatter implements Cloneable {
      */
     void appendProperty( @Nonnull String name, @Nonnull Expression value ) {
         if( output == null ) {
-            throw new LessException( "properties must be inside selector blocks, they cannot be in the root." );
+            throw new LessException( "Properties must be inside selector blocks, they cannot be in the root." );
         }
         insets();
         name = SelectorUtils.replacePlaceHolder( this, name, value );
