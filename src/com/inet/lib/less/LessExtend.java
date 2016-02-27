@@ -52,20 +52,49 @@ class LessExtend extends LessObject implements Formattable {
      * @return the base selector
      */
     static String addLessExtendsTo( FormattableContainer container, LessObject obj, String extendSelector ) {
-        int idx1 = extendSelector.indexOf( ":extend(" );
-        int idx2 = extendSelector.indexOf( ')', idx1 );
-        String selector = extendSelector.substring( 0, idx1 ).trim();
-        String[] baseSelector = new String[] { selector };
-        String params = extendSelector.substring( idx1 + 8, idx2 ).trim();
-
-        for( String param : params.split( "," ) ) {
-            boolean all = param.endsWith( " all" );
-            if( all ) {
-                param = param.substring( 0, param.length() - 4 ).trim();
+        String baseSelectors = null;
+        do {
+            int idx1 = extendSelector.indexOf( ":extend(" );
+            int idx2 = extendSelector.indexOf( ')', idx1 );
+            int idx3 = extendSelector.lastIndexOf( ',', idx1 );
+            String selector = extendSelector.substring( idx3 + 1, idx1 ).trim();
+            String[] baseSelector = new String[] { selector };
+            if( baseSelectors == null ) {
+                baseSelectors = selector;
+            } else {
+                baseSelectors = baseSelectors + ',' + selector;
             }
-            container.add( new LessExtend( obj, baseSelector, param, all ) );
-        }
-        return selector;
+            String params = extendSelector.substring( idx1 + 8, idx2 ).trim();
+    
+            for( String param : params.split( "," ) ) {
+                boolean all = param.endsWith( " all" );
+                if( all ) {
+                    param = param.substring( 0, param.length() - 4 ).trim();
+                }
+                container.add( new LessExtend( obj, baseSelector, param, all ) );
+            }
+            idx2++;
+            if( idx2 < extendSelector.length() ) {
+                while( idx2 < extendSelector.length() ) {
+                    char ch = extendSelector.charAt( idx2++ );
+                    switch( ch ) {
+                        case ',':
+                            break;
+                        case ' ':
+                            continue;
+                        default:
+                            throw obj.createException("Unrecognized input: '" + extendSelector + "'" );
+                    }
+                    break;
+                }
+                extendSelector = extendSelector.substring( idx2 ).trim();
+                if( extendSelector.length() > 0 ) {
+                    continue;
+                }
+            }
+            break;
+        } while(true);
+        return baseSelectors;
     }
 
     /**
