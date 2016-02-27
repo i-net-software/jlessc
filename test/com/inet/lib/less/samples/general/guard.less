@@ -4,11 +4,17 @@
 .mix (@a,@b) when (@a >= @b) {
     ge: @a;
 }
+.mix (@a,@b) when (@a => @b) {
+    eg: @a;
+}
 .mix (@a,@b) when (@a = @b) {
     e: @a;
 }
 .mix (@a,@b) when (@a <= @b) {
     le: @a;
+}
+.mix (@a,@b) when (@a =< @b) {
+    el: @a;
 }
 .mix (@a,@b) when (@a < @b) {
     lt: @a;
