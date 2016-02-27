@@ -62,6 +62,7 @@ class SelectorTokenizer {
                 case '.':
                 case '#':
                 case ':':
+                case '[':
                     break LOOP;
             }
         } while( true );
