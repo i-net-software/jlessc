@@ -71,20 +71,20 @@ public class Less {
      *            if any error occur on compiling.
      */
     public static String compile( URL baseURL, String lessData, boolean compress, ReaderFactory readerFactory ) throws LessException {
-        LessParser parser = new LessParser();
-        parser.parse( baseURL, new StringReader( lessData ), readerFactory );
-
-        StringBuilder builder = new StringBuilder();
-        CssFormatter formatter = compress ? new CompressCssFormatter() :  new CssFormatter();
-        parser.parseLazy( formatter );
         try {
+            LessParser parser = new LessParser();
+            parser.parse( baseURL, new StringReader( lessData ), readerFactory );
+            
+            StringBuilder builder = new StringBuilder();
+            CssFormatter formatter = compress ? new CompressCssFormatter() :  new CssFormatter();
+            parser.parseLazy( formatter );
             formatter.format( parser, baseURL, builder );
+            return builder.toString();
         } catch( LessException ex ) {
             throw ex;
         } catch( Exception ex ) {
             throw new LessException( ex );
         }
-        return builder.toString();
     }
 
     /**
