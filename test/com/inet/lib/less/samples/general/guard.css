@@ -1,0 +1,23 @@
+.greater {
+  gt: 5;
+  ge: 5;
+  gt: 'z';
+  ge: 'z';
+}
+.equals {
+  ge: 0;
+  e: 0;
+  le: 0;
+  ge: 'b';
+  e: 'b';
+  le: 'b';
+  ge: black;
+  e: black;
+  le: black;
+}
+.lesser {
+  le: -4;
+  lt: -4;
+  le: 'a';
+  lt: 'a';
+}
