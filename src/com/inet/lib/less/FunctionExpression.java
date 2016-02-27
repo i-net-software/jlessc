@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015 Volker Berlin
+ * Copyright (c) 2014 - 2016 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -337,7 +337,7 @@ class FunctionExpression extends Expression {
             switch( super.toString().toLowerCase() ) {
                 case "": //parenthesis
                     if( parameters.size() > 1 ) {
-                        throw ((LessObject)get( 0 )).createException( "Unrecognised input" );
+                        throw ((LessObject)get( 0 )).createException( "Unrecognized input" );
                     }
                     type = get( 0 ).getDataType( formatter );
                     if( type != STRING ) {
