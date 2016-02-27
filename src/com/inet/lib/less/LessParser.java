@@ -791,10 +791,6 @@ class LessParser implements FormattableContainer {
                     if( left == null ) {
                         String str = trim( builder );
                         if( str.isEmpty() ) {
-                            if( ch == ':' ) { // Selector ?
-                                builder.append( ch );
-                                break;
-                            }
                             throw createException( "Unrecognized input: '" + ch + "'" );
                         }
                         left = buildExpression( str );
