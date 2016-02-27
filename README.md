@@ -68,6 +68,12 @@ Alternative libraries
 + [LESS Engine][lessEngine] using Rhino
 + [Official LESS CSS Compiler for Java][lessOfficial] using Rhino
 
+
+Reference usage
+----
+We use JLessC in our reporting software [i-net Clear Reports](https://www.inetsoftware.de/products/clear-reports) for user customized themes. 
+
+
 [lessJS]: https://www.npmjs.com/package/less
 [lessEngine]: https://github.com/asual/lesscss-engine "LESS Engine"
 [lessOfficial]: https://github.com/marceloverdijk/lesscss-java "Official LESS CSS Compiler for Java"
