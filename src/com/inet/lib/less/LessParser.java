@@ -699,9 +699,6 @@ class LessParser implements FormattableContainer {
                                     if( builder.length() > 0 ) {
                                         left = concat( left, ' ', buildExpression( trim( builder ) ) );
                                     }
-                                    if( left == null ) {
-                                        throw createException( "Unrecognized input: '" + ch + "'" );
-                                    }
                                     return left;
                                 }
                                 if( builder.length() > 0 ) {
