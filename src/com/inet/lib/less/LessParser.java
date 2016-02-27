@@ -782,7 +782,7 @@ class LessParser implements FormattableContainer {
                                     ch = '≤';
                                     break;
                                 case '>':
-                                    ch = '≤';
+                                    ch = '≥';
                                     break;
                                 default:
                                     back( ch2 );
