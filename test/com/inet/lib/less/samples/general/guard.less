@@ -1,0 +1,31 @@
+.mix (@a,@b) when (@a > @b) {
+    gt: @a;
+}
+.mix (@a,@b) when (@a >= @b) {
+    ge: @a;
+}
+.mix (@a,@b) when (@a = @b) {
+    e: @a;
+}
+.mix (@a,@b) when (@a <= @b) {
+    le: @a;
+}
+.mix (@a,@b) when (@a < @b) {
+    lt: @a;
+}
+.greater {
+    .mix(5,0);
+    .mix('z','a');
+    .mix(#fff,#000);
+}
+.equals {
+    .mix(0,0);
+    .mix('b','b');
+    .mix(black,#000);
+}
+.lesser {
+    .mix(-4,0);
+    .mix('a','b');
+    .mix(#000,#fff);
+}
+

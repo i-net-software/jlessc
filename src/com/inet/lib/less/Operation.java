@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015 Volker Berlin
+ * Copyright (c) 2014 - 2016 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -454,17 +454,15 @@ class Operation extends Expression {
                     case RGBA:{
                         long left = Double.doubleToRawLongBits( leftOp.doubleValue( formatter ) );
                         long right = Double.doubleToRawLongBits( operands.get( 1 ).doubleValue( formatter ) );
+                        // colors can not be greater or lesser
                         switch( operator ) {
                             case '>':
-                                return left > right;
                             case '<':
-                                return left < right;
+                                return false;
                             case '=':
-                                return left == right;
                             case '≥':
-                                return left >= right;
                             case '≤':
-                                return left <= right;
+                                return left == right;
                         }
                     }
                         //$FALL-THROUGH$
