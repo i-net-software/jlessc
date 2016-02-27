@@ -185,11 +185,16 @@ class SelectorUtils {
                             exp.appendTo( formatter );
                         }
                     } else {
-                        formatter.setInlineMode( true );
-                        exp.appendTo( formatter );
-                        formatter.setInlineMode( false );
+                        if( i == 0 || str.charAt( i-1 ) != '=' ) {
+                            formatter.setInlineMode( true );
+                            exp.appendTo( formatter );
+                            formatter.setInlineMode( false );
+                        } else {
+                            exp.appendTo( formatter ); // add quotes if there is an equals like ...=${..}
+                        }
                     }
 
+                    i = nextIdx - 1;
                     break;
             }
         }
