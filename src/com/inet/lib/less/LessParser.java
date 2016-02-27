@@ -27,6 +27,7 @@
 package com.inet.lib.less;
 
 import java.io.Reader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -91,17 +92,15 @@ class LessParser implements FormattableContainer {
      *            the less input data
      * @param readerFactory
      *            A factory for the readers for imports.
+     * @throws MalformedURLException
+     *             Should never occur
      * @throws LessException
      *             if any parsing error occurred
      */
-    void parse( URL baseURL, Reader input, ReaderFactory readerFactory  ) {
+    void parse( URL baseURL, Reader input, ReaderFactory readerFactory  ) throws MalformedURLException {
         this.baseURL = baseURL;
         this.readerFactory = readerFactory;
-        try {
-            this.relativeURL = new URL( "file", null, "" );
-        } catch( Exception th ) {
-            throw new LessException( th ); //should never occur
-        }
+        this.relativeURL = new URL( "file", null, "" );
         this.reader = new LessLookAheadReader( input, null, false );
         parse( this );
     }
