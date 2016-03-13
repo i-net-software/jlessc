@@ -159,13 +159,16 @@ abstract class Expression extends LessObject implements Formattable {
      * @return the value
      */
     String stringValue( CssFormatter formatter ) {
+        String str;
         try {
             formatter.addOutput();
             appendTo( formatter );
-            return formatter.releaseOutput();
         } catch( Exception ex ) {
             throw createException( ex );
+        } finally {
+            str = formatter.releaseOutput();
         }
+        return str;
     }
 
     /**
