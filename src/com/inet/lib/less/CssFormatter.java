@@ -179,14 +179,15 @@ class CssFormatter implements Cloneable {
         addVariables( parser.getVariables() );
         state.isReference = false;
         for( Formattable rule : parser.getRules() ) {
-            if( rule.getType() == Formattable.REFERENCE_INFO ) {
-                state.isReference = ((ReferenceInfo)rule).isReference();
-                continue;
-            }
-            if( rule.getClass() == Mixin.class ) {
-                ((Mixin)rule).appendSubRules( null, this );
-            } else {
-                rule.appendTo( this );
+            switch( rule.getType() ) {
+                case Formattable.REFERENCE_INFO:
+                    state.isReference = ((ReferenceInfo)rule).isReference();
+                    continue;
+                case Formattable.MIXIN:
+                    ((Mixin)rule).appendSubRules( null, this );
+                    break;
+                default:
+                    rule.appendTo( this );
             }
         }
         removeVariables( parser.getVariables() );
