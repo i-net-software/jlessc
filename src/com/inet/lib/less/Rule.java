@@ -42,6 +42,8 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
 
     private static final HashMap<String, Expression> NO_MATCH  = new HashMap<>();
 
+    private FormattableContainer        parent;
+
     private String[]                    selectors;
 
     private final List<Expression>      params;
@@ -60,12 +62,14 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
      * Create new instance.
      * 
      * @param obj another LessObject with parse position.
+     * @param parent the parent in the hierarchy
      * @param selectors the selectors of the rule
      * @param params the parameter if the rule is a mixin.
      * @param guard a guard condition for the mixin or CSS rule
      */
-    Rule( LessObject obj, String selectors, @Nullable Operation params, Expression guard ) {
+    Rule( LessObject obj, FormattableContainer parent, String selectors, @Nullable Operation params, Expression guard ) {
         super( obj );
+        this.parent = parent;
         this.selectors = selectors.split( "," );
         for( int i = 0; i < this.selectors.length; i++ ) {
             this.selectors[i] = this.selectors[i].trim();
