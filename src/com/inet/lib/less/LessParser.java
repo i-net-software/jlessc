@@ -277,7 +277,7 @@ class LessParser implements FormattableContainer {
                     if( selector.contains( ":extend(" ) ) {
                         selector = LessExtend.addLessExtendsTo( currentRule, reader, selector );
                     }
-                    Rule rule = rule( selector, expr, guard );
+                    Rule rule = rule( currentRule, selector, expr, guard );
                     currentRule.add( rule );
                     expr = null;
                     guard = null;
@@ -566,13 +566,14 @@ class LessParser implements FormattableContainer {
      * Create a rule and parse the content of an block.
      * 
      * @param selector the selectors
-     * @param params the parameters if it is a mxin.
+     * @param parent the parent in the hierarchy
+     * @param params the parameters if it is a mixin.
      * @param guard an optional guard expression
      * @return the rule
      */
     @Nonnull
-    private Rule rule( String selector, Operation params, Expression guard ) {
-        Rule rule = new Rule( reader, selector, params, guard );
+    private Rule rule( FormattableContainer parent, String selector, Operation params, Expression guard ) {
+        Rule rule = new Rule( reader, parent, selector, params, guard );
         parseRule( rule );
         return rule;
     }
