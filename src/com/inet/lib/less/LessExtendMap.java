@@ -26,6 +26,7 @@
  */
 package com.inet.lib.less;
 
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -41,6 +42,15 @@ class LessExtendMap {
 
     // use a LinkedHashSet as cache to remove duplicates and hold the original order
     private final LinkedHashSet<String>                  selectorList = new LinkedHashSet<>();
+
+    private final ArrayDeque<SelectorTokenizer>          tokenizers = new ArrayDeque<SelectorTokenizer>() {
+        public SelectorTokenizer pollLast() {
+            if( size() == 0 ) {
+                return new SelectorTokenizer();
+            }
+            return super.pollLast();
+        }
+    };
 
     /**
      * Default constructor
@@ -75,7 +85,7 @@ class LessExtendMap {
         String extendingSelector = lessExtend.getExtendingSelector();
         if( lessExtend.isAll() ) {
             LessExtendResult extend = new LessExtendResult( mainSelector, extendingSelector );
-            SelectorTokenizer tokenizer = new SelectorTokenizer( extendingSelector );
+            SelectorTokenizer tokenizer = tokenizers.pollLast().init( extendingSelector );
             do {
                 String token = tokenizer.next();
                 if( token == null ) {
@@ -83,6 +93,7 @@ class LessExtendMap {
                 }
                 all.add( token, extend );
             } while( true );
+            tokenizers.addLast( tokenizer );
         } else {
             exact.add( extendingSelector, mainSelector );
         }
@@ -145,7 +156,7 @@ class LessExtendMap {
                 }
             }
         }
-        SelectorTokenizer tokenizer = new SelectorTokenizer( allSelector );
+        SelectorTokenizer tokenizer = tokenizers.pollLast().init( allSelector );
         do {
             String token = tokenizer.next();
             if( token == null ) {
@@ -167,5 +178,6 @@ class LessExtendMap {
                 }
             }
         } while( true );
+        tokenizers.addLast( tokenizer );
     }
 }

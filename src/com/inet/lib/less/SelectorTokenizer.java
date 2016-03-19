@@ -33,16 +33,18 @@ import javax.annotation.Nullable;
  */
 class SelectorTokenizer {
 
-    private final String selector;
+    private String selector;
 
-    private int          idx, lastIdx;
+    private int    idx, lastIdx;
 
     /**
      * Create a new tokenizer. 
      * @param selector all selectors
      */
-    SelectorTokenizer( String selector ) {
+    SelectorTokenizer init( String selector ) {
         this.selector = selector;
+        idx = lastIdx = 0;
+        return this;
     }
 
     /**
