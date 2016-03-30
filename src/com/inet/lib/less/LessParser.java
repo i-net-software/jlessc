@@ -97,7 +97,7 @@ class LessParser implements FormattableContainer {
      * @throws LessException
      *             if any parsing error occurred
      */
-    void parse( URL baseURL, Reader input, ReaderFactory readerFactory  ) throws MalformedURLException {
+    void parse( URL baseURL, Reader input, ReaderFactory readerFactory  ) throws MalformedURLException, LessException {
         this.baseURL = baseURL;
         this.readerFactory = readerFactory;
         this.relativeURL = new URL( "file", null, "" );
