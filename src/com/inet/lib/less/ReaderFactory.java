@@ -47,7 +47,7 @@ public class ReaderFactory {
      * @throws IOException
      *             If any I/O error occur on reading the URL.
      */
-    Reader create( URL url ) throws IOException {
+    public Reader create( URL url ) throws IOException {
         return new InputStreamReader( url.openStream(), StandardCharsets.UTF_8 );
     }
 }
