@@ -40,6 +40,7 @@ class SelectorTokenizer {
     /**
      * Create a new tokenizer. 
      * @param selector all selectors
+     * @return this
      */
     SelectorTokenizer init( String selector ) {
         this.selector = selector;
