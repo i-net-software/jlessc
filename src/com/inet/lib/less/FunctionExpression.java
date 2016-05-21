@@ -665,7 +665,8 @@ class FunctionExpression extends Expression {
                     return;
                 case "isnumber":
                     type = BOOLEAN;
-                    booleanValue = get( 0 ).getDataType( formatter ) == NUMBER;
+                    type0 = get( 0 ).getDataType( formatter );
+                    booleanValue = type0 == NUMBER || type0 == PERCENT;
                     return;
                 case "isstring":
                     type = BOOLEAN;
