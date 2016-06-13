@@ -6,7 +6,7 @@ JLessC
 [![Coverage Status](https://coveralls.io/repos/i-net-software/jlessc/badge.svg?branch=master&service=github)](https://coveralls.io/github/i-net-software/jlessc?branch=master)
 [![Download](https://img.shields.io/bintray/v/bintray/jcenter/de.inetsoftware%3Ajlessc.svg)](https://bintray.com/bintray/jcenter/de.inetsoftware%3Ajlessc)
 
-JLessC is a [Less CSS compiler](http://lesscss.org) written completely in Java (pure Java). It does not need any additional libraries at runtime (no JavaScript, no ANTLR). The main target of the project is performance and compatibility to bootstrap.
+JLessC is a [Less CSS compiler](http://lesscss.org) written completely in Java (pure Java). It does not need any additional libraries at runtime (no JavaScript, no ANTLR). The main target of the project is performance and compatibility to Bootstrap.
 
 Required Java Version
 ----
@@ -21,7 +21,7 @@ Gradle users should add the library using the following dependency:
         compile 'de.inetsoftware:jlessc:+'
     }
 
-If you want test a snapshot version with the latest bug fixes then add the snapshot repository:
+If you want to test a snapshot version with the latest bug fixes, then add the snapshot repository:
 
     repositories {
         maven {
@@ -40,7 +40,7 @@ Maven users should add the library using the following dependency:
 
 Usage
 ----
-Checkout the sources or download the binary and add it to your Java project. The following code sequence shows a sample usage:
+Check out the sources or download the binary and add it to your Java project. The following code sequence shows a sample usage:
 
     import com.inet.lib.less.Less;
     ...
@@ -48,11 +48,11 @@ Checkout the sources or download the binary and add it to your Java project. The
     // Compile Less data to CSS output
     String css = Less.compile( null, "@bgcol: red; #row { background-color: @bgcol; }", true );
 
-API details can you find in the source of the [Less](https://github.com/i-net-software/jlessc/blob/master/src/com/inet/lib/less/Less.java) class. 
+API details can be found in the source of the [Less](https://github.com/i-net-software/jlessc/blob/master/src/com/inet/lib/less/Less.java) class. 
 
 Benchmark
 ----
-JLessC runs a benchmark test on the travis build system using different less compilers. We always use the latest version of every compiler. We measure the compile time of the bootstrap sample in our test suite. The table shows [a result for Java SE 8](https://travis-ci.org/i-net-software/jlessc/jobs/57452290). Of course the values can change over the time.
+JLessC runs a benchmark test on the Travis build system using different less compilers. We always use the latest version of every compiler. We measure the compile time of the Bootstrap sample in our test suite. The table shows [a result for Java SE 8](https://travis-ci.org/i-net-software/jlessc/jobs/57452290). Of course the values can change over the time.
 
 | Tool                                                |      Time |
 | :-------------------------------------------------- | ---------:|
