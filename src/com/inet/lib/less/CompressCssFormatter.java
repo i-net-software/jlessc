@@ -147,7 +147,11 @@ class CompressCssFormatter extends CssFormatter {
     @Override
     CssFormatter startBlock( String[] selectors ) {
         checkSemicolon();
-        return super.startBlock( selectors );
+        CssFormatter formatter = super.startBlock( selectors );
+        if( formatter != this && formatter.getOutput().length() > 0 ) { // two rules with same selector was merged
+            formatter.semicolon();
+        }
+        return formatter;
     }
 
     /**
