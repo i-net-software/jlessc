@@ -40,7 +40,7 @@ class LessLookAheadReader extends LessObject implements Closeable {
 
     private final StringBuilder cache = new StringBuilder();
 
-    private final boolean       isReference;
+    private final boolean       isReference, isMultiple;
 
     private int                 cachePos;
 
@@ -49,11 +49,13 @@ class LessLookAheadReader extends LessObject implements Closeable {
      * @param reader the underlying reader
      * @param fileName the filename of the less file or null if a String is parsed.
      * @param isReference true, if the less file is imported as reference
+     * @param isMultiple true, if the less file is imported with keyword "multiple"
      */
-    LessLookAheadReader( Reader reader, String fileName, boolean isReference ) {
+    LessLookAheadReader( Reader reader, String fileName, boolean isReference, boolean isMultiple ) {
         super( fileName );
         this.reader = reader.markSupported() ? reader : new BufferedReader( reader );
         this.isReference = isReference;
+        this.isMultiple = isMultiple;
         line = 1;
         column = 0;
     }
@@ -327,5 +329,14 @@ class LessLookAheadReader extends LessObject implements Closeable {
      */
     boolean isReference() {
         return isReference;
+    }
+
+
+    /**
+     * If the less file of this reader was import with "multiple" keyword.
+     * @return true, if multiple
+     */
+    boolean isMultiple() {
+        return isMultiple;
     }
 }
