@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Scanner;
 import java.util.StringTokenizer;
 
 import javax.annotation.Nonnull;
@@ -434,6 +435,8 @@ class LessParser implements FormattableContainer {
         boolean isCss = false;
         boolean isLess = false;
         boolean isMultiple = reader.isMultiple();
+        boolean isInline = false;
+        boolean isOptional = false;
         if( filename.startsWith( "(" ) ) {
             int endIdx = filename.indexOf( ')', 1);
             if( endIdx > 0 ) {
@@ -443,7 +446,10 @@ class LessParser implements FormattableContainer {
                     String keywordStr = tokenizer.nextToken().trim();
                     switch( keywordStr ) {
                         case "inline":
+                            isInline = true;
+                            break;
                         case "optional":
+                            isOptional = true;
                             System.err.println( "not implemented @import keyword: " + keywordStr ); //TODO
                             break;
                         case "once":
@@ -514,6 +520,9 @@ class LessParser implements FormattableContainer {
             if( i < filename.length() - 1 ) {
                 //additional content after url(...)
                 media = filename.substring( i + 1 ).trim();
+                Rule rule = new Rule( reader, currentRule, "@media " + media, null, null );
+                currentRule.add( rule );
+                currentRule = rule;
             }
             filename = trim( builder );
 
@@ -533,13 +542,13 @@ class LessParser implements FormattableContainer {
                 lazyImports.add( lazy );
                 return;
             }
-            if( !isLess && (isCss || filename.endsWith( "css" )) ) {
+            if( !isLess && !isInline && (isCss || filename.endsWith( "css" )) ) {
                 // filenames ends with "css" will not be inline else a CSS @import directive is written
                 currentRule.add( new CssAtRule( reader, "@import " + name + ';') );
                 return;
             }
             baseURL = baseURL == null ? new URL( filename ) : new URL( baseURL, filename );
-            if( !isLess && baseURL.getPath().endsWith( "css" ) ) {
+            if( !isLess && !isInline && baseURL.getPath().endsWith( "css" ) ) {
                 // URL path ends with "css" will not be inline else a CSS @import directive is written
                 currentRule.add( new CssAtRule( reader, "@import " + name + ';') );
                 return;
@@ -554,9 +563,17 @@ class LessParser implements FormattableContainer {
                 if( isReference != reader.isReference() ) {
                     add( new ReferenceInfo( isReference ) );
                 }
-                reader = new LessLookAheadReader( readerFactory.create( baseURL ), filename, isReference, isMultiple );
-                parse( currentRule );
-                reader.close();
+                Reader importReader = readerFactory.create( baseURL );
+                if( isInline ) {
+                    Scanner scanner = new Scanner(importReader).useDelimiter( "\\A" );
+                    if( scanner.hasNext() ) {
+                        currentRule.add( new CssAtRule( reader, scanner.next() ) );
+                    }
+                } else {
+                    reader = new LessLookAheadReader( importReader, filename, isReference, isMultiple );
+                    parse( currentRule );
+                    reader.close();
+                }
             }
         } catch( LessException ex ) {
             throw ex;
