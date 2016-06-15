@@ -186,6 +186,11 @@ class CssFormatter implements Cloneable {
                 case Formattable.MIXIN:
                     ((Mixin)rule).appendSubRules( null, this );
                     break;
+                case Formattable.CSS_AT_RULE:
+                    if( state.isReference ) {
+                        continue;
+                    }
+                    //$FALL-THROUGH$
                 default:
                     rule.appendTo( this );
             }
