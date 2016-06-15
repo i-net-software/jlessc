@@ -32,6 +32,7 @@ import java.net.URL;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -64,6 +65,8 @@ class LessParser implements FormattableContainer {
     private final StringBuilder         cachesBuilder = new StringBuilder();
 
     private ArrayDeque<Rule>            ruleStack     = new ArrayDeque<>();
+
+    private HashSet<URL>                imports       = new HashSet<>();
 
     private List<LazyImport>            lazyImports;
 
@@ -101,7 +104,7 @@ class LessParser implements FormattableContainer {
         this.baseURL = baseURL;
         this.readerFactory = readerFactory;
         this.relativeURL = new URL( "file", null, "" );
-        this.reader = new LessLookAheadReader( input, null, false );
+        this.reader = new LessLookAheadReader( input, null, false, false );
         parse( this );
     }
 
@@ -430,6 +433,7 @@ class LessParser implements FormattableContainer {
         boolean isReference = reader.isReference();
         boolean isCss = false;
         boolean isLess = false;
+        boolean isMultiple = reader.isMultiple();
         if( filename.startsWith( "(" ) ) {
             int endIdx = filename.indexOf( ')', 1);
             if( endIdx > 0 ) {
@@ -439,10 +443,14 @@ class LessParser implements FormattableContainer {
                     String keywordStr = tokenizer.nextToken().trim();
                     switch( keywordStr ) {
                         case "inline":
-                        case "once":
-                        case "multiple":
                         case "optional":
                             System.err.println( "not implemented @import keyword: " + keywordStr ); //TODO
+                            break;
+                        case "once":
+                            isMultiple = false;
+                            break;
+                        case "multiple":
+                            isMultiple = true;
                             break;
                         case "less":
                             isLess = true;
@@ -542,12 +550,14 @@ class LessParser implements FormattableContainer {
                 baseURL = baseURL == null ? new URL( filename ) : new URL( baseURL, filename );
             }
             relativeURL = new URL( relativeURL, filename );
-            if( isReference != reader.isReference() ) {
-                add( new ReferenceInfo( isReference ) );
+            if( imports.add( baseURL ) || isMultiple ) {
+                if( isReference != reader.isReference() ) {
+                    add( new ReferenceInfo( isReference ) );
+                }
+                reader = new LessLookAheadReader( readerFactory.create( baseURL ), filename, isReference, isMultiple );
+                parse( currentRule );
+                reader.close();
             }
-            reader = new LessLookAheadReader( readerFactory.create( baseURL ), filename, isReference );
-            parse( currentRule );
-            reader.close();
         } catch( LessException ex ) {
             throw ex;
         } catch( Exception ex ) {
