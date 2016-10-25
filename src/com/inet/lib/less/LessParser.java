@@ -1063,7 +1063,7 @@ class LessParser implements FormattableContainer {
                     break;
                 case ')':
                     val = trim( builder );
-                    op.addOperand( new ValueExpression( reader, val ) );
+                    op.addOperand( new ValueExpression( reader, val, Expression.STRING ) );
                     return op;
                 default:
                     builder.append( ch );
