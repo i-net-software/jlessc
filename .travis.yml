@@ -1,14 +1,8 @@
 # Use docker-based build environment (instead of openvz)
-# sudo: false
-
-# for oraclejdk9
-sudo: required
-dist: trusty
-group: edge
+sudo: false
 
 language: java
 jdk:
   - oraclejdk8
   - oraclejdk7
-  - oraclejdk9
 script: gradle check benchmark
