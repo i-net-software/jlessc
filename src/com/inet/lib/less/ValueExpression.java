@@ -52,6 +52,18 @@ class ValueExpression extends Expression {
     }
 
     /**
+     * Create a new instance.
+     * @param obj another LessObject with parse position.
+     * @param value the value
+     * @param type the value type
+     */
+    ValueExpression( LessObject obj, String value, int type ) {
+        super( obj, value );
+        this.type = type;
+        this.unit = "";
+    }
+
+    /**
      * Create a new value expression from a JavaScriptExpression.
      * @param expr another LessObject with parse position.
      * @param value the value
