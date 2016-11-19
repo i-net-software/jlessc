@@ -26,6 +26,7 @@
  */
 package com.inet.lib.less;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -450,7 +451,6 @@ class LessParser implements FormattableContainer {
                             break;
                         case "optional":
                             isOptional = true;
-                            System.err.println( "not implemented @import keyword: " + keywordStr ); //TODO
                             break;
                         case "once":
                             isMultiple = false;
@@ -577,6 +577,10 @@ class LessParser implements FormattableContainer {
             }
         } catch( LessException ex ) {
             throw ex;
+        } catch( IOException ex ) {
+            if( !isOptional ) {
+                throw new LessException( ex );
+            }
         } catch( Exception ex ) {
             throw new LessException( ex );
         } finally {

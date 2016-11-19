@@ -1,0 +1,12 @@
+.slash {
+  a: 1.5;
+  b: 1.5;
+  e: a / b;
+  f: a / b;
+  g: a / b;
+  h: a / b;
+}
+.slash2 {
+  background: url("img.jpg") center / 100px;
+  background: url(abc/img.jpg);
+}
