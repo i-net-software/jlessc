@@ -70,10 +70,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
     Rule( LessObject obj, FormattableContainer parent, String selectors, @Nullable Operation params, Expression guard ) {
         super( obj );
         this.parent = parent;
-        this.selectors = selectors.split( "," );
-        for( int i = 0; i < this.selectors.length; i++ ) {
-            this.selectors[i] = this.selectors[i].trim();
-        }
+        this.selectors = SelectorUtils.split( selectors  );
         if( params == null ) {
             this.params = null;
         } else {
