@@ -26,6 +26,7 @@
  */
 package com.inet.lib.less;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -216,5 +217,41 @@ class SelectorUtils {
             return formatter.releaseOutput();
         }
         return str;
+    }
+
+    /**
+     * Split a selectors in single selectors. This is like selectors.split("'") but ignored quoted parts.
+     * 
+     * @param selectors
+     *            the selectors
+     * @return the splitted selectors
+     */
+    static String[] split( String selectors ) {
+        ArrayList<String> result = null;
+        int length = selectors.length();
+        char quote = 0;
+        int off = 0;
+        for( int i = 0; i < length; i++ ) {
+            char ch = selectors.charAt( i );
+            switch( ch ) {
+                case ',':
+                    if( result == null ) {
+                        result = new ArrayList<>();
+                    }
+                    result.add( selectors.substring( off, i ).trim() );
+                    off = i + 1;
+                    break;
+                case '\'':
+                case '\"':
+                    do {
+                        i++;
+                    } while( i < length && selectors.charAt( i ) != ch );
+            }
+        }
+        if( result == null ) {
+            return new String[] { selectors.trim() };
+        }
+        result.add( selectors.substring( off, length ).trim() );
+        return result.toArray( new String[result.size()] );
     }
 }
