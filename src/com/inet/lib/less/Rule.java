@@ -234,7 +234,11 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
                 // non-conditional directives for example @font-face or @keyframes
                 CssFormatter block = formatter.startBlock( mediaSelector );
                 appendPropertiesTo( block );
+                for( Rule rule : subrules ) {
+                    rule.appendTo( null, block );
+                }
                 block.endBlock();
+                return;
             }
         }
 

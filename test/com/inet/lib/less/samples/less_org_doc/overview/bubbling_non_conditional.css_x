@@ -1,1 +1,1 @@
-#a{color:#00f;padding:2 2 2 2}@font-face{src:made-up-url}
+#a{color:#00f;padding:2 2 2 2}@font-face{src:made-up-url}@keyframes foobar{from{opacity:1}}
