@@ -5,3 +5,8 @@
 @font-face {
   src: made-up-url;
 }
+@keyframes foobar {
+  from {
+    opacity: 1;
+  }
+}
