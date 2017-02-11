@@ -759,42 +759,12 @@ class CssFormatter implements Cloneable {
         name = SelectorUtils.replacePlaceHolder( this, name, value );
         output.append( name ).append( ':' );
         space();
-        if( "font".equals( name ) && value.getClass() == Operation.class ) {
-            appendFontPropertyValue( (Operation)value );
-        } else {
-            value.appendTo( this );
-        }
+        value.appendTo( this );
         if( state.importantCount > 0 || value.isImportant() ) {
             output.append( " !important" );
         }
         semicolon();
         newline();
-    }
-
-    /**
-     * Special hack for property "font" which contains a value font-size/line-height
-     * @param value the value
-     */
-    void appendFontPropertyValue( Operation value ) {
-        ArrayList<Expression> operands = value.getOperands();
-        char operator = value.getOperator();
-        switch( operator ) {
-            case '~':
-            case ',':
-                value.appendTo( this );
-                return;
-        }
-        for( int i = 0; i < operands.size(); i++ ) {
-            if( i > 0 ) {
-                this.append( operator );
-            }
-            Expression operand = operands.get( i );
-            if( operand.getClass() == Operation.class ) {
-                appendFontPropertyValue( (Operation)operand );
-            } else {
-                operand.appendTo( this );
-            }
-        }
     }
 
     /**

@@ -45,6 +45,10 @@ import javax.annotation.Nonnull;
  */
 class LessParser implements FormattableContainer {
 
+    private boolean                     strictMath;
+
+    private int                         nesting;
+
     private URL                         baseURL;
 
     private ReaderFactory               readerFactory;
@@ -184,7 +188,9 @@ class LessParser implements FormattableContainer {
                         continue LOOP;
                     }
                     String name = trim( builder );
+                    strictMath = "font".equals( name );
                     Expression value = parseExpression( (char)0 );
+                    strictMath = false;
                     ch = read();
                     switch( ch ) {
                         case '}': //last line in a block does not need a semicolon
@@ -784,6 +790,14 @@ class LessParser implements FormattableContainer {
                     }
                     switch( ch ) {
                         case '/':
+                            if( strictMath && nesting == 0 ) {
+                                if( wasWhite ) {
+                                    builder.append( ' ' );
+                                    wasWhite = false;
+                                }
+                                builder.append( ch );
+                                continue LOOP;
+                            }
                             if( comment( null ) ) {
                                 continue LOOP;
                             }
@@ -979,7 +993,9 @@ class LessParser implements FormattableContainer {
         Expression left = null;
         char ch;
         do {
+            nesting++;
             Expression expr = parseExpression( (char)0 );
+            nesting--;
             left = concat( left, ';', expr );
             ch = read();
         } while( ch == ';' );
