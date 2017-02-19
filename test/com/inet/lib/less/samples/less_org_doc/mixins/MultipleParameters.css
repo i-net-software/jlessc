@@ -3,3 +3,8 @@
   color-2: #008000;
   padding-2: 2;
 }
+.dummyParameter {
+  color-1: 1, 2, 3;
+  color-2: 1, 2, 3;
+  padding-2: 2;
+}
