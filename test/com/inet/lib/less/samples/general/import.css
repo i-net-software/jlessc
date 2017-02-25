@@ -3,15 +3,16 @@
   b: "b";
 }
 .values .slash {
+  font: 1.5/2;
   a: 1.5;
   b: 1.5;
-  e: a / b;
-  f: a / b;
-  g: a / b;
-  h: a / b;
+  e: a/b;
+  f: a/b;
+  g: a/b;
+  h: a/b;
   font: 3/2;
 }
 .values .slash2 {
-  background: url("img.jpg") center / 100px;
+  background: url("img.jpg") center/100px;
   background: url(abc/img.jpg);
 }

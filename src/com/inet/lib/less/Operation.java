@@ -175,6 +175,14 @@ class Operation extends Expression {
     }
 
     /**
+     * Inject a data type from parser
+     * @param type the type
+     */
+    void setDataType( int type ) {
+        this.type = type;
+    }
+
+    /**
      * Get the highest data type of different operands
      * @param formatter current formatter
      * @return the data type
@@ -232,7 +240,7 @@ class Operation extends Expression {
                     case '/':
                         for( int i = 0; i < operands.size(); i++ ) {
                             if( i > 0 ) {
-                                formatter.append( ' ' ).append( operator ).append( ' ' );
+                                formatter.append( operator );
                             }
                             operands.get( i ).appendTo( formatter );
                         }
