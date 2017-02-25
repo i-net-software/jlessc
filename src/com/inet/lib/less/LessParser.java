@@ -790,14 +790,6 @@ class LessParser implements FormattableContainer {
                     }
                     switch( ch ) {
                         case '/':
-                            if( strictMath && nesting == 0 ) {
-                                if( wasWhite ) {
-                                    builder.append( ' ' );
-                                    wasWhite = false;
-                                }
-                                builder.append( ch );
-                                continue LOOP;
-                            }
                             if( comment( null ) ) {
                                 continue LOOP;
                             }
@@ -846,6 +838,9 @@ class LessParser implements FormattableContainer {
                         }
                     }
                     left = concat( left, ch, parseExpression( ch ) );
+                    if( strictMath && nesting == 0 && ch == '/' ) {
+                        ((Operation)left).setDataType( Expression.STRING );
+                    }
                     break;
                 case ':': // Key value parameter like @color:#abc
                     if( left == null ) {
