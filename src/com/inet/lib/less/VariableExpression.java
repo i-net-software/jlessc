@@ -104,6 +104,6 @@ class VariableExpression extends Expression {
                 }
             }
         }
-        throw createException( "Undefine Variable: " + name );
+        throw createException( "Undefined Variable: " + name );
     }
 }

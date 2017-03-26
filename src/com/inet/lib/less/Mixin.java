@@ -175,7 +175,7 @@ class Mixin extends LessObject implements Formattable {
                 }
             }
             if( rules == null ) {
-                throw createException( "Undefine mixin: " + name );
+                throw createException( "Undefined mixin: " + name );
             }
         }
         stackID = formatter.stackID();

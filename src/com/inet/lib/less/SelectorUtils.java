@@ -168,7 +168,7 @@ class SelectorUtils {
 
                     Expression exp = formatter.getVariable( name );
                     if( exp == null ) {
-                        throw caller.createException( "Undefine Variable: " + name + " in " + str );
+                        throw caller.createException( "Undefined Variable: " + name + " in " + str );
                     }
                     if( isJavaScript ) {
                         boolean isList = exp.getDataType( formatter ) == Expression.LIST;
