@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015 Volker Berlin
+ * Copyright (c) 2014 - 2017 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,12 +26,16 @@
  */
 package com.inet.lib.less;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * A exception that occur if some can not parse or converted.
  */
 public class LessException extends RuntimeException {
 
-    private String msg;
+    private List<LessFilePosition> positions = new ArrayList<>();
 
     /**
      * Constructs a new less exception with the specified detail message.
@@ -41,7 +45,6 @@ public class LessException extends RuntimeException {
      */
     LessException( String message ) {
         super( message );
-        this.msg = super.getMessage();
     }
 
     /**
@@ -52,7 +55,6 @@ public class LessException extends RuntimeException {
      */
     LessException( Throwable cause ) {
         super( cause );
-        this.msg = super.getMessage();
     }
 
     /**
@@ -65,7 +67,6 @@ public class LessException extends RuntimeException {
      */
     LessException( String message, Throwable cause ) {
         super( message, cause );
-        this.msg = super.getMessage();
     }
 
     /**
@@ -75,14 +76,26 @@ public class LessException extends RuntimeException {
      * @param column the column in the less file
      */
     void addPosition( String filename, int line, int column ) {
-        StringBuilder builder = new StringBuilder();
-        builder.append( " on line " ).append( line ).append( ", column " ).append( column );
-        if( filename != null ) {
-            builder.append( ", file " ).append( filename );
+        LessFilePosition pos = new LessFilePosition( filename, line, column );
+        if( !positions.contains( pos ) ) {
+            this.positions.add( pos );
         }
-        if( !msg.contains( builder ) ) {
-            msg += "\n\t" + builder;
-        }
+    }
+
+    /**
+     * Get the less file stacktrace
+     * @return the stack
+     */
+    public List<LessFilePosition>  getPositions() {
+        return new ArrayList<>( positions );
+    }
+
+    /**
+     * The message without stacktrace.
+     * @return the message
+     */
+    public String getOriginalMessage() {
+        return super.getMessage();
     }
 
     /**
@@ -91,6 +104,13 @@ public class LessException extends RuntimeException {
      */
     @Override
     public String getMessage() {
-        return msg;
+        StringBuilder builder = new StringBuilder( super.getMessage() );
+        for( LessFilePosition pos : positions ) {
+            builder.append( "\n\t on line " ).append( pos.getLine() ).append( ", column " ).append( pos.getColumn() );
+            if( pos.getFilename() != null ) {
+                builder.append( ", file " ).append( pos.getFilename() );
+            }
+        }
+        return builder.toString();
     }
 }
