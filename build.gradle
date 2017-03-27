@@ -148,7 +148,7 @@ uploadArchives {
                         name 'Volker Berlin'
                         email 'vberlin@inetsoftware.de'
                         organization = 'i-net software'
-                        organizationUrl 'http://www.inetsoftware.de'
+                        organizationUrl 'https://www.inetsoftware.de/'
                     }
                 }
             }

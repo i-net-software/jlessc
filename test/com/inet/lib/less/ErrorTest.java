@@ -72,8 +72,8 @@ public class ErrorTest {
     }
 
     @Test
-    public void undefineVariableInSelectorInput() {
-        assertLessException( "a@{b}c{a:1;}", "Undefine Variable: @b in a@{b}c" );
+    public void undefinedVariableInSelectorInput() {
+        assertLessException( "a@{b}c{a:1;}", "Undefined Variable: @b in a@{b}c" );
     }
 
     @Test
