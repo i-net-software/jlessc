@@ -53,7 +53,9 @@ public final class LessFilePosition {
     }
 
     /**
-     * returns null if a file name is unavailable
+     * Get the file name.
+     * 
+     * @return the file name or null if in memory
      */
     public String getFilename() {
         return filename;
