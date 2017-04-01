@@ -19,4 +19,8 @@
 *.java text
 *.java diff=java
 
-* -text
+*.less text
+
+.classpath	-text
+.project	-text
+.settings	-text
