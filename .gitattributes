@@ -18,3 +18,5 @@
 
 *.java text
 *.java diff=java
+
+* -text
