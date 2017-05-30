@@ -127,6 +127,8 @@ class SelectorUtils {
         boolean isJavaScript = length > 0 && str.charAt( 0 ) == '`';
         int appendIdx = 0;
         char quote = 0;
+        boolean hasFileSeparators = ( str.indexOf("\\") > -1 || str.indexOf("/") > -1 );
+        boolean hasQuotes = ( str.indexOf('\'') != -1 || str.indexOf('\"') != -1 );
         for( ; i < length; i++ ) {
             char ch = str.charAt( i );
             switch( ch ) {
@@ -146,7 +148,15 @@ class SelectorUtils {
                         name = '@' + str.substring( i + 2, nextIdx );
                         nextIdx++;
                     } else {
-                        if( quote != 0 ) {
+                        String strBeforeWithNoSpace = str.substring( 0, i )
+                            .replaceAll("\\s","");
+                        boolean isAssign = ( str.charAt( i - 1 ) == ':' 
+                                || strBeforeWithNoSpace
+                                    .charAt(strBeforeWithNoSpace.length() -1) == ':');
+                        boolean isUrl = hasFileSeparators
+                            && !hasQuotes
+                            && !isAssign;
+                        if( quote != 0 || isUrl ) {
                             break;
                         }
                         LOOP: for( nextIdx = i + 1; nextIdx < str.length(); nextIdx++ ) {
