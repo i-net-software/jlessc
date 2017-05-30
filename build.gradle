@@ -173,6 +173,7 @@ configurations {
 
 dependencies {
     benchmarkLessCSS    'org.lesscss:lesscss:+'
+    benchmarkLessCSS    'org.slf4j:slf4j-jdk14:+'
     benchmarkLessEngine 'com.asual.lesscss:lesscss-engine:+'
 }
 
@@ -281,4 +282,7 @@ ClassLoader getClassLoader( Configuration config ) {
         urls += file.toURI().toURL()
     }
     return new URLClassLoader( urls.toArray(new URL[0]) );
+}
+configurations.all {
+  exclude(module:"slf4j-api")
 }
