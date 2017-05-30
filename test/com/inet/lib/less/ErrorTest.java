@@ -101,4 +101,22 @@ public class ErrorTest {
             assertEquals( Integer.toString( i ), ".t{c:#d3d3d3}", Less.compile( null, ".t{c:lightgrey}", true ) );
         }
     }
+    /**
+     * test for error with retina images and no quote marks
+     *
+     * fix issue we were having that if you have retina images and do not 
+     * use quote marks the name gets cut off so for example the file is
+     * no longer 'lock@2x.png' but 'lock'
+     *
+     */
+    @Test
+    public void checkRetina(){
+        String less2 = ".container { background-image: url(/img/lock@2x.png);}";
+        try{
+            String css2 = Less.compile(null, less2, false);
+            assert(css2.contains("lock@2x.png"));
+        }catch(LessException e){
+            fail("@ sign in retina image was not recognised "+e.getMessage());
+        }
+    }
 }
