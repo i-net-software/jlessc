@@ -117,9 +117,10 @@ class SelectorUtils {
      * @param formatter current formatter
      * @param str the string
      * @param i a start position for search for place holders
+     * @param isStringValue is called from string replace of a variable in inline mode
      * @param caller for exception handling
      */
-    static void appendToWithPlaceHolder( CssFormatter formatter, String str, int i, LessObject caller ) {
+    static void appendToWithPlaceHolder( CssFormatter formatter, String str, int i, boolean isStringValue, LessObject caller ) {
         if( formatter.inlineMode() ) {
             str = UrlUtils.removeQuote( str );
         }
@@ -146,7 +147,7 @@ class SelectorUtils {
                         name = '@' + str.substring( i + 2, nextIdx );
                         nextIdx++;
                     } else {
-                        if( quote != 0 ) {
+                        if( quote != 0 || isStringValue ) {
                             break;
                         }
                         LOOP: for( nextIdx = i + 1; nextIdx < str.length(); nextIdx++ ) {
@@ -213,7 +214,7 @@ class SelectorUtils {
         int pos = str.startsWith( "@{" ) ? 0 : str.indexOf( "@", 1 );
         if( pos >= 0 ) {
             formatter.addOutput();
-            SelectorUtils.appendToWithPlaceHolder( formatter, str, pos, caller );
+            SelectorUtils.appendToWithPlaceHolder( formatter, str, pos, false, caller );
             return formatter.releaseOutput();
         }
         return str;
