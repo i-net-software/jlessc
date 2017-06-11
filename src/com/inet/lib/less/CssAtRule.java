@@ -70,7 +70,7 @@ class CssAtRule extends LessObject implements Formattable {
             formatter = formatter.getHeader();
         }
         formatter.getOutput();
-        SelectorUtils.appendToWithPlaceHolder( formatter, css, 1, this );
+        SelectorUtils.appendToWithPlaceHolder( formatter, css, 1, false, this );
         formatter.newline();
     }
 }

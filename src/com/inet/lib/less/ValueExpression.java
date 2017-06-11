@@ -121,7 +121,7 @@ class ValueExpression extends Expression {
                 formatter.appendColor( value, toString() );
                 break;
             case STRING:
-                SelectorUtils.appendToWithPlaceHolder( formatter, toString(), 0, this );
+                SelectorUtils.appendToWithPlaceHolder( formatter, toString(), 0, true, this );
                 break;
             default:
                 super.appendTo( formatter );
