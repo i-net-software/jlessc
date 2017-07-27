@@ -29,18 +29,21 @@ package com.inet.lib.less;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
-import javax.xml.bind.DatatypeConverter;
 
 /**
  * Implementation of the function svg-Gradient and other URL utils.
  */
 class UrlUtils {
+
+    private static Method base64;
+    private static Object encoder;
 
     /**
      * Remove a quote if exists.
@@ -134,7 +137,7 @@ class UrlUtils {
         byte[] bytes = builder.toString().getBytes( StandardCharsets.UTF_8 );
 
         formatter.append( "url('data:image/svg+xml;base64," );
-        formatter.append( DatatypeConverter.printBase64Binary( bytes ) );
+        formatter.append( toBase64( bytes ) );
         formatter.append( "\')" );
     }
 
@@ -224,7 +227,7 @@ class UrlUtils {
 
         if( type.endsWith( "base64" ) ) {
             formatter.append( "url(\"data:" ).append( type ).append( ',' );
-            formatter.append( DatatypeConverter.printBase64Binary( bytes ) );
+            formatter.append( toBase64( bytes ) );
             formatter.append( "\")" );
         } else {
             formatter.append( "url(\"data:" ).append( type ).append( ',' );
@@ -257,6 +260,39 @@ class UrlUtils {
                         formatter.append( Character.toUpperCase( Character.forDigit(b & 0xF, 16) ) );
                 }
             }
+        }
+    }
+
+    /**
+     * Hack for base64 inJava 7 to Java 9. In Java 7 we use: javax.xml.bind.DatatypeConverter.printBase64Binary( byte[]
+     * ) in Java 8-9 we use: java.util.Base64.getEncoder().encodeToString( byte[] )
+     * 
+     * @param bytes the bytes to converted
+     * @return the base64 encoded string
+     */
+    private static String toBase64( byte[] bytes ) {
+        if( base64 == null ) {
+            try {
+                Class<?> clazz = Class.forName( "java.util.Base64" );
+                encoder = clazz.getMethod( "getEncoder" ).invoke( null );
+                base64 = encoder.getClass().getMethod( "encodeToString", byte[].class );
+                base64.setAccessible( true ); /// performance optimizing
+            } catch( Throwable th1 ) {
+                try {
+                    Class<?> clazz = Class.forName( "javax.xml.bind.DatatypeConverter" );
+                    base64 = clazz.getMethod( "printBase64Binary", byte[].class );
+                    encoder = null;
+                    base64.setAccessible( true ); /// performance optimizing
+                } catch( Throwable th2 ) {
+                    th1.addSuppressed( th2 );
+                    throw new LessException( th1 );
+                }
+            }
+        }
+        try {
+            return (String)base64.invoke( encoder, bytes );
+        } catch( Throwable th ) {
+            throw new LessException( th );
         }
     }
 }
