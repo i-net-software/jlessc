@@ -1,13 +1,14 @@
 buildscript {
+    repositories {
+        jcenter()
+    }
     dependencies {
+        classpath 'com.moowork.gradle:gradle-node-plugin:+'
         classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:+'
     }
 }
 
-plugins {
-  id "com.moowork.node" version "0.9"
-}
-
+apply plugin: 'com.moowork.node'
 apply plugin: 'java'
 
 repositories {
