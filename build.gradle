@@ -74,7 +74,10 @@ jacocoTestReport {
         html.enabled = true
     }
 }
-check.dependsOn tasks.coveralls
+ 
+if( System.getProperty( "java.vm.specification.version" ) > '1.8' ) { 
+    check.dependsOn tasks.coveralls
+}
 
 /****************************************
  * Deploy to Maven
