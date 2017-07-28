@@ -264,11 +264,14 @@ class UrlUtils {
     }
 
     /**
-     * Hack for base64 inJava 7 to Java 9. In Java 7 we use: javax.xml.bind.DatatypeConverter.printBase64Binary( byte[]
-     * ) in Java 8-9 we use: java.util.Base64.getEncoder().encodeToString( byte[] )
-     * 
+     * Hack for base64 in Java 7 to Java 9.
+     * <ul>
+     * <li>In Java 7 we use: javax.xml.bind.DatatypeConverter.printBase64Binary( byte[] ) 
+     * <li>in Java 8-9 we use: java.util.Base64.getEncoder().encodeToString( byte[] )
+     * </ul>
      * @param bytes the bytes to converted
      * @return the base64 encoded string
+     * @throws LessException if the reflection does not work
      */
     private static String toBase64( byte[] bytes ) {
         if( base64 == null ) {
