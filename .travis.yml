@@ -4,5 +4,6 @@ sudo: false
 language: java
 jdk:
   - oraclejdk8
-  - oraclejdk7
+  - oraclejdk9
+  - openjdk7
 script: gradle check benchmark
