@@ -541,7 +541,7 @@ class LessParser implements FormattableContainer {
                 HashMap<String, Expression> importVariables = new DefaultedHashMap<>( variables );
                 variables = new DefaultedHashMap<>( importVariables );
                 Formattable lastRuleBefore = rules.size() == 0 ? null : rules.get( rules.size() - 1 );
-                LazyImport lazy = new LazyImport( reader, baseURL, filename, importVariables, lastRuleBefore );
+                LazyImport lazy = new LazyImport( reader, baseURL, name, importVariables, lastRuleBefore );
                 if( lazyImports == null ) {
                     lazyImports = new ArrayList<>();
                 }
