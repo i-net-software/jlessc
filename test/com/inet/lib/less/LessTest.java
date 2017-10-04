@@ -64,6 +64,7 @@ public class LessTest {
     }
 
     private static void params( ArrayList<Object[]> params, File dir, int baseLength ) {
+        String javaVersion = System.getProperty( "java.vm.specification.version" );
         for( File file : dir.listFiles() ) {
             if( file.getName().endsWith( ".less" ) ) {
                 String basename = file.getName();
@@ -71,6 +72,10 @@ public class LessTest {
                 String cssname = basename + ".css";
                 File cssfile = new File( file.getParent(), cssname );
                 if( cssfile.exists() ) {
+                    File javaSpecialFile = new File( file.getParent(), basename + '.' + javaVersion + ".css" );
+                    if( javaSpecialFile.exists() ) {
+                        cssfile = javaSpecialFile;
+                    }
                     params.add( new Object[] { cssfile.getPath().substring( baseLength ), file, cssfile } );
                 }
                 cssname = basename + ".css_x";
