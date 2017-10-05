@@ -68,6 +68,7 @@ class UrlUtils {
      * 
      * @param formatter current formatter
      * @param parameters function parameters
+     * @throws LessException if parameter list is wrong
      */
     static void svgGradient( CssFormatter formatter, List<Expression> parameters ) {
         if( parameters.size() < 3 ) {

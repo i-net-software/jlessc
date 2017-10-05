@@ -46,8 +46,9 @@ class CustomFunctions {
     /**
      * Colorize an image and inline it as base64.
      * @param formatter current formatter
-     * @param parameters the parameters (url, main_color, contrast_color)
+     * @param parameters the parameters (relativeURL, url, main_color, contrast_color)
      * @throws IOException if any I/O error occur
+     * @throws LessException if parameter list is wrong
      */
     static void colorizeImage( CssFormatter formatter, List<Expression> parameters ) throws IOException {
         if( parameters.size() < 4 ) {
