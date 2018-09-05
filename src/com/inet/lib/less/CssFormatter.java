@@ -797,7 +797,7 @@ class CssFormatter implements Cloneable {
      * @return a reference to this object
      */
     CssFormatter newline() {
-        output.append( '\n' );
+        output.append( System.lineSeparator() );
         return this;
     }
 
@@ -821,7 +821,7 @@ class CssFormatter implements Cloneable {
      * @return a reference to this object
      */
     CssFormatter comment( String msg ) {
-        getOutput().append( insets ).append( msg ).append( '\n' );
+        getOutput().append( insets ).append( msg ).append( System.lineSeparator() );
         return this;
     }
 
