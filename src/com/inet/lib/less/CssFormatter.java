@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -57,7 +57,7 @@ class CssFormatter implements Cloneable {
 
         /**
          * Get a variable expression from this scope
-         * 
+         *
          * @param name
          *            the name of the variable starting with @
          * @return the expression or null if not found
@@ -148,7 +148,7 @@ class CssFormatter implements Cloneable {
 
     /**
      * Create a new formatter for a single rule with optional output.
-     * 
+     *
      * @param output
      *            optional target
      * @return a new formatter
@@ -169,7 +169,7 @@ class CssFormatter implements Cloneable {
 
     /**
      * Format the a parsed less file.
-     * 
+     *
      * @param parser the parser result
      * @param baseURL the URL of the less file
      * @param target the output of the resulting string
@@ -204,7 +204,7 @@ class CssFormatter implements Cloneable {
     }
 
     /**
-     * Get the formatter for CSS directives. 
+     * Get the formatter for CSS directives.
      * @return the header formatter
      */
     CssFormatter getHeader() {
@@ -213,7 +213,7 @@ class CssFormatter implements Cloneable {
 
     /**
      * If already was write a character directive. Such directive can write only once.
-     * 
+     *
      * @return true, if already write.
      */
     boolean isCharsetDirective(){
@@ -246,7 +246,7 @@ class CssFormatter implements Cloneable {
     }
 
     /**
-     * Release an output buffer, return the content and restore the previous output. 
+     * Release an output buffer, return the content and restore the previous output.
      * @return the content of the current output
      */
     String releaseOutput() {
@@ -298,7 +298,7 @@ class CssFormatter implements Cloneable {
 
     /**
      * Get a variable expression from the current stack
-     * 
+     *
      * @param name
      *            the name of the variable starting with @
      * @return the expression or null if not found
@@ -381,7 +381,7 @@ class CssFormatter implements Cloneable {
 
     /**
      * Add rule variables to the stack.
-     * 
+     *
      * @param variables
      *            the variables, can be null if the current rule has no parameters.
      */
@@ -391,7 +391,7 @@ class CssFormatter implements Cloneable {
 
     /**
      * Remove rule variables from the stack.
-     * 
+     *
      * @param variables
      *            the variables, can be null if the current rule has no parameters.
      */
@@ -401,7 +401,7 @@ class CssFormatter implements Cloneable {
 
     /**
      * Add the parameters of a guard
-     * 
+     *
      * @param parameters the parameters
      * @param isDefault if the default case will be evaluated, in this case the expression "default" in guard is true.
      */
@@ -435,7 +435,7 @@ class CssFormatter implements Cloneable {
 
     /**
      * Get the current value of "default" in a guard.
-     * 
+     *
      * @return true if the default case will be evaluate.
      */
     boolean getGuardDefault() {
@@ -445,17 +445,17 @@ class CssFormatter implements Cloneable {
 
     /**
      * If the state of "default" was requested since the last guard parameter was added.
-     * 
+     *
      * @return true, if default was called
      */
     boolean wasDefaultFunction() {
         return wasDefaultFunction;
     }
 
- 
+
     /**
      * A mixin inline never it self.
-     * 
+     *
      * @param rule the rule
      * @return true, if the mixin is currently formatting
      */
@@ -470,7 +470,7 @@ class CssFormatter implements Cloneable {
 
     /**
      * Get a nested mixin of a parent rule.
-     * 
+     *
      * @param name
      *            the name of the mixin
      * @return the mixin or null
@@ -493,7 +493,7 @@ class CssFormatter implements Cloneable {
     }
 
     /**
-     * The counter of the variable stack changes. This is an optimizing that some expression does not need reevaluate if this ID has not changed. 
+     * The counter of the variable stack changes. This is an optimizing that some expression does not need reevaluate if this ID has not changed.
      * @return the id
      */
     int stackID() {
@@ -502,7 +502,7 @@ class CssFormatter implements Cloneable {
 
     /**
      * Get the current output of the formatter.
-     * 
+     *
      * @return the output.
      */
     StringBuilder getOutput() {
@@ -515,7 +515,7 @@ class CssFormatter implements Cloneable {
     }
 
     /**
-     * Set the inline mode. In the inline mode: 
+     * Set the inline mode. In the inline mode:
      * <li>quotes are removed from strings
      * <li>colors are written ever as full color RGB value
      * @param mode the new mode.
@@ -564,7 +564,7 @@ class CssFormatter implements Cloneable {
 
     /**
      * Append an hex value to the output.
-     * 
+     *
      * @param value the value
      * @param digits the digits to write.
      */
@@ -577,7 +577,7 @@ class CssFormatter implements Cloneable {
 
     /**
      * Append a single character to the output.
-     * 
+     *
      * @param ch the character
      * @return a reference to this object
      */
@@ -588,7 +588,7 @@ class CssFormatter implements Cloneable {
 
     /**
      * Append a decimal number to the output.
-     * 
+     *
      * @param value the number
      * @return a reference to this object
      */
@@ -603,7 +603,7 @@ class CssFormatter implements Cloneable {
 
     /**
      * Append a value with a unit. In compress mode not all units are written.
-     * 
+     *
      * @param value the value.
      * @param unit the unit
      * @return a reference to this object
@@ -649,7 +649,7 @@ class CssFormatter implements Cloneable {
                 block = copy( null );
                 if( selectors[0].startsWith( "@media" ) ) {
                     block.lessExtends = new LessExtendMap( state.lessExtends );
-                    nextOutput = new CssMediaOutput( selectors, block.output, state.isReference, block.lessExtends ); 
+                    nextOutput = new CssMediaOutput( selectors, block.output, state.isReference, block.lessExtends );
                 } else {
                     nextOutput = new CssRuleOutput( selectors, block.output, state.isReference );
                 }
@@ -690,7 +690,7 @@ class CssFormatter implements Cloneable {
 
     /**
      * Output a new block and increment the insets.
-     * 
+     *
      * @param selectors the selectors of the block.
      */
     void startBlockImpl( String[] selectors ) {
@@ -710,7 +710,7 @@ class CssFormatter implements Cloneable {
 
     /**
      * Terminate a CSS block.
-     * 
+     *
      * @return a reference to this object
      */
     CssFormatter endBlock() {
@@ -743,7 +743,7 @@ class CssFormatter implements Cloneable {
 
     /**
      * Append a property to the output like: name: value;
-     * 
+     *
      * @param name
      *            the name
      * @param value
@@ -783,7 +783,7 @@ class CssFormatter implements Cloneable {
 
     /**
      * Write a single space. The compress formatter do nothing.
-     * 
+     *
      * @return a reference to this object
      */
     CssFormatter space() {
@@ -793,11 +793,11 @@ class CssFormatter implements Cloneable {
 
     /**
      * Write a newline. The compress formatter do nothing.
-     * 
+     *
      * @return a reference to this object
      */
     CssFormatter newline() {
-        output.append( '\n' );
+        output.append( System.lineSeparator() );
         return this;
     }
 
@@ -821,13 +821,13 @@ class CssFormatter implements Cloneable {
      * @return a reference to this object
      */
     CssFormatter comment( String msg ) {
-        getOutput().append( insets ).append( msg ).append( '\n' );
+        getOutput().append( insets ).append( msg ).append( System.lineSeparator() );
         return this;
     }
 
     /**
      * Get a shared decimal format for parsing numbers with units.
-     * 
+     *
      * @return the format
      */
     DecimalFormat getFormat() {
