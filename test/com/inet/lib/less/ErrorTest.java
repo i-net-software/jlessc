@@ -1,8 +1,9 @@
 package com.inet.lib.less;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 public class ErrorTest {
 
@@ -12,7 +13,7 @@ public class ErrorTest {
             fail( "LessException expected" );
         } catch( LessException lex ) {
             String message = lex.getMessage();
-            assertEquals( expectedErrorMessage, message.substring( 0, message.indexOf( '\n' ) ) );
+            assertEquals( expectedErrorMessage, message.substring( 0, message.indexOf( System.lineSeparator() ) ) );
         }
     }
     @Test
