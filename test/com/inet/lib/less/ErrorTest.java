@@ -13,7 +13,7 @@ public class ErrorTest {
             fail( "LessException expected" );
         } catch( LessException lex ) {
             String message = lex.getMessage();
-            assertEquals( expectedErrorMessage, message.substring( 0, message.indexOf( System.lineSeparator() ) ) );
+            assertEquals( expectedErrorMessage, message.substring( 0, message.indexOf( '\n' ) ) );
         }
     }
     @Test

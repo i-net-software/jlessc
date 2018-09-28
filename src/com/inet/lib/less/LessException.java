@@ -105,7 +105,7 @@ public class LessException extends RuntimeException {
     public String getMessage() {
         StringBuilder builder = new StringBuilder( super.getMessage() );
         for( LessFilePosition pos : positions ) {
-            builder.append( System.lineSeparator() ).append( " on line " ).append( pos.getLine() ).append( ", column " ).append( pos.getColumn() );
+            builder.append( "\n\t on line " ).append( pos.getLine() ).append( ", column " ).append( pos.getColumn() );
             if( pos.getFilename() != null ) {
                 builder.append( ", file " ).append( pos.getFilename() );
             }
