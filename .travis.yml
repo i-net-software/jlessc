@@ -11,13 +11,4 @@ jdk:
   - openjdk11
   - openjdk-ea
 
-matrix:
-  include:
-    - jdk: openjdk11
-      before_install: &fix_certs
-        - rm "${JAVA_HOME}/lib/security/cacerts"
-        - ln -s /etc/ssl/certs/java/cacerts "${JAVA_HOME}/lib/security/cacerts"
-    - jdk: openjdk-ea
-      before_install: *fix_certs
-
-script: ./gradlew check benchmark
+script: ./gradlew --stacktrace check benchmark
