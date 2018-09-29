@@ -1,4 +1,5 @@
 # Use docker-based build environment (instead of openvz)
+dist: trusty
 sudo: false
 
 language: java
