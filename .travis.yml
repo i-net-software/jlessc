@@ -6,4 +6,4 @@ language: java
 jdk:
   - oraclejdk8
   - oraclejdk9
-script: gradle check benchmark
+script: ./gradlew check benchmark
