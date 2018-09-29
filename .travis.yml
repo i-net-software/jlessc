@@ -7,7 +7,7 @@ jdk:
   - oraclejdk8
   - oraclejdk9
   - oraclejdk10
-  - oraclejdk-ea
   - openjdk10
   - openjdk11
+  - openjdk-ea
 script: ./gradlew check benchmark
