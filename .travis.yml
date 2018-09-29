@@ -11,4 +11,4 @@ jdk:
   - openjdk11
   - openjdk-ea
 
-script: ./gradlew --stacktrace check benchmark
+script: ./gradlew -Djdk.tls.client.protocols="TLSv1,TLSv1.1,TLSv1.2" --stacktrace check benchmark
