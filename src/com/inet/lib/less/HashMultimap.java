@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015 Volker Berlin
+ * Copyright (c) 2014 - 2018 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@ package com.inet.lib.less;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 /**
  * A HashMap that hold multiple values for a single key.
@@ -90,10 +91,39 @@ class HashMultimap<K, V> {
             } else if( resultParent == null ){
                 return result;
             } else {
-                result.addAll( resultParent );
+                for( V value : resultParent ) {
+                    if( !result.contains( value ) ) {
+                        result.add( value );
+                    }
+                }
             }
         }
         return result;
+    }
+
+    /**
+     * Add all values of the mappings from the specified map to this map.
+     * 
+     * @param m
+     *            mappings to be stored in this map
+     */
+    void addAll( HashMultimap<K, V> m ) {
+        if( m == this ) {
+            return;
+        }
+        for( Entry<K, List<V>> entry : m.map.entrySet() ) {
+            K key = entry.getKey();
+            List<V> rules = map.get( key );
+            if( rules == null ) {
+                rules = new ArrayList<>();
+                map.put( key, rules );
+            }
+            for( V value : entry.getValue() ) {
+                if( !rules.contains( value ) ) {
+                    rules.add( value );
+                }
+            }
+        }
     }
 
     /**

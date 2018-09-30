@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2016 Volker Berlin
+ * Copyright (c) 2014 - 2018 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -90,6 +90,14 @@ class LessParser implements FormattableContainer {
      */
     public HashMap<String, Expression> getVariables() {
         return variables;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public HashMultimap<String, Rule> getMixins() {
+        return mixins;
     }
 
     /**
@@ -246,7 +254,7 @@ class LessParser implements FormattableContainer {
                         if( selector.contains( ":extend(" ) ) {
                             LessExtend.addLessExtendsTo( currentRule, reader, selector );
                         } else {
-                            Mixin mixin = new Mixin( reader, selector, params, mixins );
+                            Mixin mixin = new Mixin( reader, selector, params, currentRule.getMixins() );
                             currentRule.add( mixin );
                         }
                     }
@@ -294,7 +302,7 @@ class LessParser implements FormattableContainer {
                     guard = null;
                     String[] selectors = rule.getSelectors();
                     for( String sel : selectors ) {
-                        mixins.add( sel.trim(), rule );
+                        currentRule.getMixins().add( sel.trim(), rule );
                     }
                     return;
                 case '/':

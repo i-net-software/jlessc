@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015 Volker Berlin
+ * Copyright (c) 2014 - 2018 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -58,6 +58,8 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
 
     private HashMap<String, Expression> variables  = new HashMap<>();
 
+    private HashMultimap<String, Rule>  mixins;
+
     /**
      * Create new instance.
      * 
@@ -70,6 +72,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
     Rule( LessObject obj, FormattableContainer parent, String selectors, @Nullable Operation params, Expression guard ) {
         super( obj );
         this.parent = parent;
+        this.mixins = new HashMultimap<>( parent.getMixins() );
         this.selectors = SelectorUtils.split( selectors  );
         if( params == null ) {
             this.params = null;
@@ -96,6 +99,16 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
     @Override
     public final int getType() {
         return RULE;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void prepare( CssFormatter formatter ) {
+        for( Formattable prop : properties ) {
+            prop.prepare( formatter );
+        }
     }
 
     /**
@@ -420,6 +433,14 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
     @Override
     public HashMap<String, Expression> getVariables() {
         return variables;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public HashMultimap<String, Rule> getMixins() {
+        return mixins;
     }
 
     /**
