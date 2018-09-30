@@ -250,6 +250,9 @@ class CssFormatter implements Cloneable {
      * @return the content of the current output
      */
     String releaseOutput() {
+        if( output == null ) { // occur in Rule.toString()
+            return "";
+        }
         String str = output.toString();
         freeOutput();
         return str;
