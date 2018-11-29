@@ -1,0 +1,5 @@
+@media screen {
+  .import_scope .media_screen {
+    content: "screen";
+  }
+}
