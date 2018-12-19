@@ -9,7 +9,9 @@
 #built-in {
   escaped: -Some::weird(#thing, y);
   lighten: #ffcccc;
+  lighten-relative: #ff6666;
   darken: #330000;
+  darken-relative: #990000;
   saturate: #203c31;
   desaturate: #29332f;
   greyscale: #2e2e2e;
