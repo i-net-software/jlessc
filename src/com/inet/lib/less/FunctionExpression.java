@@ -564,12 +564,20 @@ class FunctionExpression extends Expression {
                     return;
                 case "lighten":
                     hsl = toHSL( getColor( 0, formatter ) );
-                    hsl.l += getPercent( 1, formatter );
+                    if (parameters.size() > 2 && "relative".equals( get( 2 ).stringValue( formatter )) ) {
+                        hsl.l += hsl.l * getPercent(1, formatter);
+                    } else {
+                        hsl.l += getPercent(1, formatter);
+                    }
                     doubleValue = hsla( hsl );
                     return;
                 case "darken":
                     hsl = toHSL( getColor( 0, formatter ) );
-                    hsl.l -= getPercent( 1, formatter );
+                    if (parameters.size() > 2 && "relative".equals( get( 2 ).stringValue( formatter )) ) {
+                        hsl.l -= hsl.l * getPercent(1, formatter);
+                    } else {
+                        hsl.l -= getPercent(1, formatter);
+                    }
                     doubleValue = hsla( hsl );
                     return;
                 case "fadein":
