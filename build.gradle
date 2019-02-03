@@ -92,6 +92,18 @@ group = 'de.inetsoftware'
 archivesBaseName = 'jlessc'
 version = '1.7-SNAPSHOT'
 
+jar {
+    manifest {
+        attributes( 'Implementation-Title': 'JLessC, a Less CSS compiler',
+                    'Implementation-Vendor': 'i-net software',
+                    'Implementation-Version': version,
+                    'Automatic-Module-Name': 'de.inetsoftware.jlessc',
+                    'Bundle-SymbolicName': 'de.inetsoftware.jlessc',
+                    'Export-Package': 'com.inet.lib.less',
+                    'Bundle-Version': version)
+    }
+}
+
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
     from javadoc
