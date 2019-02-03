@@ -1,0 +1,16 @@
+simple {
+  value: 1 2 3 4;
+  length: 4;
+}
+full {
+  value: 10px 20px 30px;
+  length: 3;
+}
+empty {
+  value: ;
+  length: 0;
+}
+floating {
+  value: 1.4 1.6 1.8 2 2.2 2.4 2.6 2.8 3 3.2;
+  length: 10;
+}

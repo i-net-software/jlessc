@@ -294,6 +294,9 @@ class FunctionExpression extends Expression {
                         return;
                     }
                     break;
+                case "range":
+                    range( formatter ).appendTo( formatter );
+                    return;
             }
             if( type == UNKNOWN ) {
                 eval( formatter );
@@ -450,6 +453,9 @@ class FunctionExpression extends Expression {
                     return;
                 case "extract":
                     extract( formatter );
+                    return;
+                case "range":
+                    type = LIST;
                     return;
                 case "alpha":
                     type = NUMBER;
@@ -1028,9 +1034,11 @@ class FunctionExpression extends Expression {
      */
     @Override
     public Operation listValue( CssFormatter formatter ) {
-        switch( super.toString().toLowerCase() ) {
+        switch( super.toString() ) {
             case "extract":
                 return extract( formatter ).listValue( formatter );
+            case "range":
+                return range( formatter );
         }
         return super.listValue( formatter );
     }
@@ -1083,5 +1091,37 @@ class FunctionExpression extends Expression {
         }
         return ex;
 
+    }
+
+    /**
+     * Function range. Generate a list spanning a range of values
+     * 
+     * @param formatter
+     *            current CSS output
+     * @return The operation representing a list of values
+     */
+    private Operation range( CssFormatter formatter ) {
+        type = LIST;
+        double start = get( 0 ).doubleValue( formatter );
+        double end;
+        if( parameters.size() >= 2 ) {
+            end = get( 1 ).doubleValue( formatter );
+        } else {
+            end = start;
+            start = 1;
+        }
+        double step;
+        if( parameters.size() >= 3 ) {
+            step = get( 2 ).doubleValue( formatter );
+        } else {
+            step = 1;
+        }
+        String unit = get( 0 ).unit( formatter );
+        Operation op = new Operation( this, ' ' );
+        while( start <= end ) {
+            op.addOperand( new ValueExpression( this, start + unit ) );
+            start += step;
+        }
+        return op;
     }
 }

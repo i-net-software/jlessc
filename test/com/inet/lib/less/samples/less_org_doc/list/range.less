@@ -1,0 +1,20 @@
+simple {
+    @list: range(4);
+    value: @list;
+    length: length( @list );
+}
+full {
+    @list: range(10px, 30px, 10);
+    value: @list;
+    length: length( @list );
+}
+empty {
+    @list: range(10, 5);
+    value: @list;
+    length: length( @list );
+}
+floating {
+    @list: range(1.4, 3.4, 0.2);
+    value: @list;
+    length: length( @list );
+}
