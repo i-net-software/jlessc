@@ -30,6 +30,7 @@ import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 
 /**
  * A reader with some special look ahead reading.
@@ -39,6 +40,8 @@ class LessLookAheadReader extends LessObject implements Closeable {
     private final Reader        reader;
 
     private final StringBuilder cache = new StringBuilder();
+
+    private StringReader        blockMarkReader;
 
     private final boolean       isReference, isMultiple;
 
@@ -61,6 +64,24 @@ class LessLookAheadReader extends LessObject implements Closeable {
     }
 
     /**
+     * Read the next character in the method nextBlockMarker()
+     * 
+     * @return next char
+     * @throws IOException
+     *             if an I/O error occur
+     */
+    private int readCharBlockMarker() throws IOException {
+        if( blockMarkReader != null ) {
+            int ch = blockMarkReader.read();
+            if( ch != -1 ) {
+                return ch;
+            }
+            blockMarkReader = null;
+        }
+        return reader.read();
+    }
+
+    /**
      * Get the next parse type. This can be -1, ';', '{' or '}'. It copy the input until this marker in the look ahead
      * cache.
      * 
@@ -68,12 +89,15 @@ class LessLookAheadReader extends LessObject implements Closeable {
      * @throws LessException if any parsing error occur.
      */
     int nextBlockMarker() throws LessException {
+        if( cachePos < cache.length() ) {
+            blockMarkReader = new StringReader( cache.substring( cachePos ) );
+        }
         cache.setLength( cachePos = 0 );
         int parenthesis = 0;
         boolean isSlash = false;
         try {
             for( ;; ) {
-                int ch = reader.read();
+                int ch = readCharBlockMarker();
                 if( ch < 0 ) {
                     for( int i = 0; i < cache.length(); i++ ) {
                         if( !Character.isWhitespace( cache.charAt( i ) ) ) {
@@ -98,7 +122,7 @@ class LessLookAheadReader extends LessObject implements Closeable {
                         if( isSlash ) {
                             boolean isAsterix = false;
                             for( ;; ) {
-                                ch = reader.read();
+                                ch = readCharBlockMarker();
                                 if( ch < 0 ) {
                                     throw createException( "Unrecognized input: '" + cache.toString().trim() + "'" );
                                 }
@@ -114,7 +138,7 @@ class LessLookAheadReader extends LessObject implements Closeable {
                     case '{':
                         if( cache.length() > 1 && cache.charAt( cache.length() - 2 ) == '@' ) { // @{  --> a inline variable and not a block start
                             do {
-                                ch = reader.read();
+                                ch = readCharBlockMarker();
                                 if( ch < 0 ) {
                                     throw createException( "Unrecognized input: '" + cache.toString().trim() + "'" );
                                 }
@@ -143,7 +167,7 @@ class LessLookAheadReader extends LessObject implements Closeable {
                         int ch2;
                         isSlash = false;
                         for( ;; ) {
-                            ch2 = reader.read();
+                            ch2 = readCharBlockMarker();
                             if( ch2 < 0 ) {
                                 return ';'; // a not terminated line is like a lime with semicolon
                             }
@@ -155,7 +179,7 @@ class LessLookAheadReader extends LessObject implements Closeable {
                         }
                         break;
                     case '\\':
-                        cache.append( (char)reader.read() );
+                        cache.append( (char)readCharBlockMarker() );
                         break;
                     default:
                 }
