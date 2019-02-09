@@ -228,6 +228,7 @@ class LessLookAheadReader extends LessObject implements Closeable {
      * <li>(...)
      * <li>(red)
      * <li>(1)
+     * <li>({color: green})
      * </ul>
      * @param isBlock selector of a block or a semicolon line
      * @return true, if it is a mixin parameter
@@ -260,6 +261,8 @@ class LessLookAheadReader extends LessObject implements Closeable {
                 case ':':
                 case '[':
                     return false;
+                case '{':
+                    return true; // detached ruleset as mixin parameter
                 case ' ':
                     continue;
                 default:
