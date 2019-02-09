@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2018 Volker Berlin
+ * Copyright (c) 2014 - 2019 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -726,6 +726,13 @@ class LessParser implements FormattableContainer {
         LOOP: for( ;; ) {
             char ch = read();
             switch( ch ) {
+                case '{':
+                    if( builder.length() > 0 ) {
+                        left = concat( left, ' ', buildExpression( trim( builder ) ) );
+                    }
+                    Rule rule = rule( this, "", null, null );
+                    left = concat( left, ' ', new ValueExpression( rule ) );
+                    break;
                 case '-':
                     if( builder.length() == 0 && left == null ) {
                         builder.append( ch );

@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2018 Volker Berlin
+ * Copyright (c) 2014 - 2019 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -47,7 +47,9 @@ abstract class Expression extends LessObject implements Formattable {
 
     static final int STRING  = 6;
 
-    static final int LIST  = 7;
+    static final int LIST    = 7;
+
+    static final int RULESET = 8;
 
     // A color alpha value of 1 as long mask.
     static final long ALPHA_1 = 0xFFFF_0000_0000_0000L;

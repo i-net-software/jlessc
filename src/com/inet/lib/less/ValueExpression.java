@@ -78,6 +78,16 @@ class ValueExpression extends Expression {
     }
 
     /**
+     * Create a new value expression from a rule. This is used for detached rulesets.
+     * @param rule the rule.
+     */
+    ValueExpression( Rule rule ) {
+        super( rule, "" );
+        this.type = RULESET;
+        this.unit = "";
+    }
+
+    /**
      * Create a value expression as parameter for a mixin which not change it value in a different context.
      * @param formatter current formatter
      * @param expr current expression
