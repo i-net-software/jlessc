@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2016 Volker Berlin
+ * Copyright (c) 2014 - 2019 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,6 +41,8 @@ class ValueExpression extends Expression {
     private String unit;
 
     private Operation op;
+
+    private Rule      rule;
 
     /**
      * Create a new instance.
@@ -83,6 +85,7 @@ class ValueExpression extends Expression {
      */
     ValueExpression( Rule rule ) {
         super( rule, "" );
+        this.rule = rule;
         this.type = RULESET;
         this.unit = "";
     }
@@ -132,6 +135,9 @@ class ValueExpression extends Expression {
                 break;
             case STRING:
                 SelectorUtils.appendToWithPlaceHolder( formatter, toString(), 0, true, this );
+                break;
+            case RULESET:
+                rule.appendPropertiesTo( formatter );
                 break;
             default:
                 super.appendTo( formatter );

@@ -417,7 +417,11 @@ class LessParser implements FormattableContainer {
                         importFile( currentRule, name.substring( 8 ).trim() );
                         return;
                     }
-                    currentRule.add( new CssAtRule( reader, name + ';') ); // directives like @charset "UTF-8";
+                    if( name.endsWith( "()" ) ) {
+                        currentRule.add( new VariableExpression( reader, name.substring( 0, name.length() - 2 ) ) ); // reference to detached ruleset
+                    } else {
+                        currentRule.add( new CssAtRule( reader, name + ';') ); // directives like @charset "UTF-8";
+                    }
                     return;
 //                    throw createException( "Unrecognized input: '" + name + "'" );
                 default:
