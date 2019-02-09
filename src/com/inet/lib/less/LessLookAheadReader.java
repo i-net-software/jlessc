@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2016 Volker Berlin
+ * Copyright (c) 2014 - 2019 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -136,7 +136,19 @@ class LessLookAheadReader extends LessObject implements Closeable {
                         }
                         break;
                     case '{':
+                        boolean isBlock = true;
                         if( cache.length() > 1 && cache.charAt( cache.length() - 2 ) == '@' ) { // @{  --> a inline variable and not a block start
+                            isBlock = false;
+                        } else {
+                            for( int i = cache.length()-2; i > 0; i-- ) {
+                                char c = cache.charAt( i );
+                                if( !Character.isWhitespace( c ) ) {
+                                    isBlock = c != ':';  // detached ruleset that will assign to a variable
+                                    break;
+                                }
+                            }
+                        }
+                        if( !isBlock ) {
                             do {
                                 ch = readCharBlockMarker();
                                 if( ch < 0 ) {
@@ -269,7 +281,7 @@ class LessLookAheadReader extends LessObject implements Closeable {
             if( cachePos < cache.length() ) {
                 return incLineColumn( cache.charAt( cachePos++ ) );
             }
-            int ch = reader.read();
+            int ch = readCharBlockMarker();
             if( ch == -1 ) {
                 throw createException( "Unexpected end of Less data" );
             }
