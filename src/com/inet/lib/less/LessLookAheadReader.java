@@ -31,6 +31,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.Scanner;
 
 /**
  * A reader with some special look ahead reading.
@@ -41,7 +42,7 @@ class LessLookAheadReader extends LessObject implements Closeable {
 
     private final StringBuilder cache = new StringBuilder();
 
-    private StringReader        blockMarkReader;
+    private StringReader        cache2;
 
     private final boolean       isReference, isMultiple;
 
@@ -71,12 +72,12 @@ class LessLookAheadReader extends LessObject implements Closeable {
      *             if an I/O error occur
      */
     private int readCharBlockMarker() throws IOException {
-        if( blockMarkReader != null ) {
-            int ch = blockMarkReader.read();
+        if( cache2 != null ) {
+            int ch = cache2.read();
             if( ch != -1 ) {
                 return ch;
             }
-            blockMarkReader = null;
+            cache2 = null;
         }
         return reader.read();
     }
@@ -90,7 +91,15 @@ class LessLookAheadReader extends LessObject implements Closeable {
      */
     int nextBlockMarker() throws LessException {
         if( cachePos < cache.length() ) {
-            blockMarkReader = new StringReader( cache.substring( cachePos ) );
+            String str = cache.substring( cachePos );
+            if( cache2 != null ) { // occur with detached rulset inside another detached ruleset
+                try (Scanner scanner = new Scanner( cache2 ).useDelimiter( "\\A" )) {
+                    if( scanner.hasNext() ) {
+                        str = scanner.next() + str;
+                    }
+                }
+            }
+            cache2 = new StringReader( str );
         }
         cache.setLength( cachePos = 0 );
         int parenthesis = 0;
@@ -149,13 +158,21 @@ class LessLookAheadReader extends LessObject implements Closeable {
                             }
                         }
                         if( !isBlock ) {
+                            int braces = 1;
                             do {
                                 ch = readCharBlockMarker();
-                                if( ch < 0 ) {
-                                    throw createException( "Unrecognized input: '" + cache.toString().trim() + "'" );
+                                switch( ch ) {
+                                    case -1:
+                                        throw createException( "Unrecognized input: '" + cache.toString().trim() + "'" );
+                                    case '}':
+                                        braces--;
+                                        break;
+                                    case '{':
+                                        braces++;
+                                        break;
                                 }
                                 cache.append( (char)ch );
-                            } while( ch != '}' );
+                            } while( braces > 0 );
                             break;
                         }
                         //$FALL-THROUGH$
