@@ -440,6 +440,7 @@ class Operation extends Expression {
             case '≤':
                 int type = maxOperadType( formatter );
                 switch( type ) {
+                    case LIST:
                     case STRING: {
                         // need to differ between keyword without quotes and strings with quotes. The type of quote is ignored
                         String left = normlizeQuotes( leftOp.stringValue( formatter ) );

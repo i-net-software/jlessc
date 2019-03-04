@@ -1,0 +1,3 @@
+.svy-sidenav-dropdown.sn-level-1:not(.svy-navitem-selected) {
+  padding: 0px 1px;
+}
