@@ -174,7 +174,7 @@ class UrlUtils {
         url = new URL( url, urlStr );
         InputStream input;
         try {
-            input = url.openStream();
+            input = formatter.getReaderFactory().openStream( url );
         } catch( Exception e ) {
             formatter.append( "url(" ).append( urlString ).append( ')' );
             return;

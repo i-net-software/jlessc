@@ -27,16 +27,30 @@
 package com.inet.lib.less;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 /**
- * A factory to create a reader for parsing. You can override it to resolve the URL, implement a cache or use another
+ * A factory to create a reader and streams for parsing. You can override it to resolve the URL, implement a cache or use another
  * encoding as UFT-8.
  */
 public class ReaderFactory {
+
+    /**
+     * Open an InputStream for the given URL.
+     * 
+     * @param url
+     *            the url, not null
+     * @return the stream, never null
+     * @throws IOException
+     *             If any I/O error occur on reading the URL.
+     */
+    public InputStream openStream( URL url ) throws IOException {
+        return url.openStream();
+    }
 
     /**
      * Create a Reader for the given URL.
@@ -48,6 +62,6 @@ public class ReaderFactory {
      *             If any I/O error occur on reading the URL.
      */
     public Reader create( URL url ) throws IOException {
-        return new InputStreamReader( url.openStream(), StandardCharsets.UTF_8 );
+        return new InputStreamReader( openStream( url ), StandardCharsets.UTF_8 );
     }
 }

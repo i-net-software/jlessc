@@ -78,7 +78,7 @@ public class Less {
             StringBuilder builder = new StringBuilder();
             CssFormatter formatter = compress ? new CompressCssFormatter() :  new CssFormatter();
             parser.parseLazy( formatter );
-            formatter.format( parser, baseURL, builder );
+            formatter.format( parser, baseURL, readerFactory, builder );
             return builder.toString();
         } catch( LessException ex ) {
             throw ex;

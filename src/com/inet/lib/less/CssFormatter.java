@@ -116,6 +116,8 @@ class CssFormatter implements Cloneable {
 
     private LessExtendMap                   lessExtends = state.lessExtends;
 
+    private ReaderFactory                   readerFactory;
+
     private CssOutput currentOutput;
 
     private final static char[]             DIGITS    = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
@@ -170,12 +172,18 @@ class CssFormatter implements Cloneable {
     /**
      * Format the a parsed less file.
      *
-     * @param parser the parser result
-     * @param baseURL the URL of the less file
-     * @param target the output of the resulting string
+     * @param parser
+     *            the parser result
+     * @param baseURL
+     *            the URL of the less file
+     * @param readerFactory
+     *            A factory for the readers for imports.
+     * @param target
+     *            the output of the resulting string
      */
-    void format( LessParser parser, URL baseURL, StringBuilder target ) {
+    void format( LessParser parser, URL baseURL, ReaderFactory readerFactory, StringBuilder target ) {
         state.baseURL = baseURL;
+        this.readerFactory = readerFactory;
         addVariables( parser.getVariables() );
         state.isReference = false;
 
@@ -302,6 +310,14 @@ class CssFormatter implements Cloneable {
      */
     URL getBaseURL() {
         return state.baseURL;
+    }
+
+    /**
+     * Get the reader factory.
+     * @return the factory
+     */
+    ReaderFactory getReaderFactory() {
+        return readerFactory;
     }
 
     /**
