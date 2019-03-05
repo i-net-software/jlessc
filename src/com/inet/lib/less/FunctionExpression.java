@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2016 Volker Berlin
+ * Copyright (c) 2014 - 2019 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -296,6 +296,11 @@ class FunctionExpression extends Expression {
                     break;
                 case "range":
                     range( formatter ).appendTo( formatter );
+                    return;
+                case "calc":
+                    formatter.append( super.toString() ).append( '(' );
+                    SelectorUtils.appendToWithPlaceHolder( formatter, get( 0 ).stringValue( formatter ), 0, false, this );
+                    formatter.append( ')' );
                     return;
             }
             if( type == UNKNOWN ) {

@@ -896,6 +896,15 @@ class LessParser implements FormattableContainer {
                             op = parseParameterList();
                             right = new Operation( reader, op.getOperands().get( 0 ), '~' );
                             break;
+                        case "calc":
+                            ch = read();
+                            while( ch != ')' ) {
+                                builder.append( ch );
+                                ch = read();
+                            }
+                            op = new Operation( reader, new ValueExpression( reader, trim( builder ), Expression.STRING ), ';' );
+                            right = new FunctionExpression( reader, str, op );
+                            break;
                         default:
                             right = new FunctionExpression( reader, str, parseParameterList() );
                     }

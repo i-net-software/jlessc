@@ -22,4 +22,7 @@
   function2: - -3;
   function3: -floor(-2.3);
   function4: 3;
+  calcWithSpace: calc(100% - 98px);
+  calcCompact: calc(100%-98px);
+  calcVariable: calc(90% -10px);
 }
