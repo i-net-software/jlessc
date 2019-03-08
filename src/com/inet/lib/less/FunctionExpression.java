@@ -174,6 +174,8 @@ class FunctionExpression extends Expression {
             case "luma":
             case "luminance":
                 return "%";
+            case "if":
+                return get( 1 ).unit( formatter );
         }
         for( int i = 0; i < parameters.size(); i++ ) {
             String unit = parameters.get( i ).unit( formatter );
@@ -302,6 +304,9 @@ class FunctionExpression extends Expression {
                     SelectorUtils.appendToWithPlaceHolder( formatter, get( 0 ).stringValue( formatter ), 0, false, this );
                     formatter.append( ')' );
                     return;
+                case "if":
+                    get( get( 0 ).booleanValue( formatter ) ? 1 : 2 ).appendTo( formatter ); 
+                    return;
             }
             if( type == UNKNOWN ) {
                 eval( formatter );
@@ -347,10 +352,7 @@ class FunctionExpression extends Expression {
                     if( parameters.size() > 1 ) {
                         throw ((LessObject)get( 0 )).createException( "Unrecognized input" );
                     }
-                    type = get( 0 ).getDataType( formatter );
-                    if( type != STRING ) {
-                        doubleValue = getDouble( 0, formatter );
-                    }
+                    evalParam( 0, formatter );
                     return;
                 case "percentage":
                     type = PERCENT;
@@ -722,6 +724,9 @@ class FunctionExpression extends Expression {
                     param = get( 0 );
                     booleanValue = param.unit( formatter ).equals( unit );
                     return;
+                case "if":
+                    evalParam( get( 0 ).booleanValue( formatter ) ? 1 : 2, formatter );
+                    return;
                 case "default":
                     if( formatter.isGuard() ) {
                         type = BOOLEAN;
@@ -749,6 +754,28 @@ class FunctionExpression extends Expression {
         }
         type = STRING;
         return;
+    }
+
+    /**
+     * Evaluate a parameter as this function.
+     * 
+     * @param idx
+     *            the index of the parameter starting with 0
+     * @param formatter
+     *            the current formation context
+     */
+    private void evalParam( int idx, CssFormatter formatter ) {
+        Expression expr = get( idx );
+        type = expr.getDataType( formatter );
+        switch( type ) {
+            case BOOLEAN:
+                booleanValue = expr.booleanValue( formatter );
+                break;
+            case STRING:
+                break;
+            default:
+                doubleValue = expr.doubleValue( formatter );
+        }
     }
 
     /**
