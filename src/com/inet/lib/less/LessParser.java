@@ -1132,6 +1132,10 @@ class LessParser implements FormattableContainer {
         Operation op;
         if( left.getClass() == Operation.class && ((Operation)left).getOperator() == operator ) {
             op = (Operation)left;
+        } else if( right != null && right.getClass() == Operation.class && ((Operation)right).getOperator() == operator ) {
+            op = (Operation)right;
+            op.addLeftOperand( left );
+            return op;
         } else {
             op = new Operation( reader, left, operator );
         }

@@ -260,32 +260,41 @@ class ValueExpression extends Expression {
                 str = str.toLowerCase();
                 rgb = getRgbFromColorConst( str );
                 if( rgb == -1 ) {
-                    if( str.equals( "transparent" ) ) {
-                        value = 0;
-                        type = RGBA;
-                        return;
-                    } else {
-                        ParsePosition pos = new ParsePosition( 0 );
-                        Number number = formatter.getFormat().parse( str, pos );
-                        if( number == null ) {
-                            if( str.startsWith( "+" ) ) { // DecimalFormat can not parse an option plus sign
-                                pos.setIndex( 1 );
-                                number = formatter.getFormat().parse( str, pos );
-                                if( number == null ) {
+                    switch( str ) {
+                        case "transparent":
+                            value = 0;
+                            type = RGBA;
+                            return;
+                        case "true":
+                            type = BOOLEAN;
+                            value = -1;
+                            return;
+                        case "false":
+                            type = BOOLEAN;
+                            value = 0;
+                            return;
+                        default:
+                            ParsePosition pos = new ParsePosition( 0 );
+                            Number number = formatter.getFormat().parse( str, pos );
+                            if( number == null ) {
+                                if( str.startsWith( "+" ) ) { // DecimalFormat can not parse an option plus sign
+                                    pos.setIndex( 1 );
+                                    number = formatter.getFormat().parse( str, pos );
+                                    if( number == null ) {
+                                        type = STRING;
+                                        return;
+                                    }
+                                } else {
                                     type = STRING;
                                     return;
                                 }
-                            } else {
-                                type = STRING;
-                                return;
                             }
-                        }
-                        value = number.doubleValue();
-                        if( pos.getIndex() != str.length() ) {
-                            unit = str.substring( pos.getIndex() );
-                        }
-                        type = NUMBER;
-                        return;
+                            value = number.doubleValue();
+                            if( pos.getIndex() != str.length() ) {
+                                unit = str.substring( pos.getIndex() );
+                            }
+                            type = NUMBER;
+                            return;
                     }
                 }
             }

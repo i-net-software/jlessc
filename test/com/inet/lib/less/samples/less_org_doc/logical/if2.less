@@ -1,0 +1,7 @@
+.if {
+  a: if(not (true), foo, bar);
+  b: if((true) and (2 > 1), foo, bar);
+  c: if((false) or (isstring("boo!")), foo, bar);
+  d: if(2 > 1, blue, green);
+  e: if((2 > 1), blue, green);
+}

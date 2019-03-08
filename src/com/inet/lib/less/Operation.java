@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2016 Volker Berlin
+ * Copyright (c) 2014 - 2019 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -433,6 +433,23 @@ class Operation extends Expression {
                 return value;
             case '!':
                 return !leftOp.booleanValue( formatter );
+            case ' ':
+                if( leftOp instanceof ValueExpression && "not".equals( leftOp.toString() ) ) {
+                    return !operands.get( 1 ).booleanValue( formatter );
+                }
+                if( operands.size() == 3 ) {
+                    Expression op = operands.get( 1 );
+                    if( op instanceof ValueExpression ) {
+                        Expression rightOp = operands.get( 2 );
+                        switch( op.toString() ) {
+                            case "and":
+                                return leftOp.booleanValue( formatter ) & rightOp.booleanValue( formatter );
+                            case "or":
+                                return leftOp.booleanValue( formatter ) | rightOp.booleanValue( formatter );
+                        }
+                    }
+                }
+                break;
             case '>':
             case '<':
             case '=':
