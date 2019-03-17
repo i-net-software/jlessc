@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2016 Volker Berlin
+ * Copyright (c) 2014 - 2019 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,11 +32,24 @@ import java.io.StringReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * The main class of JLessC library. Its contain all start points for converting LESS to CSS files.
  */
 public class Less {
+
+    /**
+     * Key for compress option. true, if the CSS data should be compressed without any extra formating characters.
+     */
+    public static final String COMPRESS     = "compress";
+
+    /**
+     * Rewrites URLs to make them relative to the base less file. 'all' rewrites all URLs, 'local' just those starting
+     * with a '.', 'off' simple inline it.
+     */
+    public static final String REWRITE_URLS = "rewrite-urls";
 
     /**
      * Compile the less data from a string.
@@ -71,14 +84,55 @@ public class Less {
      *            if any error occur on compiling.
      */
     public static String compile( URL baseURL, String lessData, boolean compress, ReaderFactory readerFactory ) throws LessException {
+        Map<String,String> params = Collections.singletonMap( COMPRESS, Boolean.toString( compress ) );
+        return compile( baseURL, lessData, params, readerFactory );
+    }
+
+    /**
+     * Compile the less data from a string.
+     * 
+     * @param baseURL
+     *            the baseURL for import of external less data.
+     * @param lessData
+     *            the input less data
+     * @param options
+     *            some optional options, see constants for details
+     * @return the resulting less data
+     * @throws LessException 
+     *            if any error occur on compiling.
+     */
+    public static String compile( URL baseURL, String lessData,  Map<String, String> options ) throws LessException {
+        return compile( baseURL, lessData, options, new ReaderFactory() );
+    }
+
+    /**
+     * Compile the less data from a string.
+     * 
+     * @param baseURL
+     *            the baseURL for import of external less data.
+     * @param lessData
+     *            the input less data
+     * @param options
+     *            some optional options, see constants for details
+     * @param readerFactory
+     *            A factory for the readers for imports.
+     * @return the resulting less data
+     * @throws LessException
+     *             if any error occur on compiling.
+     */
+    public static String compile( URL baseURL, String lessData, Map<String, String> options, ReaderFactory readerFactory ) throws LessException {
         try {
+            if( options == null ) {
+                options = Collections.emptyMap();
+            }
             LessParser parser = new LessParser();
             parser.parse( baseURL, new StringReader( lessData ), readerFactory );
-            
-            StringBuilder builder = new StringBuilder();
-            CssFormatter formatter = compress ? new CompressCssFormatter() :  new CssFormatter();
+
+            boolean compress = Boolean.parseBoolean( options.get( COMPRESS ) );
+            CssFormatter formatter = compress ? new CompressCssFormatter() : new CssFormatter();
             parser.parseLazy( formatter );
-            formatter.format( parser, baseURL, readerFactory, builder );
+            StringBuilder builder = new StringBuilder();
+            formatter.format( parser, baseURL, readerFactory, builder, options );
             return builder.toString();
         } catch( LessException ex ) {
             throw ex;

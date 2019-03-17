@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2018 Volker Berlin
+ * Copyright (c) 2014 - 2019 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -118,7 +118,11 @@ class CssFormatter implements Cloneable {
 
     private ReaderFactory                   readerFactory;
 
-    private CssOutput currentOutput;
+    private Map<String, String>             options;
+
+    private int                             rewriteUrl;
+
+    private CssOutput                       currentOutput;
 
     private final static char[]             DIGITS    = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
@@ -180,10 +184,14 @@ class CssFormatter implements Cloneable {
      *            A factory for the readers for imports.
      * @param target
      *            the output of the resulting string
+     * @param options
+     *            some optional options, see constants for details
      */
-    void format( LessParser parser, URL baseURL, ReaderFactory readerFactory, StringBuilder target ) {
+    void format( LessParser parser, URL baseURL, ReaderFactory readerFactory, StringBuilder target,  @Nonnull Map<String, String> options ) {
         state.baseURL = baseURL;
         this.readerFactory = readerFactory;
+        this.options = options;
+        this.rewriteUrl = parseRewriteUrl();
         addVariables( parser.getVariables() );
         state.isReference = false;
 
@@ -214,6 +222,26 @@ class CssFormatter implements Cloneable {
         for( CssOutput result : state.results ) {
             result.appendTo( target, lessExtends, this );
         }
+    }
+
+    /**
+     * Parse the parameter rewrite URL
+     * 
+     * @return 0, 1 or 2
+     */
+    private int parseRewriteUrl() {
+        String rewrite = options.get( Less.REWRITE_URLS );
+        if( rewrite != null ) {
+            switch( rewrite.toLowerCase() ) {
+                case "off":
+                    return 0;
+                case "local":
+                    return 1;
+                case "all":
+                    return 2;
+            }
+        }
+        return 0;
     }
 
     /**
@@ -310,6 +338,18 @@ class CssFormatter implements Cloneable {
      */
     URL getBaseURL() {
         return state.baseURL;
+    }
+
+    boolean isRewriteUrl( String url ) {
+        switch( rewriteUrl ) {
+            default:
+            case 0:
+                return false;
+            case 1:
+                return url.startsWith( "." );
+            case 2:
+                return true;
+        }
     }
 
     /**

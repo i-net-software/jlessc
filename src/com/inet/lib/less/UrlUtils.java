@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015 Volker Berlin
+ * Copyright (c) 2014 - 2019 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -163,20 +163,40 @@ class UrlUtils {
      * Implementation of the function data-uri.
      * 
      * @param formatter current formatter
-     * @param relativeURL relative URL of the less script. Is used as base URL
+     * @param relativeUrlStr relative URL of the less script. Is used as base URL
      * @param urlString the url parameter of the function
      * @param type the mime type
      * @throws IOException If any I/O errors occur on reading the content
      */
-    static void dataUri( CssFormatter formatter, String relativeURL, final String urlString, String type ) throws IOException {
-        URL url = new URL( formatter.getBaseURL(), relativeURL );
+    static void dataUri( CssFormatter formatter, String relativeUrlStr, final String urlString, String type ) throws IOException {
+        URL url = formatter.getBaseURL();
         String urlStr = removeQuote( urlString );
-        url = new URL( url, urlStr );
         InputStream input;
+        url = new URL( url, urlStr );
         try {
-            input = formatter.getReaderFactory().openStream( url );
+            try {
+                input = formatter.getReaderFactory().openStream( url );
+            } catch( Exception e ) {
+                // try rewrite location if option "rewrite-urls" is "all" or "local" 
+                if( formatter.isRewriteUrl( "." ) ) {
+                    url = new URL( new URL( formatter.getBaseURL(), relativeUrlStr ), urlStr );
+                    input = formatter.getReaderFactory().openStream( url );
+                } else {
+                    throw e;
+                }
+            }
         } catch( Exception e ) {
-            formatter.append( "url(" ).append( urlString ).append( ')' );
+            boolean quote = urlString != urlStr;
+            String rewrittenUrl;
+            if( formatter.isRewriteUrl( urlStr ) ) {
+                URL relativeUrl = new URL( relativeUrlStr );
+                relativeUrl = new URL( relativeUrl, urlStr );
+                rewrittenUrl = relativeUrl.getPath();
+                rewrittenUrl = quote ? urlString.charAt( 0 ) + rewrittenUrl + urlString.charAt( 0 ) : rewrittenUrl;
+            } else {
+                rewrittenUrl = urlString;
+            }
+            formatter.append( "url(" ).append( rewrittenUrl ).append( ')' );
             return;
         }
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();

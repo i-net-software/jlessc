@@ -1,0 +1,16 @@
+.rule2 {
+  url1: url('subfolder1/image.jpg');
+  url2: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg==");
+  url3: url('subfolder1/subfolder2/subfolder1/image.jpg');
+  url4: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg==");
+  url5: url('subfolder1/DoesNotExists.jpg');
+  url4: url('subfolder1/subfolder2/subfolder1/DoesNotExists.jpg');
+}
+.rule1 {
+  url1: url('subfolder1/image.jpg');
+  url2: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg==");
+  url3: url('subfolder1/subfolder1/image.jpg');
+  url4: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg==");
+  url5: url('subfolder1/DoesNotExists.jpg');
+  url4: url('subfolder1/subfolder1/DoesNotExists.jpg');
+}
