@@ -340,6 +340,12 @@ class CssFormatter implements Cloneable {
         return state.baseURL;
     }
 
+    /**
+     * If the URL should be rewrite. This depends on the option "rewrite-urls"
+     * 
+     * @param url the URL that should be rewrite
+     * @return true, if rewrite
+     */
     boolean isRewriteUrl( String url ) {
         switch( rewriteUrl ) {
             default:
