@@ -52,6 +52,7 @@ import static com.inet.lib.less.ColorUtils.softlight;
 import static com.inet.lib.less.ColorUtils.toHSL;
 import static com.inet.lib.less.ColorUtils.toHSV;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -242,12 +243,16 @@ class FunctionExpression extends Expression {
                     String url = get( 1 ).stringValue( formatter );
                     String urlStr = UrlUtils.removeQuote( url );
                     if( formatter.isRewriteUrl( urlStr ) ) {
-                        String relativeUrlStr = get( 0 ).stringValue( formatter );
-                        URL relativeUrl = new URL( "file", null, relativeUrlStr );
-                        relativeUrl = new URL( relativeUrl, urlStr );
-                        boolean quote = url != urlStr;
-                        urlStr = relativeUrl.getPath();
-                        url = quote ? url.charAt( 0 ) + urlStr + url.charAt( 0 ) : urlStr;
+                        try {
+                            String relativeUrlStr = get( 0 ).stringValue( formatter );
+                            URL relativeUrl = new URL( "file", null, relativeUrlStr );
+                            relativeUrl = new URL( relativeUrl, urlStr );
+                            boolean quote = url != urlStr;
+                            urlStr = relativeUrl.getPath();
+                            url = quote ? url.charAt( 0 ) + urlStr + url.charAt( 0 ) : urlStr;
+                        } catch ( MalformedURLException ex ) {
+                            // ignore, occur with data: protocol
+                        }
                     }
                     formatter.append( "url(" );
                     formatter.append( url );

@@ -13,4 +13,5 @@
   url4: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg==");
   url5: url('subfolder1/DoesNotExists.jpg');
   url4: url('subfolder1/subfolder1/DoesNotExists.jpg');
+  url5: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg==");
 }
