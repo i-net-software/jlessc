@@ -1,6 +1,6 @@
 .rule2 {
   url1: url('../image.jpg');
-  url2: url('../image.jpg');
+  url2: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg==");
   url3: url('subfolder1/image.jpg');
   url4: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg==");
   url5: url('../DoesNotExists.jpg');
@@ -8,7 +8,7 @@
 }
 .rule1 {
   url1: url('image.jpg');
-  url2: url('image.jpg');
+  url2: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg==");
   url3: url('subfolder1/image.jpg');
   url4: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg==");
   url5: url('DoesNotExists.jpg');
