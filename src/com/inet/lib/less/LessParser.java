@@ -1332,8 +1332,9 @@ class LessParser implements FormattableContainer {
                 case '-':
                     if( i < builder.length() ) {
                         ch = builder.charAt( i++ );
+                        continue FIRST;
                     }
-                    continue FIRST;
+                    return false;
                 case 'U':
                     if( builder.length() > 1 && builder.charAt( 1 ) == '+' ) {
                         //unicode-range
