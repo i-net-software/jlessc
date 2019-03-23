@@ -1334,7 +1334,7 @@ class LessParser implements FormattableContainer {
                         ch = builder.charAt( i++ );
                         continue FIRST;
                     }
-                    return false;
+                    return true; // special case of properties that starts with two minus letters. see https://developer.mozilla.org/de/docs/Web/CSS/var
                 case 'U':
                     if( builder.length() > 1 && builder.charAt( 1 ) == '+' ) {
                         //unicode-range

@@ -26,3 +26,9 @@
   calcCompact: calc(100%-98px);
   calcVariable: calc(90% -10px);
 }
+:root {
+  --main-bg-color: pink;
+}
+body {
+  background-color: var(--main-bg-color);
+}
