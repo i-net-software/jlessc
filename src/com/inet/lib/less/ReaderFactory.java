@@ -53,6 +53,30 @@ public class ReaderFactory {
     }
 
     /**
+     * Open an InputStream for the given URL. This is used for inlining images via data-uri.
+     * 
+     * @param baseURL
+     *            the URL of the top less file
+     * @param urlStr
+     *            the absolute or relative URL that should be open
+     * @param relativeUrlStr
+     *            relative URL of the less script
+     * @return the stream, never null
+     * @throws IOException
+     *             If any I/O error occur on reading the URL.
+     */
+    public InputStream openStream( URL baseURL, String urlStr, String relativeUrlStr ) throws IOException {
+        URL url = new URL( baseURL, urlStr );
+        try {
+            return openStream( url );
+        } catch( Exception e ) {
+            // try rewrite location independent of option "rewrite-urls" for backward compatibility, this is not 100% compatible with Less CSS
+            url = new URL( new URL( baseURL, relativeUrlStr ), urlStr );
+            return openStream( url );
+        }
+    }
+
+    /**
      * Create a Reader for the given URL.
      * 
      * @param url

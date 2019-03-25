@@ -169,18 +169,10 @@ class UrlUtils {
      * @throws IOException If any I/O errors occur on reading the content
      */
     static void dataUri( CssFormatter formatter, String relativeUrlStr, final String urlString, String type ) throws IOException {
-        URL url = formatter.getBaseURL();
         String urlStr = removeQuote( urlString );
         InputStream input;
-        url = new URL( url, urlStr );
         try {
-            try {
-                input = formatter.getReaderFactory().openStream( url );
-            } catch( Exception e ) {
-                // try rewrite location independent of option "rewrite-urls" for backward compatibility, this is not 100% compatible with Less CSS
-                url = new URL( new URL( formatter.getBaseURL(), relativeUrlStr ), urlStr );
-                input = formatter.getReaderFactory().openStream( url );
-            }
+            input = formatter.getReaderFactory().openStream( formatter.getBaseURL(), urlStr, relativeUrlStr );
         } catch( Exception e ) {
             boolean quote = urlString != urlStr;
             String rewrittenUrl;
