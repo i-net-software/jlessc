@@ -4,7 +4,7 @@ JLessC
 [![Build Status](https://travis-ci.org/i-net-software/jlessc.svg)](https://travis-ci.org/i-net-software/jlessc)
 [![License](https://img.shields.io/github/license/i-net-software/jlessc.svg)](https://github.com/i-net-software/jlessc/blob/master/license.txt)
 [![Coverage Status](https://coveralls.io/repos/i-net-software/jlessc/badge.svg?branch=master&service=github)](https://coveralls.io/github/i-net-software/jlessc?branch=master)
-[![Download](https://img.shields.io/bintray/v/bintray/jcenter/de.inetsoftware%3Ajlessc.svg)](https://bintray.com/bintray/jcenter/de.inetsoftware%3Ajlessc)
+[![Download](https://api.bintray.com/packages/bintray/jcenter/de.inetsoftware%3Ajlessc/images/download.svg)](https://bintray.com/bintray/jcenter/de.inetsoftware%3Ajlessc/_latestVersion)
 [![Maven](https://img.shields.io/maven-central/v/de.inetsoftware/jlessc.svg)](https://mvnrepository.com/artifact/de.inetsoftware/jlessc)
 
 JLessC is a [Less CSS compiler](http://lesscss.org) written completely in Java (pure Java). It does not need any additional libraries at runtime (no JavaScript, no ANTLR). The main target of the project is performance and compatibility to Bootstrap.
