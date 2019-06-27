@@ -120,6 +120,7 @@ class CssFormatter implements Cloneable {
 
     private Map<String, String>             options;
 
+    /** 0 - "off", 1 - "local", 2 - "all" */
     private int                             rewriteUrl;
 
     private CssOutput                       currentOutput;
@@ -354,7 +355,7 @@ class CssFormatter implements Cloneable {
             case 1:
                 return url.startsWith( "." );
             case 2:
-                return true;
+                return !url.startsWith( "data:" ); // data: URL never rewrite
         }
     }
 
