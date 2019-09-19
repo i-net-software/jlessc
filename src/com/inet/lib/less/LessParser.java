@@ -1222,7 +1222,9 @@ class LessParser implements FormattableContainer {
     /**
      * Read a single character from reader or from back buffer
      * 
-     * @return a character or -1 if EOF
+     * @return a character
+     * @throws LessException
+     *             If an I/O error occurs or EOF
      */
     private char read() {
         return reader.read();

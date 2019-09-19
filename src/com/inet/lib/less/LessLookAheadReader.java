@@ -292,9 +292,9 @@ class LessLookAheadReader extends LessObject implements Closeable {
     /**
      * Read a single character from reader or from back buffer
      * 
-     * @return a character or -1 if EOF
+     * @return a character
      * @throws LessException
-     *             If an I/O error occurs
+     *             If an I/O error occurs or EOF
      */
     char read() {
         try {
