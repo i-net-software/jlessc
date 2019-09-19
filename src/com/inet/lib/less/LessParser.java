@@ -897,11 +897,22 @@ class LessParser implements FormattableContainer {
                             right = new Operation( reader, op.getOperands().get( 0 ), '~' );
                             break;
                         case "calc":
-                            ch = read();
-                            while( ch != ')' ) {
-                                builder.append( ch );
+                            int parenthesisCount = 0;
+                            CALC: do {
                                 ch = read();
-                            }
+                                switch( ch ) {
+                                    case '(':
+                                        parenthesisCount++;
+                                        break;
+                                    case ')':
+                                        if( parenthesisCount == 0 ) {
+                                            break CALC;
+                                        }
+                                        parenthesisCount--;
+                                        break;
+                                }
+                                builder.append( ch );
+                            } while( true );
                             op = new Operation( reader, new ValueExpression( reader, trim( builder ), Expression.STRING ), ';' );
                             right = new FunctionExpression( reader, str, op );
                             break;
