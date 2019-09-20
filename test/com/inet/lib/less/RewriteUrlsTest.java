@@ -35,7 +35,7 @@ import java.util.Scanner;
 
 import org.junit.Test;
 
-public class RewriteUrls {
+public class RewriteUrlsTest {
 
     private void test( String rewriteUrl ) throws IOException {
         Less less = new Less();
