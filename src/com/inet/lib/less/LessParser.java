@@ -1226,7 +1226,7 @@ class LessParser implements FormattableContainer {
      * @throws LessException
      *             If an I/O error occurs or EOF
      */
-    private char read() {
+    private char read() throws LessException {
         return reader.read();
     }
 

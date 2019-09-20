@@ -296,7 +296,7 @@ class LessLookAheadReader extends LessObject implements Closeable {
      * @throws LessException
      *             If an I/O error occurs or EOF
      */
-    char read() {
+    char read() throws LessException {
         try {
             if( cachePos < cache.length() ) {
                 return incLineColumn( cache.charAt( cachePos++ ) );
