@@ -91,7 +91,7 @@ public class LessTest {
 
     @Test
     public void compile() throws Exception {
-        String cssData = new String( Files.readAllBytes( cssFile.toPath() ), StandardCharsets.UTF_8 );
+        String cssData = new String( Files.readAllBytes( cssFile.toPath() ), StandardCharsets.UTF_8 ).replace( "\r\n", "\n" ); // JLess always uses Linux newlines because it's more compact
 
         boolean compress = cssFile.getName().endsWith( ".css_x" ) || lessFile.getParentFile().getName().equals( "compression" );
         assertEquals( cssData, Less.compile( lessFile, compress ) );
