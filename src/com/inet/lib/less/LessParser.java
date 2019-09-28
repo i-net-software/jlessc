@@ -898,14 +898,25 @@ class LessParser implements FormattableContainer {
                             break;
                         case "calc":
                             int parenthesisCount = 0;
+                            right = null;
                             CALC: do {
                                 ch = read();
                                 switch( ch ) {
+                                    case '~':
+                                        if( isWhitespace( builder ) ) {
+                                            right = new Operation( reader, parseExpression( ch ), ch );
+                                            continue;
+                                        }
+                                        break;
                                     case '(':
                                         parenthesisCount++;
                                         break;
                                     case ')':
                                         if( parenthesisCount == 0 ) {
+                                            String val = trim( builder );
+                                            if( right == null ) {
+                                                right = new ValueExpression( reader, val, Expression.STRING );
+                                            }
                                             break CALC;
                                         }
                                         parenthesisCount--;
@@ -913,7 +924,7 @@ class LessParser implements FormattableContainer {
                                 }
                                 builder.append( ch );
                             } while( true );
-                            op = new Operation( reader, new ValueExpression( reader, trim( builder ), Expression.STRING ), ';' );
+                            op = new Operation( reader, right, ';' );
                             right = new FunctionExpression( reader, str, op );
                             break;
                         default:

@@ -26,6 +26,7 @@
   calcCompact: calc(100%-98px);
   calcVariable: calc(90% -10px);
   calcNested: calc(100% - (2 * 2em));
+  calcEscaped: calc(100% - (2 * 2em));
 }
 :root {
   --main-bg-color: pink;

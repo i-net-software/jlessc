@@ -30,6 +30,7 @@
   @b : 10px;
   calcVariable: calc(@a -@b);
   calcNested: calc(100% - (2 * 2em));
+  calcEscaped: calc(~"100% - (2 * 2em)");
 }
 :root {
   --main-bg-color: pink;
