@@ -577,7 +577,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
         }
 
         for( Rule rule : subrules ) {
-            if( rule.isValidCSS( formatter ) && !rule.isInlineRule( formatter) ) {
+            if( rule.isValidCSS( formatter ) /*&& !rule.isInlineRule( formatter)*/ ) {
                 return false;
             }
         }
