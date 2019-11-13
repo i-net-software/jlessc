@@ -43,6 +43,8 @@ class CssAtRule extends LessObject implements Formattable {
      *            the reader with parse position
      * @param css
      *            the content of the rule
+     * @param withPlaceHolder
+     *            if the content can contain placeholder
      */
     public CssAtRule( LessObject reader, String css, boolean withPlaceHolder ) {
         super( reader );
