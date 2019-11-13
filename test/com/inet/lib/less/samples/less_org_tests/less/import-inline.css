@@ -2,4 +2,7 @@
 #css { color: yellow; }
 
 }
+@media (pointer: coarse) {
+  .ql-snow.ql-toolbar button:hover:not(.ql-active),
+}
 this isn't very valid CSS.

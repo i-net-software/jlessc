@@ -31,7 +31,9 @@ package com.inet.lib.less;
  */
 class CssAtRule extends LessObject implements Formattable {
 
-    private final String css;
+    private final String  css;
+
+    private final boolean withPlaceHolder;
 
     /**
      * Create CSS at-rule that have no special handling. Known CSS at rules are @charset, @document, @font-face,
@@ -42,9 +44,10 @@ class CssAtRule extends LessObject implements Formattable {
      * @param css
      *            the content of the rule
      */
-    public CssAtRule( LessObject reader, String css ) {
+    public CssAtRule( LessObject reader, String css, boolean withPlaceHolder ) {
         super( reader );
         this.css = css;
+        this.withPlaceHolder = withPlaceHolder;
     }
 
     /**
@@ -78,7 +81,11 @@ class CssAtRule extends LessObject implements Formattable {
             formatter = formatter.getHeader();
         }
         formatter.getOutput();
-        SelectorUtils.appendToWithPlaceHolder( formatter, css, 1, false, this );
+        if( withPlaceHolder ) {
+            SelectorUtils.appendToWithPlaceHolder( formatter, css, 1, false, this );
+        } else {
+            formatter.append( css );
+        }
         formatter.newline();
     }
 }
