@@ -94,6 +94,6 @@ public class LessTest {
         String cssData = new String( Files.readAllBytes( cssFile.toPath() ), StandardCharsets.UTF_8 ).replace( "\r\n", "\n" ); // JLess always uses Linux newlines because it's more compact
 
         boolean compress = cssFile.getName().endsWith( ".css_x" ) || lessFile.getParentFile().getName().equals( "compression" );
-        assertEquals( cssData, Less.compile( lessFile, compress ) );
+        assertEquals( cssData, Less.compile( lessFile, compress ).replace( "\r\n", "\n" ) ); // CSS files will be inlined 1:1
     }
 }
