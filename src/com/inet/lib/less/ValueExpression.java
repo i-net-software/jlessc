@@ -214,9 +214,21 @@ class ValueExpression extends Expression {
             }
             unit = "";
             long rgb;
+            long alpha = ALPHA_1;
             if( str.startsWith( "#" ) ) {
                 str = str.substring( 1 );
                 switch( str.length() ) {
+                    case 4:
+                        {
+                            char ch = str.charAt( 3 );
+                            int digit = Character.digit( ch, 16 );
+                            if( digit < 0 ) {
+                                type = STRING;
+                                return;
+                            }
+                            alpha = digit * 0x1111 << 48;
+                        }
+                        //$FALL-THROUGH$
                     case 3:
                         rgb = 0;
                         for( int i = 0; i < 3; i++ ) {
@@ -231,6 +243,24 @@ class ValueExpression extends Expression {
                             rgb *= 0x100;
                         }
                         break;
+                    case 8:
+                        {
+                            char ch = str.charAt( 6 );
+                            int digit = Character.digit( ch, 16 );
+                            if( digit < 0 ) {
+                                type = STRING;
+                                return;
+                            }
+                            rgb = digit * 16;
+                            ch = str.charAt( 7 );
+                            digit = Character.digit( ch, 16 );
+                            if( digit < 0 ) {
+                                type = STRING;
+                                return;
+                            }
+                            alpha = (rgb + digit) * 0x101 << 48;
+                        }
+                        //$FALL-THROUGH$
                     case 6:
                         rgb = 0;
                         for( int i = 0; i < 6; i++ ) {
@@ -298,7 +328,7 @@ class ValueExpression extends Expression {
                     }
                 }
             }
-            value = Double.longBitsToDouble( ALPHA_1 | rgb );
+            value = Double.longBitsToDouble( alpha | rgb );
             type = COLOR;
         } catch( NumberFormatException e ) {
             type = STRING;
