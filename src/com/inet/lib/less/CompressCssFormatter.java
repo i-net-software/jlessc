@@ -110,7 +110,7 @@ class CompressCssFormatter extends CssFormatter {
      */
     @Override
     CssFormatter appendValue( double value, String unit ) {
-        if( value == 0 ) {
+        if( value == 0 && !inlineMode() ) {
             switch( unit ) {
                 case "deg":
                 case "s":
