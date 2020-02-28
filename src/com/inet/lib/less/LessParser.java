@@ -542,6 +542,7 @@ class LessParser implements FormattableContainer {
                 currentRule.add( rule );
                 currentRule = rule;
             }
+            String origFilename = filename;
             filename = trim( builder );
 
             if( filename.contains( "@{" ) ) { // filename with variable name, we need to parse later
@@ -562,13 +563,13 @@ class LessParser implements FormattableContainer {
             }
             if( !isLess && !isInline && (isCss || filename.endsWith( "css" )) ) {
                 // filenames ends with "css" will not be inline else a CSS @import directive is written
-                currentRule.add( new CssAtRule( reader, "@import " + name + ';', true ) );
+                currentRule.add( new CssAtRule( reader, "@import " + origFilename + ';', true ) );
                 return;
             }
             baseURL = baseURL == null ? new URL( filename ) : new URL( baseURL, filename );
             if( !isLess && !isInline && baseURL.getPath().endsWith( "css" ) ) {
                 // URL path ends with "css" will not be inline else a CSS @import directive is written
-                currentRule.add( new CssAtRule( reader, "@import " + name + ';', true ) );
+                currentRule.add( new CssAtRule( reader, "@import " + origFilename + ';', true ) );
                 return;
             }
             if( "file".equals( baseURL.getProtocol() ) && filename.lastIndexOf( '.' ) <= filename.lastIndexOf( '/' ) ) {
