@@ -561,7 +561,7 @@ class LessParser implements FormattableContainer {
                 lazyImports.add( lazy );
                 return;
             }
-            if( !isLess && !isInline && (isCss || filename.endsWith( "css" )) ) {
+            if( !isLess && !isInline && (isCss || filename.endsWith( "css" ) || filename.contains( "css?" ) ) ) {
                 // filenames ends with "css" will not be inline else a CSS @import directive is written
                 currentRule.add( new CssAtRule( reader, "@import " + origFilename + ';', true ) );
                 return;
