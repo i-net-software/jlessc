@@ -88,6 +88,7 @@ class LessParser implements FormattableContainer {
     /**
      * {@inheritDoc}
      */
+    @Override
     public HashMap<String, Expression> getVariables() {
         return variables;
     }
