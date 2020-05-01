@@ -5,10 +5,11 @@ sudo: false
 language: java
 jdk:
   - oraclejdk8
-  - oraclejdk9
-  - openjdk10
+#  - oraclejdk9
+#  - openjdk10
   - openjdk11
   - openjdk12
-  - openjdk-ea
+  - openjdk14
+#  - openjdk-ea
 
 script: ./gradlew -Djdk.tls.client.protocols="TLSv1,TLSv1.1,TLSv1.2" --stacktrace check benchmark
