@@ -18,6 +18,10 @@ repositories {
 dependencies {
     compile		'com.google.code.findbugs:jsr305:3.0.0'
 	testCompile	'junit:junit:4.11'
+	def javaVersion = org.gradle.util.VersionNumber.parse( System.properties['java.version'] ).getMajor()
+    if( javaVersion >= 15 ) {
+        testRuntime 'org.mozilla:rhino:+'
+    }
 }
 
 sourceCompatibility = 1.7
