@@ -27,9 +27,11 @@
 package com.inet.lib.less;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import javax.script.ScriptEngine;
+import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 
 /**
@@ -127,6 +129,9 @@ public class JavaScriptExpression extends Expression {
         try {
             ScriptEngineManager factory = new ScriptEngineManager( getClass().getClassLoader() );
             ScriptEngine engine = factory.getEngineByName( "JavaScript" );
+            if( engine == null ) {
+                throw createException( "No JavaScript engine available: " + factory.getEngineFactories() );
+            }
             engine.setContext( new JavaScriptContext( formatter, this ) );
 
             String script = toString();
