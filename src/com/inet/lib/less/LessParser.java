@@ -764,7 +764,7 @@ class LessParser implements FormattableContainer {
                                     left = concat( left, ' ', buildExpression( trim( builder ) ) );
                                 }
                                 builder.append( ch );
-                                builder.append( ch2 );
+                                back( ch2 );
                                 wasWhite = false;
                                 break;
                              } else {
