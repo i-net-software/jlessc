@@ -94,7 +94,7 @@ apply plugin: 'signing'
 
 group = 'de.inetsoftware'
 archivesBaseName = 'jlessc'
-version = '1.9-SNAPSHOT'
+version = '1.10-SNAPSHOT'
 
 jar {
     manifest {
