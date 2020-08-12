@@ -27,11 +27,9 @@
 package com.inet.lib.less;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 
 /**
@@ -42,6 +40,8 @@ public class JavaScriptExpression extends Expression {
     private int    type;
 
     private Object result;
+
+    private String latestScript;
 
     /**
      * Create a new instance.
@@ -123,10 +123,15 @@ public class JavaScriptExpression extends Expression {
      * @param formatter current formatter
      */
     private void eval( CssFormatter formatter ) {
-        if( type != UNKNOWN ) {
-            return;
-        }
         try {
+            String script = toString();
+            script = SelectorUtils.replacePlaceHolder( formatter, script, this );
+            if( script.equals( latestScript ) ) {
+                return;
+            }
+            latestScript = script;
+            script = script.substring( 1, script.length() - 1 );
+
             ScriptEngineManager factory = new ScriptEngineManager( getClass().getClassLoader() );
             ScriptEngine engine = factory.getEngineByName( "JavaScript" );
             if( engine == null ) {
@@ -134,9 +139,6 @@ public class JavaScriptExpression extends Expression {
             }
             engine.setContext( new JavaScriptContext( formatter, this ) );
 
-            String script = toString();
-            script = SelectorUtils.replacePlaceHolder( formatter, script, this );
-            script = script.substring( 1, script.length() - 1 );
             result = engine.eval( script );
             if( result instanceof Number ) {
                 type = NUMBER;
