@@ -1,0 +1,7 @@
+.a.b.navbar,
+.navbar.c {
+  color: orange;
+}
+.navbar:hover {
+  color: green;
+}

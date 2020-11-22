@@ -330,6 +330,9 @@ class CssFormatter implements Cloneable {
      * @param lessExtend the extend
      */
     void add( LessExtend lessExtend ) {
+        if( state.isReference ) {
+            return;
+        }
         lessExtends.add( lessExtend, this.currentOutput.getSelectors() );
     }
 
