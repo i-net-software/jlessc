@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015 Volker Berlin
+ * Copyright (c) 2014 - 2020 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,18 +39,15 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 /**
- * Contains functions which are not in the less standard. 
+ * Colorize an image and inline it as base64.
  */
-class CustomFunctions {
+class CustomFunctionColorizeImage implements CustomLessFunction {
 
     /**
-     * Colorize an image and inline it as base64.
-     * @param formatter current formatter
-     * @param parameters the parameters (relativeURL, url, main_color, contrast_color)
-     * @throws IOException if any I/O error occur
-     * @throws LessException if parameter list is wrong
+     * {@inheritDoc}
      */
-    static void colorizeImage( CssFormatter formatter, List<Expression> parameters ) throws IOException {
+    @Override
+    public void appendTo( CssFormatter formatter, List<Expression> parameters ) throws IOException {
         if( parameters.size() < 4 ) {
             throw new LessException( "error evaluating function colorize-image expects url, main_color, contrast_color " );
         }

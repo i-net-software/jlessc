@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2019 Volker Berlin
+ * Copyright (c) 2014 - 2020 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.annotation.Nonnull;
 
 /**
  * The main class of JLessC library. Its contain all start points for converting LESS to CSS files.
@@ -50,6 +53,14 @@ public class Less {
      * with a '.', 'off' simple inline it.
      */
     public static final String REWRITE_URLS = "rewrite-urls";
+
+    /**
+     * A map with custom less functions 
+     */
+    static final ConcurrentHashMap<String, CustomLessFunction> CUSTOM_FUNKTIONS = new ConcurrentHashMap<>();
+    static {
+        registerCustomFunction( "colorize-image", new CustomFunctionColorizeImage() );
+    }
 
     /**
      * Compile the less data from a string.
@@ -173,5 +184,18 @@ public class Less {
     public static String compile( File lessFile, boolean compress, ReaderFactory readerFactory ) throws IOException {
         String lessData = new String( Files.readAllBytes( lessFile.toPath() ), StandardCharsets.UTF_8 );
         return Less.compile( lessFile.toURI().toURL(), lessData, compress, readerFactory );
+    }
+
+    /**
+     * Register a custom less function.
+     * @param name the non null name
+     * @param func the function
+     */
+    public static void registerCustomFunction( @Nonnull String name, CustomLessFunction func ) {
+        if( func == null ) {
+            CUSTOM_FUNKTIONS.remove( name );
+        } else {
+            CUSTOM_FUNKTIONS.put( name, func );
+        }
     }
 }
