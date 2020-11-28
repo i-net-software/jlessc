@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2019 Volker Berlin
+ * Copyright (c) 2014 - 2020 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@ import static com.inet.lib.less.ColorUtils.*;
 /**
  * Base expression with value formating.
  */
-abstract class Expression extends LessObject implements Formattable {
+public abstract class Expression extends LessObject implements Formattable {
 
     static final int UNKNOWN = 0;
 
@@ -141,7 +141,7 @@ abstract class Expression extends LessObject implements Formattable {
      * 
      * @return one of the constant
      */
-    abstract int getDataType( CssFormatter formatter );
+    public abstract int getDataType( CssFormatter formatter );
 
     /**
      * Get the numeric value.
@@ -150,7 +150,7 @@ abstract class Expression extends LessObject implements Formattable {
      *            the CCS target
      * @return the value
      */
-    abstract double doubleValue( CssFormatter formatter );
+    public abstract double doubleValue( CssFormatter formatter );
 
     /**
      * Get the boolean value
@@ -159,7 +159,7 @@ abstract class Expression extends LessObject implements Formattable {
      *            the CCS target
      * @return the value
      */
-    abstract boolean booleanValue( CssFormatter formatter );
+    public abstract boolean booleanValue( CssFormatter formatter );
 
     /**
      * Get the string value
@@ -168,7 +168,7 @@ abstract class Expression extends LessObject implements Formattable {
      *            the CCS target
      * @return the value
      */
-    String stringValue( CssFormatter formatter ) {
+    public String stringValue( CssFormatter formatter ) {
         String str;
         try {
             formatter.addOutput();
@@ -218,7 +218,7 @@ abstract class Expression extends LessObject implements Formattable {
      *            the CCS target
      * @return the unit or empty string if nothing
      */
-    abstract String unit( CssFormatter formatter );
+    public abstract String unit( CssFormatter formatter );
 
     /**
      * {@inheritDoc}

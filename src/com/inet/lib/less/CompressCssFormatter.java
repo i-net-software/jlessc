@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015 Volker Berlin
+ * Copyright (c) 2014 - 2020 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -84,7 +84,7 @@ class CompressCssFormatter extends CssFormatter {
      * {@inheritDoc}
      */
     @Override
-    CssFormatter appendColor( double color, String hint ) {
+    public CssFormatter appendColor( double color, String hint ) {
         if( !inlineMode() ) {
             int red = ColorUtils.red( color );
             if( red % 17 == 0 ) {
@@ -109,7 +109,7 @@ class CompressCssFormatter extends CssFormatter {
      * {@inheritDoc}
      */
     @Override
-    CssFormatter appendValue( double value, String unit ) {
+    public CssFormatter appendValue( double value, String unit ) {
         if( value == 0 && !inlineMode() ) {
             switch( unit ) {
                 case "deg":

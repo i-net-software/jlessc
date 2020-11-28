@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2017 Volker Berlin
+ * Copyright (c) 2014 - 2020 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,7 +42,7 @@ public class LessException extends RuntimeException {
      * @param message
      *            the detail message.
      */
-    LessException( String message ) {
+    public LessException( String message ) {
         super( message );
     }
 
@@ -52,7 +52,7 @@ public class LessException extends RuntimeException {
      * @param cause
      *            the cause
      */
-    LessException( Throwable cause ) {
+    public LessException( Throwable cause ) {
         super( cause );
     }
 
@@ -64,7 +64,7 @@ public class LessException extends RuntimeException {
      * @param cause
      *            the cause
      */
-    LessException( String message, Throwable cause ) {
+    public LessException( String message, Throwable cause ) {
         super( message, cause );
     }
 
@@ -85,7 +85,7 @@ public class LessException extends RuntimeException {
      * Get the less file stacktrace
      * @return the stack
      */
-    public List<LessFilePosition>  getPositions() {
+    public List<LessFilePosition> getPositions() {
         return new ArrayList<>( positions );
     }
 

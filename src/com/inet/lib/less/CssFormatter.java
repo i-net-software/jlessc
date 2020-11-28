@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2019 Volker Berlin
+ * Copyright (c) 2014 - 2020 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,7 +44,7 @@ import javax.annotation.Nullable;
 /**
  * A formatter for the CSS output. Hold some formating states.
  */
-class CssFormatter implements Cloneable {
+public class CssFormatter implements Cloneable {
 
     /**
      * The scope of a single stack element.
@@ -340,7 +340,7 @@ class CssFormatter implements Cloneable {
      * Get the URL of the top less file.
      * @return the URL
      */
-    URL getBaseURL() {
+    public URL getBaseURL() {
         return state.baseURL;
     }
 
@@ -611,7 +611,7 @@ class CssFormatter implements Cloneable {
      * @param str the string
      * @return this
      */
-    CssFormatter append( String str ) {
+    public CssFormatter append( String str ) {
         if( inlineMode ) {
             str = UrlUtils.removeQuote( str );
         }
@@ -625,7 +625,7 @@ class CssFormatter implements Cloneable {
      * @param hint the original spelling of the color if not calculated
      * @return this
      */
-    CssFormatter appendColor( double color, @Nullable String hint ) {
+    public CssFormatter appendColor( double color, @Nullable String hint ) {
         if( !inlineMode && hint != null ) {
             output.append( hint );
         } else {
@@ -642,7 +642,7 @@ class CssFormatter implements Cloneable {
      * @param value the value
      * @param digits the digits to write.
      */
-    void appendHex( int value, int digits ) {
+    public void appendHex( int value, int digits ) {
         if( digits > 1 ) {
             appendHex( value >>> 4, digits-1 );
         }
@@ -655,7 +655,7 @@ class CssFormatter implements Cloneable {
      * @param ch the character
      * @return a reference to this object
      */
-    CssFormatter append( char ch ) {
+    public CssFormatter append( char ch ) {
         output.append( ch );
         return this;
     }
@@ -666,7 +666,7 @@ class CssFormatter implements Cloneable {
      * @param value the number
      * @return a reference to this object
      */
-    CssFormatter append( double value ) {
+    public CssFormatter append( double value ) {
         if( value == (int)value ) {
             output.append( Integer.toString( (int)value ) );
         } else {
@@ -682,7 +682,7 @@ class CssFormatter implements Cloneable {
      * @param unit the unit
      * @return a reference to this object
      */
-    CssFormatter appendValue( double value, String unit ) {
+    public CssFormatter appendValue( double value, String unit ) {
         append( value );
         append( unit );
         return this;

@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2015 Volker Berlin
+ * Copyright (c) 2015 - 2020 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -72,7 +72,7 @@ public class JavaScriptExpression extends Expression {
      * {@inheritDoc}
      */
     @Override
-    int getDataType( CssFormatter formatter ) {
+    public int getDataType( CssFormatter formatter ) {
         eval( formatter );
         return type;
     }
@@ -81,7 +81,7 @@ public class JavaScriptExpression extends Expression {
      * {@inheritDoc}
      */
     @Override
-    double doubleValue( CssFormatter formatter ) {
+    public double doubleValue( CssFormatter formatter ) {
         return ((Number)result).doubleValue();
     }
 
@@ -89,7 +89,7 @@ public class JavaScriptExpression extends Expression {
      * {@inheritDoc}
      */
     @Override
-    boolean booleanValue( CssFormatter formatter ) {
+    public boolean booleanValue( CssFormatter formatter ) {
         return ((Boolean)result).booleanValue();
     }
 
@@ -97,7 +97,7 @@ public class JavaScriptExpression extends Expression {
      * {@inheritDoc}
      */
     @Override
-    String unit( CssFormatter formatter ) {
+    public String unit( CssFormatter formatter ) {
         return "";
     }
 
