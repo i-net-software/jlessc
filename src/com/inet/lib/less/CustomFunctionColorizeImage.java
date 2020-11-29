@@ -57,8 +57,8 @@ class CustomFunctionColorizeImage implements CustomLessFunction {
         URL url = new URL( formatter.getBaseURL(), relativeURL );
         String urlStr = UrlUtils.removeQuote( urlString );
         url = new URL( url, urlStr );
-        int mainColor = ColorUtils.argb( UrlUtils.getColor( parameters.get( 2 ), formatter ) );
-        int contrastColor = ColorUtils.argb( UrlUtils.getColor( parameters.get( 3 ), formatter ) );
+        int mainColor = ColorUtils.argb( ColorUtils.getColor( parameters.get( 2 ), formatter ) );
+        int contrastColor = ColorUtils.argb( ColorUtils.getColor( parameters.get( 3 ), formatter ) );
 
         BufferedImage loadedImage = ImageIO.read( url.openStream() );
 

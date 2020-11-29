@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015 Volker Berlin
+ * Copyright (c) 2014 - 2020 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@ package com.inet.lib.less;
 /**
  * Some methods for calculating colors.
  */
-class ColorUtils {
+public class ColorUtils {
 
     // color blending functions
     private static final int MULTIPLY = 0;
@@ -88,6 +88,23 @@ class ColorUtils {
     }
 
     /**
+     * Get the color value of the expression or fire an exception if not a color.
+     * 
+     * @param param the expression to evaluate
+     * @param formatter current formatter
+     * @return the color value of the expression
+     * @throws LessException if the expression is not a color value
+     */
+    public static double getColor( Expression param, CssFormatter formatter ) throws LessException {
+        switch( param.getDataType( formatter ) ) {
+            case Expression.COLOR:
+            case Expression.RGBA:
+                return param.doubleValue( formatter );
+        }
+        throw new LessException( "Not a color: " + param );
+    }
+
+    /**
      * Create a color from rgba values
      * @param r red in range of 0 to 255.0
      * @param g green in range of 0 to 255.0
@@ -95,7 +112,7 @@ class ColorUtils {
      * @param a alpha in range of 0.0 to 1.0
      * @return color value as long
      */
-    static double rgba( double r, double g, double b, double a ) {
+    public static double rgba( double r, double g, double b, double a ) {
         return Double.longBitsToDouble( Math.round( a * 0xFFFF ) << 48 | (colorLargeDigit(r) << 32) | (colorLargeDigit(g) << 16) | colorLargeDigit(b) );
     }
 
@@ -112,7 +129,7 @@ class ColorUtils {
      *            alpha in range from 0.0 to 1.0
      * @return color value as long
      */
-    static double rgba( int r, int g, int b, double a ) {
+    public static double rgba( int r, int g, int b, double a ) {
         return Double.longBitsToDouble( Math.round( a * 0xFFFF ) << 48 | (colorLargeDigit(r) << 32) | (colorLargeDigit(g) << 16) | colorLargeDigit(b) );
     }
 
@@ -127,7 +144,7 @@ class ColorUtils {
      *            blue in range from 0 to 255
      * @return color value as long
      */
-    static double rgb( int r, int g, int b ) {
+    public static double rgb( int r, int g, int b ) {
         return Double.longBitsToDouble( Expression.ALPHA_1 | (colorLargeDigit(r) << 32) | (colorLargeDigit(g) << 16) | colorLargeDigit(b) );
     }
 
@@ -138,7 +155,7 @@ class ColorUtils {
      *            color value as long
      * @return color value as int
      */
-    static int argb( double color ) {
+    public static int argb( double color ) {
         long value = Double.doubleToRawLongBits( color );
         int result = colorDigit( ((value >>> 48)) / 256.0 ) << 24;
         result |= colorDigit( ((value >> 32) & 0xFFFF) / 256.0 ) << 16; 
@@ -154,7 +171,7 @@ class ColorUtils {
      *            color value as long
      * @return the alpha in the range 0.0 to 1.0
      */
-    static double alpha( double color ) {
+    public static double alpha( double color ) {
         double value = (Double.doubleToRawLongBits( color ) >>> 48) / (double)0XFFFF;
         return Math.round( value * 10000 ) / 10000.0;
     }
@@ -166,7 +183,7 @@ class ColorUtils {
      *            color value as long
      * @return the alpha in the range 0 to 255
      */
-    static int red( double color ) {
+    public static int red( double color ) {
         return colorDigit( ((Double.doubleToRawLongBits( color ) >> 32) & 0xFFFF) / 256.0 ); 
     }
 
@@ -177,7 +194,7 @@ class ColorUtils {
      *            color value as long
      * @return the alpha in the range 0 to 255
      */
-    static int green( double color ) {
+    public static int green( double color ) {
         return colorDigit( ((Double.doubleToRawLongBits( color ) >> 16 & 0xFFFF)) / 256.0 ); 
     }
 
@@ -188,7 +205,7 @@ class ColorUtils {
      *            color value as long
      * @return the alpha in the range 0 to 255
      */
-    static int blue( double color ) {
+    public static int blue( double color ) {
         return colorDigit( (Double.doubleToRawLongBits( color ) & 0xFFFF) / 256.0 ); 
     }
 

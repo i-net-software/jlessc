@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2019 Volker Berlin
+ * Copyright (c) 2014 - 2020 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -109,10 +109,10 @@ class UrlUtils {
             double position;
             if( param.getClass() == Operation.class && ((Operation)param).getOperator() == ' ' ) {
                 ArrayList<Expression> operands = ((Operation)param).getOperands();
-                color = getColor( operands.get( 0 ), formatter );
+                color = ColorUtils.getColor( operands.get( 0 ), formatter );
                 position = ColorUtils.getPercent( operands.get( 1 ), formatter );
             } else {
-                color = getColor( param, formatter );
+                color = ColorUtils.getColor( param, formatter );
                 position = (i - 1) / (parameters.size() - 2.0);
             }
             builder.append( "<stop offset=\"" );
@@ -140,23 +140,6 @@ class UrlUtils {
         formatter.append( "url('data:image/svg+xml;base64," );
         formatter.append( toBase64( bytes ) );
         formatter.append( "\')" );
-    }
-
-    /**
-     * Get the color value of the expression or fire an exception if not a color.
-     * 
-     * @param param the expression to evaluate
-     * @param formatter current formatter
-     * @return the color value of the expression
-     * @throws LessException if the expression is not a color value
-     */
-    static double getColor( Expression param, CssFormatter formatter ) throws LessException {
-        switch( param.getDataType( formatter ) ) {
-            case Expression.COLOR:
-            case Expression.RGBA:
-                return param.doubleValue( formatter );
-        }
-        throw new LessException( "Not a color: " + param );
     }
 
     /**
