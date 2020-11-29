@@ -48,7 +48,7 @@ public class ColorUtils {
      * @param color argb color
      * @return the HSL
      */
-    static HSL toHSL( double color ) {
+    public static HSL toHSL( double color ) {
         long argb = Double.doubleToRawLongBits( color );
         double a = alpha( color );
         double r = clamp( ((argb >> 32) & 0xFFFF) / (double)0xFF00 );
@@ -231,7 +231,7 @@ public class ColorUtils {
      *            a HSL value
      * @return a color as long
      */
-    static double hsla( HSL hsl ) {
+    public static double hsla( HSL hsl ) {
         return hsla(hsl.h, hsl.s, hsl.l, hsl.a);
     }
 
