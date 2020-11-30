@@ -210,6 +210,9 @@ class UrlUtils {
                 case "jpeg":
                     type = "image/jpeg;base64";
                     break;
+                case "webp":
+                    type = "image/webp;base64";
+                    break;
                 default: 
                     type = "text/html";
             }
