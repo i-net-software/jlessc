@@ -4,14 +4,16 @@
   url3: url('subfolder1/image.jpg');
   url4: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg==");
   url5: url('subfolder1/DoesNotExists.jpg');
-  url4: url('subfolder1/DoesNotExists.jpg');
+  url4: url('subfolder1/subfolder2/DoesNotExists.jpg');
+  url5: url('/image.jpg');
 }
 .rule1 {
-  url1: url('image.jpg');
+  url1: url('subfolder1/image.jpg');
   url2: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg==");
-  url3: url('subfolder1/image.jpg');
+  url3: url('subfolder1/subfolder2/image.jpg');
   url4: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg==");
-  url5: url('DoesNotExists.jpg');
-  url4: url('subfolder1/DoesNotExists.jpg');
+  url5: url('subfolder1/DoesNotExists.jpg');
+  url4: url('subfolder1/subfolder2/DoesNotExists.jpg');
   url5: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg==");
+  url6: url('/image.jpg');
 }

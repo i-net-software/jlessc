@@ -1,11 +1,12 @@
 @import 'subfolder2/sub2.less';
 
 .rule1 {
-    url1:      url('image.jpg'); 
+    url1: url('image.jpg'); 
     url2: data-uri('image.jpg'); 
-    url3:      url('subfolder1/image.jpg'); 
-    url4: data-uri('subfolder1/image.jpg'); 
+    url3: url('subfolder2/image.jpg'); 
+    url4: data-uri('subfolder2/image.jpg'); 
     url5: data-uri('DoesNotExists.jpg'); 
-    url4: data-uri('subfolder1/DoesNotExists.jpg');
+    url4: data-uri('subfolder2/DoesNotExists.jpg');
     url5: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg==");
+    url6: url('/image.jpg'); 
 }
