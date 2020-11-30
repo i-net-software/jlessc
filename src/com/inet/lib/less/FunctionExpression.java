@@ -242,10 +242,13 @@ class FunctionExpression extends Expression {
                     if( formatter.isRewriteUrl( urlStr ) ) {
                         try {
                             String relativeUrlStr = get( 0 ).stringValue( formatter );
+                            boolean isRoot = relativeUrlStr.startsWith("/"); 
+                            if (!isRoot) relativeUrlStr = '/' + relativeUrlStr; // must start with root so it resolves .. fragments
                             URL relativeUrl = new URL( "file", null, relativeUrlStr );
                             relativeUrl = new URL( relativeUrl, urlStr );
                             boolean quote = url != urlStr;
                             urlStr = relativeUrl.getPath();
+                            if (!isRoot && urlStr.startsWith("/")) urlStr = urlStr.substring(1); // remove the root again if it didn't have it.
                             url = quote ? url.charAt( 0 ) + urlStr + url.charAt( 0 ) : urlStr;
                         } catch ( MalformedURLException ex ) {
                             // ignore, occur with data: protocol
