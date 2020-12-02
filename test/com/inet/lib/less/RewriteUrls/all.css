@@ -6,7 +6,7 @@
   url5: url('subfolder1/DoesNotExists.jpg');
   url6: url('subfolder1/subfolder2/subfolder1/DoesNotExists.jpg');
   url7: url('main.jpg');
-  url8: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IIGEganBlZyBmaWxlCg==");
+  url8: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg==");
   url9: url('http://test.com');
 }
 .rule1 {

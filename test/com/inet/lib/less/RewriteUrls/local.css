@@ -6,7 +6,7 @@
   url5: url('subfolder1/DoesNotExists.jpg');
   url6: url('subfolder1/DoesNotExists.jpg');
   url7: url('main.jpg');
-  url8: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg=");
+  url8: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg==");
   url9: url('http://test.com');
 }
 .rule1 {
@@ -18,9 +18,9 @@
   url6: url('subfolder1/DoesNotExists.jpg');
   url7: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg==");
   url8: url('main.jpg');
-  url9: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg=");
-  url10: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg=");
+  url9: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg==");
+  url10: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg==");
   url11: url('/main.jpg');
   url12: url('subfolder2/sub.jpg');
-  url13: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg=");
+  url13: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg==");
 }
