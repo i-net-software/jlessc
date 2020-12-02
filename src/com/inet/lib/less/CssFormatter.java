@@ -367,6 +367,10 @@ public class CssFormatter implements Cloneable {
     			}
         }
     }
+    
+    boolean isRewriteUrlOff() {
+    	return rewriteUrl == 0;
+    }
 
     /**
      * Get the reader factory.

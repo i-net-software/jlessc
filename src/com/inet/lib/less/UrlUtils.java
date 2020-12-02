@@ -157,7 +157,7 @@ class UrlUtils {
         URL url = formatter.getBaseURL();
         String urlStr = removeQuote(urlString);
         url = new URL(url, urlStr);
-        if (formatter.isRewriteUrl(urlStr)) {
+        if (!formatter.isRewriteUrlOff()) {
             url = new URL(new URL(formatter.getBaseURL(), relativeUrlStr), urlStr);
         }
         InputStream input = null;
@@ -167,7 +167,8 @@ class UrlUtils {
             } catch (Exception e) {
                 // try rewrite location independent of option "rewrite-urls" for backward
                 // compatibility, this is not 100% compatible with Less CSS
-                url = new URL(new URL(formatter.getBaseURL(), relativeUrlStr), urlStr);
+            	// also if is a root url, remove that to see if the file can be found right besides the base less file.
+                url = new URL(formatter.getBaseURL(), urlStr.startsWith("/")?urlStr.substring(1):urlStr);
                 input = formatter.getReaderFactory().openStream(url);
             }
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
