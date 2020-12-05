@@ -47,7 +47,8 @@ public class RewriteUrlsTest {
         HashMap<String, String> options = new HashMap<>();
         options.put( Less.REWRITE_URLS, rewriteUrl );
 
-        String expectedCss = new Scanner( new URL( baseURL, rewriteUrl + ".css" ).openStream(), "UTF-8" ).useDelimiter( "\\A" ).next();;
+        String expectedCss = new Scanner( new URL( baseURL, rewriteUrl + ".css" ).openStream(), "UTF-8" ).useDelimiter( "\\A" ).next();
+        expectedCss = expectedCss.replace( "\r\n", "\n" ); // JLess always uses Linux newlines because it's more compact
 
         assertEquals( expectedCss, less.compile( baseURL, lessData, options ) );
     }
