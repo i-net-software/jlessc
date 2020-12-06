@@ -51,6 +51,7 @@ public class Less {
     /**
      * Rewrites URLs to make them relative to the base less file. 'all' rewrites all URLs, 'local' just those starting
      * with a '.', 'off' simple inline it.
+     * @see <a href="http://lesscss.org/usage/#less-options-rewrite-urls">http://lesscss.org/usage/#less-options-rewrite-urls</a>
      */
     public static final String REWRITE_URLS = "rewrite-urls";
 

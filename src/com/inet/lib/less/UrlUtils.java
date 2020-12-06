@@ -152,71 +152,70 @@ class UrlUtils {
      * @param type           the mime type
      * @throws IOException If any I/O errors occur on reading the content
      */
-    static void dataUri(CssFormatter formatter, String relativeUrlStr, final String urlString, String type)
-            throws IOException {
+    static void dataUri( CssFormatter formatter, String relativeUrlStr, final String urlString, String type ) throws IOException {
         URL url = formatter.getBaseURL();
-        String urlStr = removeQuote(urlString);
-        url = new URL(url, urlStr);
-        if (!formatter.isRewriteUrlOff()) {
-            url = new URL(new URL(formatter.getBaseURL(), relativeUrlStr), urlStr);
+        String urlStr = removeQuote( urlString );
+        url = new URL( url, urlStr );
+        if( !formatter.isRewriteUrlOff() ) {
+            url = new URL( new URL( formatter.getBaseURL(), relativeUrlStr ), urlStr );
         }
         InputStream input = null;
         try {
             try {
-                input = formatter.getReaderFactory().openStream(url);
-            } catch (Exception e) {
+                input = formatter.getReaderFactory().openStream( url );
+            } catch( Exception e ) {
                 // try rewrite location independent of option "rewrite-urls" for backward
                 // compatibility, this is not 100% compatible with Less CSS
-            	// also if is a root url, remove that to see if the file can be found right besides the base less file.
-                url = new URL(formatter.getBaseURL(), urlStr.startsWith("/")?urlStr.substring(1):urlStr);
-                input = formatter.getReaderFactory().openStream(url);
+                // also if is a root url, remove that to see if the file can be found right besides the base less file.
+                url = new URL( formatter.getBaseURL(), urlStr.startsWith( "/" ) ? urlStr.substring( 1 ) : urlStr );
+                input = formatter.getReaderFactory().openStream( url );
             }
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
             int count;
             byte[] data = new byte[16384];
 
-            while ((count = input.read(data, 0, data.length)) > 0) {
-                buffer.write(data, 0, count);
-                if (buffer.size() >= 32 * 1024)
+            while( (count = input.read( data, 0, data.length )) > 0 ) {
+                buffer.write( data, 0, count );
+                if( buffer.size() >= 32 * 1024 )
                     break;
             }
 
             byte[] bytes = buffer.toByteArray();
 
-            if (bytes.length >= 32 * 1024) {
-                String rewrittenUrl = getRewrittenUrl(formatter, relativeUrlStr, urlString, urlStr);
-                formatter.append("url(").append(rewrittenUrl).append(')');
+            if( bytes.length >= 32 * 1024 ) {
+                String rewrittenUrl = getRewrittenUrl( formatter, relativeUrlStr, urlString, urlStr );
+                formatter.append( "url(" ).append( rewrittenUrl ).append( ')' );
             } else {
-                dataUri(formatter, bytes, urlStr, type);
+                dataUri( formatter, bytes, urlStr, type );
             }
-        } catch (Exception e) {
-            String rewrittenUrl = getRewrittenUrl(formatter, relativeUrlStr, urlString, urlStr);
-            formatter.append("url(").append(rewrittenUrl).append(')');
+        } catch( Exception e ) {
+            String rewrittenUrl = getRewrittenUrl( formatter, relativeUrlStr, urlString, urlStr );
+            formatter.append( "url(" ).append( rewrittenUrl ).append( ')' );
             return;
         } finally {
-            if (input != null)
+            if( input != null )
                 input.close();
         }
     }
 
     /**
-     * @param formatter
-     * @param relativeUrlStr
-     * @param urlString
-     * @param urlStr
-     * @return
-     * @throws MalformedURLException
+     * Create the rewritten URL
+     * @param formatter current formatter
+     * @param relativeUrlStr relative URL of the less script. Is used as base URL
+     * @param urlString the url parameter of the function
+     * @param urlStr the url parameter of the function
+     * @return the new URL
+     * @throws MalformedURLException if there any problems with the URL
      */
-    private static String getRewrittenUrl(CssFormatter formatter, String relativeUrlStr, final String urlString,
-            String urlStr) throws MalformedURLException {
+    private static String getRewrittenUrl( CssFormatter formatter, String relativeUrlStr, final String urlString, String urlStr ) throws MalformedURLException {
         boolean quote = urlString != urlStr;
         String rewrittenUrl;
-        if (formatter.isRewriteUrl(urlStr)) {
-            URL relativeUrl = new URL(relativeUrlStr);
-            relativeUrl = new URL(relativeUrl, urlStr);
+        if( formatter.isRewriteUrl( urlStr ) ) {
+            URL relativeUrl = new URL( relativeUrlStr );
+            relativeUrl = new URL( relativeUrl, urlStr );
             rewrittenUrl = relativeUrl.getPath();
-            rewrittenUrl = quote ? urlString.charAt(0) + rewrittenUrl + urlString.charAt(0) : rewrittenUrl;
+            rewrittenUrl = quote ? urlString.charAt( 0 ) + rewrittenUrl + urlString.charAt( 0 ) : rewrittenUrl;
         } else {
             rewrittenUrl = urlString;
         }

@@ -350,26 +350,34 @@ public class CssFormatter implements Cloneable {
      * 
      * @param url the URL that should be rewrite
      * @return true, if rewrite
+     * @see #parseRewriteUrl()
      */
     boolean isRewriteUrl( String url ) {
         switch( rewriteUrl ) {
             default:
-            case 0:
+            case 0: // off
                 return false;
-            case 1:
+            case 1: // local
                 return url.startsWith( "." );
-            case 2:
-                if (url.startsWith("/")) return false;  // never rewrite root urls
-    			try {
-    				return new URI(url).getScheme() == null; // nver rewrite urls with a scheme (data, http, https)
-    			} catch (Exception e) {
-    				return false;
-    			}
+            case 2: // all
+                if( url.startsWith( "/" ) ) {
+                    return false; // never rewrite root urls
+                }
+                try {
+                    return new URI( url ).getScheme() == null; // nver rewrite urls with a scheme (data, http, https)
+                } catch( Exception e ) {
+                    return false;
+                }
         }
     }
-    
+
+    /**
+     * if rewrite URL is off
+     * 
+     * @return true, is off
+     */
     boolean isRewriteUrlOff() {
-    	return rewriteUrl == 0;
+        return rewriteUrl == 0;
     }
 
     /**
