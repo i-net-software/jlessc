@@ -26,6 +26,7 @@
  */
 package com.inet.lib.less;
 
+import java.net.URI;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -358,8 +359,17 @@ public class CssFormatter implements Cloneable {
             case 1:
                 return url.startsWith( "." );
             case 2:
-                return !url.startsWith( "data:" ); // data: URL never rewrite
+                if (url.startsWith("/")) return false;  // never rewrite root urls
+    			try {
+    				return new URI(url).getScheme() == null; // nver rewrite urls with a scheme (data, http, https)
+    			} catch (Exception e) {
+    				return false;
+    			}
         }
+    }
+    
+    boolean isRewriteUrlOff() {
+    	return rewriteUrl == 0;
     }
 
     /**
