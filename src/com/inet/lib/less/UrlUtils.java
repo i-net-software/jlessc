@@ -153,20 +153,18 @@ class UrlUtils {
      * @throws IOException If any I/O errors occur on reading the content
      */
     static void dataUri( CssFormatter formatter, String relativeUrlStr, final String urlString, String type ) throws IOException {
-        URL url = formatter.getBaseURL();
         String urlStr = removeQuote( urlString );
-        url = new URL( url, urlStr );
-        if( !formatter.isRewriteUrlOff() ) {
-            url = new URL( new URL( formatter.getBaseURL(), relativeUrlStr ), urlStr );
-        }
         InputStream input = null;
         try {
             try {
-                input = formatter.getReaderFactory().openStream( url );
+                input = formatter.getReaderFactory().openStream( formatter.getBaseURL(), urlStr, relativeUrlStr );
             } catch( Exception e ) {
-                // try rewrite location independent of option "rewrite-urls" for backward
-                // compatibility, this is not 100% compatible with Less CSS
                 // also if is a root url, remove that to see if the file can be found right besides the base less file.
+                URL url = formatter.getBaseURL();
+                url = new URL( url, urlStr );
+                if( !formatter.isRewriteUrlOff() ) {
+                    url = new URL( new URL( formatter.getBaseURL(), relativeUrlStr ), urlStr );
+                }
                 url = new URL( formatter.getBaseURL(), urlStr.startsWith( "/" ) ? urlStr.substring( 1 ) : urlStr );
                 input = formatter.getReaderFactory().openStream( url );
             }
