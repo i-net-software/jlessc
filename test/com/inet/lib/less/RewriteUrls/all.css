@@ -23,4 +23,8 @@
   url11: url('/main.jpg');
   url12: url('subfolder1/subfolder2/sub.jpg');
   url13: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg==");
+  url14: url("data:image/jpeg;base64,dGhpcyBpcyBpbiB0aGUgc3ViZm9sZGVy");
+  url15: url("data:image/jpeg;base64,dGhpcyBpcyBpbiB0aGUgbWFpbg==");
+  url16: url('subfolder1/test.jpg');
+  url17: url('test.jpg');
 }
