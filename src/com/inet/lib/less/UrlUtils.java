@@ -160,9 +160,11 @@ class UrlUtils {
                 URL url = formatter.getBaseURL();
                 url = new URL( url, urlStr );
                 if( !formatter.isRewriteUrlOff() ) {
-                    url = new URL( new URL( formatter.getBaseURL(), relativeUrlStr ), urlStr );
+                    input = formatter.getReaderFactory().openStream(new URL( formatter.getBaseURL(), relativeUrlStr ), urlStr, "" );
                 }
-                input = formatter.getReaderFactory().openStream( url );
+                else {
+                	 input = formatter.getReaderFactory().openStream( formatter.getBaseURL(),  urlStr, relativeUrlStr );
+                }
             } catch( Exception e ) {
                 // try to do the default without rewrite, also if is a root url, remove that to see if the file can be found right besides the base less file.
                 input = formatter.getReaderFactory().openStream( formatter.getBaseURL(),  urlStr.startsWith( "/" ) ? urlStr.substring( 1 ): urlStr, relativeUrlStr );
