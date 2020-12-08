@@ -157,16 +157,17 @@ class UrlUtils {
         InputStream input = null;
         try {
             try {
-                input = formatter.getReaderFactory().openStream( formatter.getBaseURL(), urlStr, relativeUrlStr );
-            } catch( Exception e ) {
-                // also if is a root url, remove that to see if the file can be found right besides the base less file.
                 URL url = formatter.getBaseURL();
                 url = new URL( url, urlStr );
                 if( !formatter.isRewriteUrlOff() ) {
-                    url = new URL( new URL( formatter.getBaseURL(), relativeUrlStr ), urlStr );
+                    input = formatter.getReaderFactory().openStream(new URL( formatter.getBaseURL(), relativeUrlStr ), urlStr, "" );
                 }
-                url = new URL( formatter.getBaseURL(), urlStr.startsWith( "/" ) ? urlStr.substring( 1 ) : urlStr );
-                input = formatter.getReaderFactory().openStream( url );
+                else {
+                	 input = formatter.getReaderFactory().openStream( formatter.getBaseURL(),  urlStr, relativeUrlStr );
+                }
+            } catch( Exception e ) {
+                // try to do the default without rewrite, also if is a root url, remove that to see if the file can be found right besides the base less file.
+                input = formatter.getReaderFactory().openStream( formatter.getBaseURL(),  urlStr.startsWith( "/" ) ? urlStr.substring( 1 ): urlStr, relativeUrlStr );
             }
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
