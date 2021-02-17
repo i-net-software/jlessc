@@ -12,7 +12,7 @@ apply plugin: 'com.moowork.node'
 apply plugin: 'java'
 
 repositories {
-	jcenter()
+    mavenCentral()
 }
 
 dependencies {
