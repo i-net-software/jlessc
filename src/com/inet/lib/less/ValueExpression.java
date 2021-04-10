@@ -284,7 +284,8 @@ class ValueExpression extends Expression {
                         }
                         break;
                     default:
-                        throw createException( "Invalid Color: " + toString() );
+                        type = STRING;
+                        return;
                 }
             } else {
                 str = str.toLowerCase();
