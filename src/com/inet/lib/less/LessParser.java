@@ -987,10 +987,10 @@ class LessParser implements FormattableContainer {
                                     str = trim( builder );
                                     if( str.equals( "important" ) ) {
                                         left.setImportant();
-                                        back( ch );
                                     } else {
                                         left = concat( left, ' ', buildExpression( '!' + str ) );
                                     }
+                                    back( ch );
                                     return left;
                                 default:
                                     builder.append( ch );
