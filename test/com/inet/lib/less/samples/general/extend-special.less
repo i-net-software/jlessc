@@ -1,0 +1,21 @@
+.mixin() {
+  &:before {
+    &:extend(.foo > bar);
+    foo: 3;
+  }
+}
+.main {
+  @media only screen and (max-width: 768px) {
+    > first {
+      > second {
+        .mixin();
+      }
+    }
+  }
+}
+.foo {
+  > bar {
+    color: red;
+  }
+}
+foo:extend(.foo all) {}

@@ -1,0 +1,9 @@
+@media only screen and (max-width: 768px) {
+  .main > first > second:before {
+    foo: 3;
+  }
+}
+.foo > bar,
+foo > bar {
+  color: red;
+}
