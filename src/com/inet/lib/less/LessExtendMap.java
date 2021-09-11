@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015 Volker Berlin
+ * Copyright (c) 2014 - 2021 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -79,6 +79,9 @@ class LessExtendMap {
     void add( LessExtend lessExtend, String[] mainSelector ) {
         if( mainSelector == null || mainSelector[0].startsWith( "@media" ) ) {
             mainSelector = lessExtend.getSelectors();
+            if( mainSelector[0].equals( "&" ) ) {
+                return; // no valid "extending selector"
+            }
         } else {
             mainSelector = SelectorUtils.merge( mainSelector, lessExtend.getSelectors() );
         }
@@ -109,6 +112,7 @@ class LessExtendMap {
      * @return the selectors concatenate with extends or the original if there are no etends.
      */
     String[] concatenateExtends( String[] selectors, boolean isReference ) {
+        LinkedHashSet<String> selectorList = this.selectorList; // use local variable for speed
         selectorList.clear();
         for( String selector : selectors ) {
             concatenateExtendsRecursive( selector, isReference, selector );
