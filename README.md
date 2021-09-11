@@ -1,7 +1,7 @@
 JLessC
 ======
 
-[![Build Status](https://travis-ci.org/i-net-software/jlessc.svg)](https://travis-ci.org/i-net-software/jlessc)
+[![Build Status](https://api.travis-ci.com/i-net-software/jlessc.svg)](https://app.travis-ci.com/github/i-net-software/jlessc)
 [![License](https://img.shields.io/github/license/i-net-software/jlessc.svg)](https://github.com/i-net-software/jlessc/blob/master/license.txt)
 [![Coverage Status](https://coveralls.io/repos/i-net-software/jlessc/badge.svg?branch=master&service=github)](https://coveralls.io/github/i-net-software/jlessc?branch=master)
 [![Maven](https://img.shields.io/maven-central/v/de.inetsoftware/jlessc.svg)](https://mvnrepository.com/artifact/de.inetsoftware/jlessc)
