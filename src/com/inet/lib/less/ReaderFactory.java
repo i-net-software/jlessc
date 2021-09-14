@@ -33,6 +33,8 @@ import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * A factory to create a reader and streams for parsing. You can override it to resolve the URL, implement a cache or use another
  * encoding as UFT-8.
@@ -48,6 +50,7 @@ public class ReaderFactory {
      * @throws IOException
      *             If any I/O error occur on reading the URL.
      */
+    @SuppressFBWarnings( value = "URLCONNECTION_SSRF_FD", justification = "Caller of JLessC must check this" )
     public InputStream openStream( URL url ) throws IOException {
         return url.openStream();
     }

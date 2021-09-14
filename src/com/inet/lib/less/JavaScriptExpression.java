@@ -32,6 +32,8 @@ import java.util.Map;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * An expression with JavaScript.
  */
@@ -122,6 +124,7 @@ public class JavaScriptExpression extends Expression {
      * Execute the JavaScript 
      * @param formatter current formatter
      */
+    @SuppressFBWarnings( value = "SCRIPT_ENGINE_INJECTION", justification = "Caller of JLessC must check this" )
     private void eval( CssFormatter formatter ) {
         try {
             String script = toString();

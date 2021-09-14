@@ -38,6 +38,8 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Colorize an image and inline it as base64.
  */
@@ -47,6 +49,7 @@ class CustomFunctionColorizeImage implements CustomLessFunction {
      * {@inheritDoc}
      */
     @Override
+    @SuppressFBWarnings( value = "URLCONNECTION_SSRF_FD", justification = "Caller of JLessC must check this" )
     public void appendTo( CssFormatter formatter, List<Expression> parameters ) throws IOException {
         if( parameters.size() < 4 ) {
             throw new LessException( "error evaluating function colorize-image expects url, main_color, contrast_color " );
