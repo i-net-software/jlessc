@@ -37,6 +37,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -44,6 +48,13 @@ import org.junit.runners.Parameterized.Parameters;
 
 @RunWith( Parameterized.class )
 public class LessTest {
+
+    private static boolean javaScriptAvaialable;
+    static {
+        ScriptEngineManager factory = new ScriptEngineManager( LessTest.class.getClassLoader() );
+        ScriptEngine engine = factory.getEngineByName( "JavaScript" );
+        javaScriptAvaialable = engine != null;
+    }
 
     private File lessFile;
     private File cssFile;
@@ -91,6 +102,8 @@ public class LessTest {
 
     @Test
     public void compile() throws Exception {
+        Assume.assumeTrue( javaScriptAvaialable || !"javascript.css".equals( cssFile.getName() ) );
+
         String cssData = new String( Files.readAllBytes( cssFile.toPath() ), StandardCharsets.UTF_8 ).replace( "\r\n", "\n" ); // JLess always uses Linux newlines because it's more compact
 
         boolean compress = cssFile.getName().endsWith( ".css_x" ) || lessFile.getParentFile().getName().equals( "compression" );
