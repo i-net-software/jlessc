@@ -245,6 +245,9 @@ class UrlUtils {
                 case "webp":
                     type = "image/webp;base64";
                     break;
+                case "svg":
+                    type = "image/svg+xml";
+                    break;
                 default: 
                     type = "text/html";
             }
