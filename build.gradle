@@ -102,7 +102,8 @@ version = '1.10-SNAPSHOT'
 jar {
     manifest {
         attributes( 'Implementation-Title': 'JLessC, a Less CSS compiler',
-                    'Implementation-Vendor': 'i-net software',
+                    'Implementation-Vendor-Id': 'de.inetsoftware',
+                    'Implementation-Vendor': 'i-net software GmbH, Berlin, Germany',
                     'Implementation-Version': version,
                     'Automatic-Module-Name': 'de.inetsoftware.jlessc',
                     'Bundle-SymbolicName': 'de.inetsoftware.jlessc',
