@@ -1092,7 +1092,7 @@ class LessParser implements FormattableContainer {
             if( ch == quote && !isBackslash ) {
                 return;
             }
-            isBackslash = ch == '\\';
+            isBackslash = ch == '\\' && !isBackslash;
         }
     }
 

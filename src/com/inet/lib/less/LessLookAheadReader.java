@@ -204,7 +204,7 @@ class LessLookAheadReader extends LessObject implements Closeable {
                             if( ch == ch2 && !isSlash ) {
                                 break;
                             }
-                            isSlash = ch2 == '\\';
+                            isSlash = ch2 == '\\' && !isSlash;
                         }
                         break;
                     case '\\':

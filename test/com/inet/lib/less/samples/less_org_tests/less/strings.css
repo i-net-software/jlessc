@@ -1,4 +1,6 @@
 #strings {
+  doubleEscape: "\\";
+  doubleEscapeVar: "\\";
   background-image: url("http://son-of-a-banana.com");
   quotes: "~" "~";
   content: "#*%:&^,)!.(~*})";
