@@ -1,0 +1,11 @@
+@supports selector {
+  surrounding .parentclass {
+    background: red;
+  }
+  surrounding .parentclass .element {
+    display: flex;
+  }
+  surrounding .parentclass .another {
+    border-color: green;
+  }
+}

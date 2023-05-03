@@ -1,0 +1,1 @@
+@supports selector{surrounding .parentclass{background:#f00}surrounding .parentclass .element{display:flex}surrounding .parentclass .another{border-color:#008000}}

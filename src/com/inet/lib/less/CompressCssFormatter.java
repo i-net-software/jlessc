@@ -26,7 +26,6 @@
  */
 package com.inet.lib.less;
 
-
 /**
  * A version of the CssFormatter that produce a compressed output.
  */
@@ -148,8 +147,13 @@ class CompressCssFormatter extends CssFormatter {
     CssFormatter startBlock( String[] selectors ) {
         checkSemicolon();
         CssFormatter formatter = super.startBlock( selectors );
-        if( formatter != this && formatter.getOutput().length() > 0 ) { // two rules with same selector was merged
-            formatter.semicolon();
+        if( formatter != this ) { // two rules with same selector was merged
+            StringBuilder output = formatter.getOutput();
+            int length = output.length();
+            if( length > 0 && output.charAt( length-1 ) != '}' ) {
+                // the previous rule of the same selector ends with a property
+                formatter.semicolon();
+            }
         }
         return formatter;
     }
