@@ -220,7 +220,7 @@ class Rule extends LessObject implements Formattable, FormattableContainer {
     private void bubbling( String[] mediaSelector, String[] blockSelector, CssFormatter formatter ) {
         if( properties.size() > 0 ) {
             String media = mediaSelector[0];
-            if( media.startsWith( "@media" ) || media.startsWith( "@supports" ) || media.startsWith( "@document" ) ) {
+            if( media.startsWith( "@media" ) || media.startsWith( "@supports" ) || media.startsWith( "@document" ) || media.startsWith( "@container" ) ) {
                 // conditional directives
                 int size0 = formatter.getOutputSize();
                 CssFormatter block = formatter.startBlock( mediaSelector );

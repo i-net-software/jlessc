@@ -6,6 +6,11 @@
     background-size: 123 456;
   }
 }
+@container sidebar (width > 400px) {
+  .container-fixed {
+    back-color: red;
+  }
+}
 @media print {
   .visible-print {
     display: block !important;
