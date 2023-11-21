@@ -1,6 +1,3 @@
-# The project JLessC is end of live because bootstrap has switch from less to scss. We will use and develop the [sass-compiler](https://github.com/i-net-software/sass-compiler) in the future.
-
-
 JLessC
 ======
 
