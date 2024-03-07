@@ -51,8 +51,8 @@ class CustomFunctionColorizeImage implements CustomLessFunction {
     @Override
     @SuppressFBWarnings( value = "URLCONNECTION_SSRF_FD", justification = "Caller of JLessC must check this" )
     public void appendTo( CssFormatter formatter, List<Expression> parameters ) throws IOException {
-        if( parameters.size() < 4 ) {
-            throw new LessException( "error evaluating function colorize-image expects url, main_color, contrast_color " );
+        if( parameters.size() < 3 ) {
+            throw new LessException( "error evaluating function 'colorize-image' expects parameters: url, main_color, contrast_color " );
         }
 
         String relativeURL = parameters.get( 0 ).stringValue( formatter );
@@ -61,7 +61,6 @@ class CustomFunctionColorizeImage implements CustomLessFunction {
         String urlStr = UrlUtils.removeQuote( urlString );
         url = new URL( url, urlStr );
         int mainColor = ColorUtils.argb( ColorUtils.getColor( parameters.get( 2 ), formatter ) );
-        int contrastColor = ColorUtils.argb( ColorUtils.getColor( parameters.get( 3 ), formatter ) );
 
         BufferedImage loadedImage = ImageIO.read( url.openStream() );
 
@@ -74,7 +73,13 @@ class CustomFunctionColorizeImage implements CustomLessFunction {
         bGr.dispose();
 
         final float[] mainColorHsb = Color.RGBtoHSB( (mainColor >> 16) & 0xFF, (mainColor >> 8) & 0xFF, mainColor & 0xFF, null );
-        final float[] contrastColorHsb = Color.RGBtoHSB( (contrastColor >> 16) & 0xFF, (contrastColor >> 8) & 0xFF, contrastColor & 0xFF, null );
+        final float[] contrastColorHsb;
+        if( parameters.size() > 3 ) {
+            int contrastColor = ColorUtils.argb( ColorUtils.getColor( parameters.get( 3 ), formatter ) );
+            contrastColorHsb = Color.RGBtoHSB( (contrastColor >> 16) & 0xFF, (contrastColor >> 8) & 0xFF, contrastColor & 0xFF, null );
+        } else {
+            contrastColorHsb = mainColorHsb;
+        }
 
         // get the pixel data
         WritableRaster raster = image.getRaster();
