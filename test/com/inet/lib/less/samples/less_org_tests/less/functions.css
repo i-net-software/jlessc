@@ -137,6 +137,12 @@
   percent: true;
   em: true;
   cat: true;
+  a: true;
+  b: false;
+  c: red;
+  d: blue;
+  f: true;
+  g: red;
 }
 #alpha {
   alpha: rgba(153, 94, 51, 0.6);

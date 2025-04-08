@@ -147,6 +147,14 @@
     percent: ispercentage(32%);
     em: isem(32em);
     cat: isunit(32cat, cat);
+
+    @foo: 1;
+    a:isdefined(@foo);
+    b:isdefined(@bar);
+    c:if(isdefined(@foo), red, blue);
+    d:if(isdefined(@bar), red, blue);
+    f:isdefined("hello");
+    g:if(isdefined("hello"), red, blue);
   }
 }
 

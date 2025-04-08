@@ -137,6 +137,7 @@ class FunctionExpression extends Expression {
             case "cos":
             case "tan":
             case "length":
+            case "isdefined":
                 return "";
             case "acos":
             case "asin":
@@ -287,6 +288,10 @@ class FunctionExpression extends Expression {
                     return;
                 case "if":
                     get( get( 0 ).booleanValue( formatter ) ? 1 : 2 ).appendTo( formatter ); 
+                    return;
+                case "isdefined":
+                    Expression param = get( 0 );
+                    formatter.append( Boolean.toString( param instanceof VariableExpression ? formatter.getVariable( param.toString() ) != null : true ) );
                     return;
                 default:
                     CustomLessFunction customLessFunction = Less.CUSTOM_FUNKTIONS.get( super.toString() );
@@ -689,6 +694,11 @@ class FunctionExpression extends Expression {
                     } else {
                         booleanValue = false;
                     }
+                    return;
+                case "isdefined":
+                    type = BOOLEAN;
+                    param = get( 0 );
+                    booleanValue = param instanceof VariableExpression ? formatter.getVariable( param.toString() ) != null : true;
                     return;
                 case "ispixel":
                     type = BOOLEAN;
