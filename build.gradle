@@ -1,10 +1,9 @@
 buildscript {
     repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
+        gradlePluginPortal()
     }
     dependencies {
+        classpath 'io.github.gradle-nexus.publish-plugin:io.github.gradle-nexus.publish-plugin.gradle.plugin:+'
         classpath 'com.moowork.gradle:gradle-node-plugin:+'
         classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:+'
     }
@@ -18,12 +17,12 @@ repositories {
 }
 
 dependencies {
-    compile		'com.google.code.findbugs:jsr305:3.0.2'
-    compile		'com.google.code.findbugs:annotations:3.0.1'
-	testCompile	'junit:junit:4.11'
+    implementation		'com.google.code.findbugs:jsr305:3.0.2'
+    implementation		'com.google.code.findbugs:annotations:3.0.1'
+	testImplementation	'junit:junit:4.11'
 	def javaVersion = org.gradle.util.VersionNumber.parse( System.properties['java.version'] ).getMajor()
     if( javaVersion >= 15 ) {
-        testRuntime 'org.mozilla:rhino:+'
+        testRuntimeOnly 'org.mozilla:rhino:1.7.+' // version 1.8.x required Java 11 which Gradle not accept with a smaller sourceCompatibility
     }
 }
 
@@ -80,8 +79,8 @@ jacoco {
 jacocoTestReport {
     tasks.coveralls.dependsOn it
     reports {
-        xml.enabled = true  // coveralls plugin depends on xml format report
-        html.enabled = true
+        xml.required = true  // coveralls plugin depends on xml format report
+        html.required = true
     }
 }
  
@@ -92,8 +91,9 @@ if( System.getProperty( "java.vm.specification.version" ) > '1.8' ) {
 /****************************************
  * Deploy to Maven
  ****************************************/
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'signing'
+apply plugin: 'io.github.gradle-nexus.publish-plugin'
 
 group = 'de.inetsoftware'
 archivesBaseName = 'jlessc'
@@ -112,81 +112,72 @@ jar {
     }
 }
 
-task javadocJar(type: Jar) {
-    classifier = 'javadoc'
-    from javadoc
+java {
+    withJavadocJar()
+    withSourcesJar()
 }
 
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
+sourcesJar {
+    duplicatesStrategy DuplicatesStrategy.EXCLUDE
 }
 
-artifacts {
-    archives javadocJar, sourcesJar
-}
-
-signing {
-    if (project.hasProperty("signing.keyId") ){
-        sign configurations.archives
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl = uri('https://ossrh-staging-api.central.sonatype.com/service/local/')
+            snapshotRepositoryUrl = uri('https://central.sonatype.com/repository/maven-snapshots/')
+            username = project.findProperty('ossrhUsername')
+            password = project.findProperty('ossrhPassword')
+        }
     }
 }
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            beforeDeployment { MavenDeployment deployment ->
-                signing.signPom(deployment)
-            }
-
-            if (project.hasProperty("ossrhUsername") ){
-                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: project["ossrhUsername"], password: project["ossrhPassword"])
-                }
-
-                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                    authentication(userName: project["ossrhUsername"], password: project["ossrhPassword"])
-                }
-            }
-
-            pom.project {
-                name 'JLessC'
+            pom {
+                name = 'JLessC'
                 packaging 'jar'
                 // optionally artifactId can be defined here
-                description 'A Less CSS compiler written completely in Java (pure Java).'
-                url 'https://github.com/i-net-software/jlessc'
+                description = 'A Less CSS compiler written completely in Java (pure Java).'
+                url = 'https://github.com/i-net-software/jlessc'
 
                 scm {
-                    connection 'scm:git:git@github.com:i-net-software/jlessc.git'
-                    developerConnection 'scm:git:git@github.com:i-net-software/jlessc.git'
-                    url 'git@github.com:i-net-software/jlessc.git'
+                    connection ='scm:git:git@github.com:i-net-software/jlessc.git'
+                    developerConnection = 'scm:git:git@github.com:i-net-software/jlessc.git'
+                    url = 'git@github.com:i-net-software/jlessc.git'
                 }
 
                 licenses {
                     license {
-                        name 'MIT License'
-                        url 'http://www.opensource.org/licenses/mit-license.php'
+                        name = 'MIT License'
+                        url = 'http://www.opensource.org/licenses/mit-license.php'
                     }
                 }
 
                 developers {
                     developer {
-                        id 'vberlin'
-                        name 'Volker Berlin'
-                        email 'vberlin@inetsoftware.de'
+                        id = 'vberlin'
+                        name = 'Volker Berlin'
+                        email = 'vberlin@inetsoftware.de'
                         organization = 'i-net software'
-                        organizationUrl 'https://www.inetsoftware.de/'
+                        organizationUrl = 'https://www.inetsoftware.de/'
                     }
                 }
-            }
-            // we have only compile time dependency and no runtime dependency, that we remove all
-            pom.whenConfigured{pom ->
-                pom.dependencies.clear()
             }
         }
     }
 }
 
+signing {
+    if (project.hasProperty("signing.keyId") ){
+        sign publishing.publications.mavenJava
+    }
+}
+
+closeStagingRepositories.dependsOn 'publishToSonatype'
+publish.dependsOn 'closeStagingRepositories'
 
 /****************************************
  * Benchmark of different less compilers.
