@@ -113,6 +113,7 @@ class CompressCssFormatter extends CssFormatter {
             switch( unit ) {
                 case "deg":
                 case "s":
+                case "fr":
                     break;
                 default:
                     super.append( '0' );
