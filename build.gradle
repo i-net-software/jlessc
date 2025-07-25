@@ -4,12 +4,11 @@ buildscript {
     }
     dependencies {
         classpath 'io.github.gradle-nexus.publish-plugin:io.github.gradle-nexus.publish-plugin.gradle.plugin:+'
-        classpath 'com.moowork.gradle:gradle-node-plugin:+'
+        classpath 'com.github.node-gradle.node:com.github.node-gradle.node.gradle.plugin:7.1.0'
         classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:+'
     }
 }
 
-apply plugin: 'com.moowork.node'
 apply plugin: 'java'
 
 repositories {
@@ -182,7 +181,7 @@ publish.dependsOn 'closeStagingRepositories'
 /****************************************
  * Benchmark of different less compilers.
  ****************************************/
-apply plugin: 'com.moowork.node'
+apply plugin: 'com.github.node-gradle.node'
 
 configurations {
     benchmarkLessCSS
