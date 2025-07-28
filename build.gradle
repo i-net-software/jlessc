@@ -83,7 +83,7 @@ jacocoTestReport {
     }
 }
  
-if( System.getProperty( "java.vm.specification.version" ) > '1.8' ) { 
+if( false && System.getProperty( "java.vm.specification.version" ) > '1.8' ) { 
     check.dependsOn tasks.coveralls
 }
 
