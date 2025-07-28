@@ -109,17 +109,18 @@ class CompressCssFormatter extends CssFormatter {
      */
     @Override
     public CssFormatter appendValue( double value, String unit ) {
-        if( value == 0 && !inlineMode() ) {
-            switch( unit ) {
-                case "deg":
-                case "s":
-                case "fr":
-                    break;
-                default:
-                    super.append( '0' );
-                    return this;
-            }
-        }
+//        if( value == 0 && !inlineMode() ) {
+//            switch( unit ) {
+//                case "deg":
+//                case "s":
+//                case "ms":
+//                case "fr":
+//                    break;
+//                default:
+//                    super.append( '0' );
+//                    return this;
+//            }
+//        }
         return super.appendValue( value, unit );
     }
 
