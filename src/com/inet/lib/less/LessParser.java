@@ -591,8 +591,11 @@ class LessParser implements FormattableContainer {
                     }
                 } else {
                     reader = new LessLookAheadReader( importReader, filename, isReference, isMultiple );
-                    parse( currentRule );
-                    reader.close();
+                    try {
+                        parse( currentRule );
+                    } finally {
+                        reader.close();
+                    }
                 }
             }
         } catch( LessException ex ) {
