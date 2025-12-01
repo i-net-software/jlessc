@@ -2,3 +2,9 @@
 /build/
 /.gradle/
 /node_modules/
+
+# IDE files
+.classpath
+.project
+.settings/
+*.prefs
