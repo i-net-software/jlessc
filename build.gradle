@@ -345,7 +345,8 @@ task benchmarkNodeLessCompile( dependsOn: processTestResources ) {
     outputs.upToDateWhen { false }
     doFirst {
         benchmarkTest( 'less.js', {
-            project.exec {
+            def execOps = project.services.get(org.gradle.process.ExecOperations)
+            execOps.exec { ExecSpec execSpec ->
                 workingDir = lessFile.parentFile.absolutePath
                 commandLine "${buildDir}/../node_modules/less/bin/lessc", lessFile.name, "${lessFile.parentFile}/output.css"
                 ignoreExitValue = true
