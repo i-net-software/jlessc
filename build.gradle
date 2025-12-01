@@ -19,11 +19,13 @@ repositories {
     mavenCentral()
 }
 
+// Determine Java version for conditional dependencies
+def javaVersion = JavaVersion.current().majorVersion.toInteger()
+
 dependencies {
     implementation		'com.google.code.findbugs:jsr305:3.0.2'
     implementation		'com.google.code.findbugs:annotations:3.0.1'
 	testImplementation	'junit:junit:4.11'
-	def javaVersion = org.gradle.util.VersionNumber.parse( System.properties['java.version'] ).getMajor()
     if( javaVersion >= 15 ) {
         testRuntimeOnly 'org.mozilla:rhino:1.7.+' // version 1.8.x required Java 11 which Gradle not accept with a smaller sourceCompatibility
     }
