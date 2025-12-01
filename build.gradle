@@ -345,7 +345,7 @@ task benchmarkNodeLessCompile( dependsOn: processTestResources ) {
     outputs.upToDateWhen { false }
     doFirst {
         benchmarkTest( 'less.js', {
-            exec {
+            project.exec {
                 workingDir = lessFile.parentFile.absolutePath
                 commandLine "${buildDir}/../node_modules/less/bin/lessc", lessFile.name, "${lessFile.parentFile}/output.css"
                 ignoreExitValue = true
