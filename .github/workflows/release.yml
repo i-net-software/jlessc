@@ -1,0 +1,151 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # Triggers on tags like v1.10.0, v1.11.0, etc.
+      - '[0-9]+.[0-9]+.[0-9]+*'  # Also supports tags like 1.10.0, 1.11.0, etc.
+
+jobs:
+  release:
+    name: Build and Release
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write  # Required to create releases and upload assets
+      id-token: write  # Required for OIDC if using
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Need full history for changelog extraction
+      
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+      
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      
+      - name: Install npm dependencies
+        run: npm ci
+      
+      - name: Extract version from tag
+        id: version
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            # Tag format: v1.10.0 -> 1.10.0
+            VERSION=${GITHUB_REF#refs/tags/v}
+          else
+            # Tag format: 1.10.0 -> 1.10.0
+            VERSION=${GITHUB_REF#refs/tags/}
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Extracted version: $VERSION"
+      
+      - name: Update version in gradle.properties
+        run: |
+          # Remove -SNAPSHOT suffix if present, ensure version matches tag
+          VERSION="${{ steps.version.outputs.version }}"
+          sed -i "s/^version = .*/version = ${VERSION}/" gradle.properties
+          cat gradle.properties
+      
+      - name: Build project
+        run: ./gradlew -Djdk.tls.client.protocols="TLSv1,TLSv1.1,TLSv1.2" --stacktrace clean build -x test --no-daemon
+        shell: bash
+      
+      - name: Publish to Maven Local
+        run: ./gradlew publishToMavenLocal --no-daemon
+        shell: bash
+      
+      - name: Extract changelog for version
+        id: changelog
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          echo "Extracting changelog for version: $VERSION"
+          
+          # Try to extract changelog section for this version
+          # Look for version in CHANGELOG.md or README.md
+          CHANGELOG=""
+          
+          if [ -f "CHANGELOG.md" ]; then
+            CHANGELOG=$(awk -v version="$VERSION" '
+              BEGIN { found=0; in_section=0 }
+              /^# / || /^## / {
+                if (in_section) exit
+                if ($0 ~ "^# " version "$" || $0 ~ "^# " version " " || 
+                    $0 ~ "^## " version "$" || $0 ~ "^## " version " ") {
+                  found=1
+                  in_section=1
+                  next
+                }
+              }
+              in_section { print }
+            ' CHANGELOG.md)
+          fi
+          
+          # If empty, use a default message
+          if [ -z "$CHANGELOG" ]; then
+            CHANGELOG="Release version $VERSION"
+          fi
+          
+          # Escape for GitHub output (multiline)
+          {
+            echo "changelog<<EOF"
+            echo "$CHANGELOG"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+          
+          echo "Changelog extracted (first 200 chars):"
+          echo "$CHANGELOG" | head -c 200
+          echo ""
+      
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          name: Release ${{ steps.version.outputs.version }}
+          body: |
+            ## Version ${{ steps.version.outputs.version }}
+            
+            ${{ steps.changelog.outputs.changelog }}
+            
+            ---
+            
+            **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ github.event.before }}...${{ github.ref }}
+          files: |
+            build/libs/*.jar
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Publish to Maven Central (Sonatype)
+        continue-on-error: true
+        env:
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+        run: |
+          ./gradlew publishToSonatype closeStagingRepositories --no-daemon \
+            -Psigning.key="$SIGNING_KEY" \
+            -Psigning.password="$SIGNING_PASSWORD"
+        shell: bash
+

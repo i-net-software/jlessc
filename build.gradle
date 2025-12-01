@@ -6,10 +6,14 @@ buildscript {
         classpath 'io.github.gradle-nexus.publish-plugin:io.github.gradle-nexus.publish-plugin.gradle.plugin:+'
         classpath 'com.github.node-gradle.node:com.github.node-gradle.node.gradle.plugin:7.1.0'
         classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:+'
+        classpath 'io.github.gradle-nexus:publish-plugin:2.0.0' // Automates Sonatype Nexus publishing
     }
 }
 
 apply plugin: 'java'
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+apply plugin: 'io.github.gradle-nexus.publish-plugin'
 
 repositories {
     mavenCentral()
@@ -90,13 +94,10 @@ if( false && System.getProperty( "java.vm.specification.version" ) > '1.8' ) {
 /****************************************
  * Deploy to Maven
  ****************************************/
-apply plugin: 'maven-publish'
-apply plugin: 'signing'
-apply plugin: 'io.github.gradle-nexus.publish-plugin'
-
 group = 'de.inetsoftware'
 archivesBaseName = 'jlessc'
-version = '1.15-SNAPSHOT'
+// Version is read from gradle.properties
+version = project.findProperty('version') ?: '1.15-SNAPSHOT'
 
 jar {
     manifest {
@@ -120,16 +121,10 @@ sourcesJar {
     duplicatesStrategy DuplicatesStrategy.EXCLUDE
 }
 
-nexusPublishing {
-    repositories {
-        sonatype {
-            nexusUrl = uri('https://ossrh-staging-api.central.sonatype.com/service/local/')
-            snapshotRepositoryUrl = uri('https://central.sonatype.com/repository/maven-snapshots/')
-            username = project.findProperty('ossrhUsername')
-            password = project.findProperty('ossrhPassword')
-        }
-    }
-}
+// Configure publishing
+// - Snapshots: Published to Sonatype snapshot repository
+// - Releases: Published to Sonatype staging repository (then closed and released)
+// - Local development: Use `./gradlew publishToMavenLocal` to publish to mavenLocal()
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -138,24 +133,22 @@ publishing {
 
             pom {
                 name = 'JLessC'
-                packaging 'jar'
-                // optionally artifactId can be defined here
                 description = 'A Less CSS compiler written completely in Java (pure Java).'
                 url = 'https://github.com/i-net-software/jlessc'
-
+                
                 scm {
-                    connection ='scm:git:git@github.com:i-net-software/jlessc.git'
-                    developerConnection = 'scm:git:git@github.com:i-net-software/jlessc.git'
-                    url = 'git@github.com:i-net-software/jlessc.git'
+                    connection = 'scm:git:git://github.com/i-net-software/jlessc.git'
+                    developerConnection = 'scm:git:ssh://github.com/i-net-software/jlessc.git'
+                    url = 'https://github.com/i-net-software/jlessc'
                 }
-
+                
                 licenses {
                     license {
                         name = 'MIT License'
                         url = 'http://www.opensource.org/licenses/mit-license.php'
                     }
                 }
-
+                
                 developers {
                     developer {
                         id = 'vberlin'
@@ -166,18 +159,96 @@ publishing {
                     }
                 }
             }
+            
+            // Remove all dependencies from POM (compile-time only, no runtime dependencies)
+            pom.withXml {
+                asNode().dependencies?.replaceNode {}
+            }
         }
     }
-}
-
-signing {
-    if (project.hasProperty("signing.keyId") ){
-        sign publishing.publications.mavenJava
+    
+    // For local development, use mavenLocal()
+    repositories {
+        mavenLocal()
     }
 }
 
-closeStagingRepositories.dependsOn 'publishToSonatype'
-publish.dependsOn 'closeStagingRepositories'
+println "Publishing version: ${version}"
+println "Note: For local development, use './gradlew publishToMavenLocal'"
+println "      For snapshots, use './gradlew publishToSonatype' (requires Sonatype credentials)"
+println "      Snapshots are available at: https://oss.sonatype.org/content/repositories/snapshots/"
+
+// Configure Nexus Publish Plugin for Sonatype/Maven Central
+// Configure for both snapshots and releases
+// Snapshots go to: https://oss.sonatype.org/content/repositories/snapshots/
+// Releases go to staging, then are closed and released to Maven Central
+nexusPublishing {
+    repositories {
+        sonatype {
+            // New Central Portal URLs
+            nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
+            // Credentials - try both property name variations
+            username.set(
+                project.findProperty('ossrhUsername') 
+                    ?: project.findProperty('sonatypeUsername')
+                    ?: System.getenv('SONATYPE_USERNAME') 
+                    ?: System.getenv('OSSRH_USERNAME')
+                    ?: ""
+            )
+            password.set(
+                project.findProperty('ossrhPassword')
+                    ?: project.findProperty('sonatypePassword')
+                    ?: System.getenv('SONATYPE_PASSWORD')
+                    ?: System.getenv('OSSRH_PASSWORD')
+                    ?: ""
+            )
+            // Staging profile ID - should be the UUID from Sonatype, not the domain
+            // Get it from: https://central.sonatype.com/ -> Staging Profiles
+            // Or leave it out to auto-detect by groupId
+            // If you have a staging profile UUID, uncomment and set it:
+            // stagingProfileId.set('xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx')
+        }
+    }
+    
+    // Configure closeStagingRepositories task (only for releases, not snapshots)
+    closeStagingRepositories {
+        closeStagingRepositories.dependsOn 'publishToSonatype'
+        // Only close staging for releases (non-snapshot versions)
+        onlyIf { !version.toString().endsWith('-SNAPSHOT') }
+    }
+    
+    // For snapshots, just publish (don't close staging)
+    // For releases, close and release staging repositories
+    if (!version.toString().endsWith('-SNAPSHOT')) {
+        publish.finalizedBy 'closeStagingRepositories'
+    }
+}
+
+// Configure signing for Maven Central
+// Sign both snapshots and releases when credentials are available
+// Note: Signing is only required for Maven Central, not for mavenLocal()
+def hasSigningKey = (System.getenv('SIGNING_KEY') != null || project.findProperty('signing.key') != null)
+def isPublishingToMavenLocal = gradle.startParameter.taskNames.any { 
+    it.contains('MavenLocal') || it.contains('mavenLocal')
+}
+
+if (!isPublishingToMavenLocal && hasSigningKey) {
+    // Only sign when publishing to Sonatype and signing key is available
+    signing {
+        required { true }
+        useInMemoryPgpKeys( 
+            System.getenv('SIGNING_KEY') ?: project.findProperty('signing.key'), 
+            System.getenv('SIGNING_PASSWORD') ?: project.findProperty('signing.password') 
+        )
+        sign publishing.publications.mavenJava
+    }
+} else {
+    // Skip signing for mavenLocal
+    signing {
+        required { false }
+    }
+}
 
 /****************************************
  * Benchmark of different less compilers.
