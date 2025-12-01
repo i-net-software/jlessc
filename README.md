@@ -1,8 +1,8 @@
 JLessC
 ======
 
-[![Build Status](https://api.travis-ci.com/i-net-software/jlessc.svg)](https://app.travis-ci.com/github/i-net-software/jlessc)
-[![License](https://img.shields.io/github/license/i-net-software/jlessc.svg)](https://github.com/i-net-software/jlessc/blob/master/license.txt)
+[![CI](https://github.com/i-net-software/jlessc/workflows/CI/badge.svg)](https://github.com/i-net-software/jlessc/actions)
+[![License](https://img.shields.io/github/license/i-net-software/jlessc.svg)](https://github.com/i-net-software/jlessc/blob/master/LICENSE)
 [![Coverage Status](https://coveralls.io/repos/i-net-software/jlessc/badge.svg?branch=master&service=github)](https://coveralls.io/github/i-net-software/jlessc?branch=master)
 [![Maven](https://img.shields.io/maven-central/v/de.inetsoftware/jlessc.svg)](https://mvnrepository.com/artifact/de.inetsoftware/jlessc)
 [![JitPack](https://jitpack.io/v/i-net-software/jlessc.svg)](https://jitpack.io/#i-net-software/jlessc)
@@ -11,7 +11,7 @@ JLessC is a [Less CSS compiler](http://lesscss.org) written completely in Java (
 
 Required Java Version
 ----
-JLessC requires Java SE 8 or higher. It is tested with Java 8, 9, 10 and 11 on [travis-ci.org](https://travis-ci.org/i-net-software/jlessc). If you need support for Java 7 then you can use the old version 1.5.
+JLessC requires Java SE 8 or higher. It is tested with Java 8, 11, 17, 21, and 25 on [GitHub Actions](https://github.com/i-net-software/jlessc/actions). If you need support for Java 7 then you can use the old version 1.5.
 
 
 Add Dependency
@@ -19,7 +19,7 @@ Add Dependency
 Gradle users should add the library using the following dependency:
 
     dependencies {
-        compile 'de.inetsoftware:jlessc:+'
+        implementation 'de.inetsoftware:jlessc:+'
     }
 
 If you want to test a snapshot version with the latest bug fixes, then add the snapshot repository:
@@ -38,7 +38,7 @@ Or use on the fly snapshots from [JitPack](https://jitpack.io/#i-net-software/jl
         maven { url 'https://jitpack.io' } // for snapshots
     }
     dependencies {
-        compile 'com.github.i-net-software:jlessc:master-SNAPSHOT'
+        implementation 'com.github.i-net-software:jlessc:master-SNAPSHOT'
     }
 
 Maven users should add the library using the following dependency:
@@ -63,7 +63,7 @@ API details can be found in the source of the [Less](https://github.com/i-net-so
 
 Benchmark
 ----
-JLessC runs a benchmark test on the Travis build system using different less compilers. We always use the latest version of every compiler. We measure the compile time of the Bootstrap sample in our test suite. The table shows [a result for Java SE 8](https://travis-ci.org/i-net-software/jlessc/jobs/57452290). Of course the values can change over the time.
+JLessC runs a benchmark test on the GitHub Actions CI system using different less compilers. We always use the latest version of every compiler. We measure the compile time of the Bootstrap sample in our test suite. The values can change over time.
 
 | Tool                                                |      Time |
 | :-------------------------------------------------- | ---------:|

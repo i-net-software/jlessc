@@ -292,7 +292,9 @@ task benchmarkJLessC( dependsOn: processTestResources ) {
     dependsOn 'jar'
     outputs.upToDateWhen { false }
     doFirst {
-        URL[] urls = [jar.archivePath.toURI().toURL()]
+        // Use archiveFile for Gradle 8+ (archivePath was removed in Gradle 9)
+        def jarFile = jar.archiveFile.get().asFile
+        URL[] urls = [jarFile.toURI().toURL()]
         def classLoader = new URLClassLoader( urls );
         def compiler = Class.forName( "com.inet.lib.less.Less", true, classLoader ).newInstance();
         benchmarkTest( 'JLessC', {
