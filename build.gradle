@@ -93,9 +93,11 @@ if( false && System.getProperty( "java.vm.specification.version" ) > '1.8' ) {
  * Deploy to Maven
  ****************************************/
 group = 'de.inetsoftware'
-archivesBaseName = 'jlessc'
 // Version is read from gradle.properties
 version = project.findProperty('version') ?: '1.15-SNAPSHOT'
+
+// Set archive base name (compatible with Gradle 8 and 9)
+base.archivesName = 'jlessc'
 
 jar {
     manifest {
