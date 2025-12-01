@@ -96,7 +96,7 @@ apply plugin: 'io.github.gradle-nexus.publish-plugin'
 
 group = 'de.inetsoftware'
 archivesBaseName = 'jlessc'
-version = '1.14-SNAPSHOT'
+version = '1.15-SNAPSHOT'
 
 jar {
     manifest {
