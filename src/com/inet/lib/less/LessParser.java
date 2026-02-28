@@ -1,7 +1,7 @@
 /**
  * MIT License (MIT)
  *
- * Copyright (c) 2014 - 2020 Volker Berlin
+ * Copyright (c) 2014 - 2026 Volker Berlin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -424,7 +424,10 @@ class LessParser implements FormattableContainer {
                         currentRule.add( new CssAtRule( reader, name + ';', true ) ); // directives like @charset "UTF-8";
                     }
                     return;
-//                    throw createException( "Unrecognized input: '" + name + "'" );
+                case '\'':
+                case '\"':
+                    readQuote( ch, builder );
+                    break;
                 default:
                     builder.append( ch );
             }
