@@ -39,6 +39,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated LICENSE file name
 - Removed Travis CI dependency (migrated to GitHub Actions)
 
+## [1.16] - 2025
+
+### Fixed
+- Quoted strings in @imports
+
 ## [1.15] - 2024
 
 ### Fixed
@@ -108,7 +113,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/i-net-software/jlessc/compare/v1.15...HEAD
+[Unreleased]: https://github.com/i-net-software/jlessc/compare/v1.16...HEAD
+[1.16]: https://github.com/i-net-software/jlessc/compare/v1.15...v1.16
 [1.15]: https://github.com/i-net-software/jlessc/compare/v1.14...v1.15
 [1.14]: https://github.com/i-net-software/jlessc/compare/v1.13...v1.14
 [1.13]: https://github.com/i-net-software/jlessc/compare/v1.12...v1.13
