@@ -107,7 +107,14 @@ class FunctionExpression extends Expression {
     @Override
     public double doubleValue( CssFormatter formatter ) {
         eval( formatter );
-        return doubleValue;
+        switch( type ) {
+            case NUMBER:
+            case PERCENT:
+            case COLOR:
+            case RGBA:
+                return doubleValue;
+        }
+        throw new ParameterOutOfBoundsException(); // continue as CSS function
     }
 
     /**
