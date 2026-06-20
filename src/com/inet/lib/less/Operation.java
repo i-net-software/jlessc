@@ -476,6 +476,12 @@ class Operation extends Expression {
                         }
                         break;
                     }
+                    case BOOLEAN:
+                        switch( operator ) {
+                            case '=':
+                                return leftOp.booleanValue( formatter ) == operands.get( 1 ).booleanValue( formatter );
+                        }
+                        break;
                     case COLOR:
                     case RGBA:{
                         long left = Double.doubleToRawLongBits( leftOp.doubleValue( formatter ) );
