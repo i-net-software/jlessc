@@ -308,7 +308,7 @@ class Operation extends Expression {
             }
         }
         if( fail ) {
-            throw new LessException( "Incompatible types" );
+            throw new LessException( "Incompatible types: " + leftUnit + "," + rightUnit );
         }
         return 1;
     }

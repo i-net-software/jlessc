@@ -24,12 +24,12 @@ public class ErrorTest {
 
     @Test
     public void maxDiffTypes() {
-        assertLessException( ".a { a: max( 1px, 1% ); }", "Incompatible types" );
+        assertLessException( ".a { a: max( 1px, 1% ); }", "Incompatible types: px,%" );
     }
 
     @Test
     public void minDiffTypes() {
-        assertLessException( ".a { a: min( 1px, 1% ); }", "Incompatible types" );
+        assertLessException( ".a { a: min( 1px, 1% ); }", "Incompatible types: px,%" );
     }
 
     @Test
